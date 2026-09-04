@@ -2,29 +2,52 @@
 
 import { useEffect, useState } from 'react';
 
-export function useMediaQuery(query: string, fallback = false) {
-  const [matches, setMatches] = useState(fallback);
+/** Уважает системную настройку «уменьшить движение». */
+export function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setReduced(mq.matches);
+    const onChange = () => setReduced(mq.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+
+  return reduced;
+}
+
+/** true, когда указатель — настоящая мышь, а не палец. */
+export function useFinePointer() {
+  const [fine, setFine] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
+    setFine(mq.matches);
+    const onChange = () => setFine(mq.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+
+  return fine;
+}
+
+/** Ширина вьюпорта меньше указанной. */
+export function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(false);
+
   useEffect(() => {
     const mq = window.matchMedia(query);
-    const update = () => setMatches(mq.matches);
-    update();
-    mq.addEventListener('change', update);
-    return () => mq.removeEventListener('change', update);
+    setMatches(mq.matches);
+    const onChange = () => setMatches(mq.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
   }, [query]);
+
   return matches;
 }
 
-/** true, когда пользователь просит уменьшить анимацию */
-export function usePrefersReducedMotion() {
-  return useMediaQuery('(prefers-reduced-motion: reduce)', false);
-}
-
-/** true для устройств с точным указателем (мышь/трекпад) */
-export function useFinePointer() {
-  return useMediaQuery('(pointer: fine)', false);
-}
-
-/** Клиент смонтирован — для того, что нельзя рендерить на сервере */
+/** Отдаёт true один раз — после монтирования на клиенте. */
 export function useMounted() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);

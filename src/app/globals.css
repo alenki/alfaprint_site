@@ -1,463 +1,665 @@
 @import 'tailwindcss';
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   АЛЬФА ПРИНТ — ПРИВОДКА
-   Дизайн-система. Один закон: всё приходит не в приводке и сходится под взглядом.
+   «АЛЬФА ПРИНТ» — ДВЕ ФОРМЫ
+   Дизайн-система главной полосы.
 
-   Три правила, которые здесь никогда не нарушаются:
-   1.  ТЕНЬ — только у блока, который вырезан из листа. Всё остальное
-       разделяется волосяной линией 1px. Тень — это событие, а не оформление.
-   2.  ТРИАДА C/M/Y живёт только внутри механизма (приводка, контрольная шкала,
-       растровая розетка). Она никогда не становится фирменным цветом и никогда
-       не красит текст.
-   3.  РУБИН — единственный акцент. Одна краска на весь сайт.
+   ЗАКОН, КОТОРЫЙ ОТВЕЧАЕТ НА ЛЮБОЙ ВОПРОС:
+   каждый элемент — это либо БУМАГА (грунт, не двигается никогда),
+   либо ФОРМА K (чёрная краска, несёт весь читаемый текст, стоит намертво),
+   либо ФОРМА R (рубиновая краска, подчиняется переменной --miss),
+   либо МЕТКА ПЕЧАТНИКА (служебная графика, делающая работу интерфейса).
+   Если элемент нельзя отнести ни к одной из четырёх категорий —
+   его на странице нет.
+
+   СЛЕДСТВИЯ:
+   1. Читаемый текст никогда не двигается. Уход приводки касается только
+      рубиновых слоёв и декоративных дублей. Ни одного кадра с нерезким
+      абзацем, ни одного блюра на тексте.
+   2. Рубин тратится ровно на пять вещей: галочка в знаке, моноширинный
+      текст, второй растровый экран под 15°, галочки на цветопробах,
+      заливка секции «В печать». Ни одной рубиновой кнопки, ни одной рамки.
+   3. Ни одного числа, которого клиент не может подтвердить.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 @theme {
-  /* ── БУМАГА ───────────────────────────────────────────────────────────── */
-  --color-paper: #efeae0; /* офсетная бумага без покрытия, тёплая */
-  --color-paper-2: #e7e1d5; /* второй лист — чуть глубже */
-  --color-paper-3: #ddd6c7; /* обрезь, поля, неактивное */
+  /* ── КРАСКИ И БУМАГА ──────────────────────────────────────────────────── */
+  --color-paper: #f2f1ec; /* основной лист */
+  --color-paper-hi: #faf9f7; /* мелованная 300 г/м² — только «Растр» */
+  --color-paper-lo: #e9e7e1; /* вылеты, поля, неактивное */
+  --color-proof: #ffffff; /* чистый лист цветопробы — белее грунта */
 
-  /* ── КРАСКА ───────────────────────────────────────────────────────────── */
-  --color-ink: #16120f; /* составной чёрный, тёплый. Никогда не #000 */
-  --color-ink-72: #16120fb8;
-  --color-ink-48: #16120f7a;
-  --color-ink-32: #16120f52;
-  --color-ink-16: #16120f29;
-  --color-ink-10: #16120f1a;
-  --color-ink-06: #16120f0f;
+  --color-ink: #121110; /* форма K. Никогда не #000 */
+  --color-ink-70: rgba(18, 17, 16, 0.7);
+  --color-ink-62: rgba(18, 17, 16, 0.62); /* минимальный текстовый по бумаге */
+  --color-ink-32: rgba(18, 17, 16, 0.32); /* только линии */
+  --color-ink-14: rgba(18, 17, 16, 0.14); /* только плашки */
 
-  /* ── ЦЕХ (тёмная инверсия — секция «Оттиск») ──────────────────────────── */
-  --color-press: #100d0b;
-  --color-press-2: #1b1613;
-  --color-chalk: #ece7dd;
-  --color-chalk-56: #ece7dd8f;
-  --color-chalk-24: #ece7dd3d;
+  --color-rubine: #d50032; /* Pantone 199 C. Единственная хрома */
+  --color-rubine-26: #e5b2bc; /* растр 26 % по бумаге — призрак формы */
+  --color-rubine-15: #eecdd0; /* растр 15 % — подложка активной строки */
 
-  /* ── ЕДИНСТВЕННЫЙ АКЦЕНТ ──────────────────────────────────────────────── */
-  --color-rubine: #d4003c; /* Pantone Rubine Red — база пурпура в триаде */
-  --color-rubine-deep: #96002b;
-
-  /* ── ТРИАДА. Только механизм. Никогда не бренд, никогда не текст ─────── */
-  --color-proc-c: #009fe3;
-  --color-proc-m: #e6007e;
-  --color-proc-y: #ffed00;
+  --color-chalk: #edebe6; /* бумага по чёрному */
+  --color-chalk-70: rgba(237, 235, 230, 0.7);
+  --color-chalk-56: rgba(237, 235, 230, 0.56); /* минимальный текстовый по ink */
+  --color-chalk-30: rgba(237, 235, 230, 0.3); /* только линии */
 
   /* ── ГАРНИТУРЫ ────────────────────────────────────────────────────────── */
-  --font-display: var(--ff-display);
-  --font-sans: var(--ff-sans);
-  --font-mono: var(--ff-mono);
+  --font-display: var(--font-nsd), Georgia, serif;
+  --font-text: var(--font-golos), 'Segoe UI', system-ui, sans-serif;
+  --font-mono: var(--font-martian), ui-monospace, monospace;
 
   /* ── КЕГЛИ ────────────────────────────────────────────────────────────── */
-  --text-meta: 0.6875rem;
-  --text-meta--line-height: 1.1;
-  --text-micro: 0.75rem;
-  --text-micro--line-height: 1.3;
+  --text-h1: clamp(2.875rem, 10.4vw, 11.5rem);
+  --text-h2: clamp(2rem, 5.6vw, 5.5rem);
+  --text-h3: clamp(1.375rem, 2.5vw, 2.25rem);
+  --text-num: clamp(2.5rem, 4.6vw, 4.5rem);
+  --text-lead: clamp(1.125rem, 1.6vw, 1.5rem);
+  --text-body: clamp(0.9375rem, 1vw, 1.0625rem);
+  --text-small: 0.8125rem;
+  --text-label: clamp(0.6875rem, 0.72vw, 0.75rem);
+  --text-mono: 0.75rem;
+  --text-micro: 0.6875rem;
+  --text-emboss: clamp(3.5rem, 15vw, 15rem);
 
   /* ── РИТМ ─────────────────────────────────────────────────────────────── */
-  --spacing-gutter: clamp(1.25rem, 4vw, 3.5rem);
-  --spacing-section: clamp(5.5rem, 12vw, 11rem);
+  --section-pad: clamp(72px, 10vw, 168px);
 
-  /* ── ДВИЖЕНИЕ ─────────────────────────────────────────────────────────── */
-  /* Приводка защёлкивается — быстро в конце, без пружины и отскока */
-  --ease-register: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-press: cubic-bezier(0.65, 0, 0.35, 1);
-  --ease-out-ink: cubic-bezier(0.22, 0.61, 0.36, 1);
+  /* ── СЕТКА ────────────────────────────────────────────────────────────── */
+  --grid-max: 1680px;
+  --gutter: clamp(14px, 1.5vw, 26px);
+  --margin-l: clamp(20px, 3.4vw, 56px);
+  --margin-r: clamp(20px, 4.4vw, 72px);
+
+  /* ── ХРОМА ИНТЕРФЕЙСА ─────────────────────────────────────────────────── */
+  --topbar-h: 48px;
+  --strip-h: 10px;
+  --striplabel-h: 18px;
+  --mobilecta-h: 56px;
+
+  /* ── ДВИЖЕНИЕ ─────────────────────────────────────────────────────────────
+     Ни одной пружины. Печатная машина не пружинит. */
+  --ease-land: cubic-bezier(0.16, 1, 0.3, 1); /* посадка формы в приводку */
+  --ease-ink: cubic-bezier(0.22, 0.61, 0.36, 1); /* краска, цвет, затухания */
+  --ease-blade: cubic-bezier(0.65, 0, 0.35, 1); /* ракель: прочерки, заливки */
 }
 
-/* ── Анимируемые свойства ──────────────────────────────────────────────── */
-@property --slip {
+/* ── ПЕРЕМЕННЫЕ ПРОГОНА (не токены темы) ──────────────────────────────── */
+:root {
+  --miss: 0; /* 0..1, пишет единственный rAF-цикл */
+  --gain: 1; /* задаётся на каждой секции */
+  --progress: 0;
+  --mx: 62%;
+  --my: 40%;
+  --noise: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAAAAADmVT4XAAAe5UlEQVR42i2bCa0lRwxFm8JQ+BSKgimYgimYgimYgimYgkFF574oUjLK/OV1l5e71Rd/O21pZvXXcz1nbTabbbOW5RVd21nZ7uX5ytxsxrq3Zscvw/e8rCeqK8yyZtsmrOr83N0ne6rXK9enJi3CI6Or3mdrG9ttr8cm2txfXc9ahHVU3KRZzFh68rddNvMmOnPLMsZmystsziprxm3Lr+u5x5vcqLaIruHjzcX6rPu2+XXEt9U5n2dmRHTkznS581D/Njyn+9+zrZ2rinqZ+eKyPXP2ZZ51drefbUeMtVe4ZdfGxlzbdmVMVw+/I3u6KiLHm8+/n35Uju/fTbXn5Gxkdfnk9GZF9lqnz2VGe2f65HrnzOvZjdncuvH1zH01zTG+8bFsH9vO9ZpOK+eT8UxzyXFbWn3W4T5V/sbbgze/PeaxU7aZxm/v4BP0jM1t2CsPG84iVic72xOevh52FRbefrt9HrbFuXk4L4qfkZPht/H6edRH1fhQOh3vfLvs8Rt3Z23N7MLKeQibZz163W923tQMRZo1l5dtlRMxndtrFbn5xqrtjAJxztHzoilXK/PIzp4vnkdP21TF652OSl5ojuVWZtnsZlTF8cbHl1KOMvPspWgurqJfZlFlXZVbu5bh3rFdsc/55OWcYO9cpI1l3Zb3l7UUmnVcV1nn45DbYmLrgjdx6fk8t6O9dngdZjllYRm2Q9H4vN5XHFZfuVealy3/qrGM3Hr1Ljsv13wp1twx+zhJvUR6PnmwMroh0r14Xhv6dpvRkHOUmmWmVfFv06fdVF/F1HW8qt3bzuyglWcz3/Em3OfxEG/TJ6ba9n2d0df+jLrpiAyj5oOe4FW5bdIMR4NTc8MRdEXtdL2gRC96asyX17l3zI81t6jlpz6btPaZKNrZg/faEeZu++2z5HfEC7dtq/EX8TZ56Ha7XarUqqyYS+O+Zpl9ZRsddVNrvVvPN96OTfVM9dULFZ1vXFVxinm3ud2q1aOP82NIrH7rUP6WTcG+rK2g9jrCLex15FCP1rzvWOtiNDFlNqi6R8d3T4wvDT5Gh0yeHTO6OVs9vfnxqrw3rOJLH59ed/otptKKD+0+PFlE7W7xBikAoz7Oc95bG+toaqctvc3TfDLKIsbPszqYNGc1G8VrH28aoBiDcXxhWX37Jjbpwr6xTWPscnjjTEt7uTY0rnbHWXKKs71dY3384t2xG68J7789vr475kVSsXzmsqqgwhnT4+XWjPz16q/SrS2yxt5rC59hyntY5b0tVsWYd8/6dGd4TEdWFQWQTJpgZGRb1NlcB6N8k+lX/pqB/s96qfA9tfcYK7Iyx/rTmIj03ZnnFbPVs1Wx02t8DLaJ9boxrtg17MBapqC57bja5WXYM74ymex0NWfxlhGQsxdhE1Fe9dQ4fNqe/FhLPiysLGOcUAaPGcJDWTFVmwZ/ml28zqcT4jtso/KxxObcfFjYpj050e42lUyIeRxu0dKvfMyaTUCbhjMJ3+Nl0/MbTmGxGXgDLJuXNzFT6Y8D5BmNacpmynM9iNVrX0p4qfIcTuW2641bxfJZLG2o5spgBO3xCLHzDQP7N+8fPfaa2Xg17C9eLT1OESTVycgQ5JhsZkBYaAZEMYqi9615zwV/zwdkIwKyJp4xc5lWPDloqrtzP47dl9ftbD8+GjPINnyLtp1/7JFkibGnmMvjdf8P9ObIhnUW0xfx6q4reeXAjKXXDSj32fit/wHnmOHNkJxlGdlG5Nu1V8+HE88rP0BdbPpLvZHLfhVV9Z7za7N81zfT6chu7bPuNEEJC8aEedZUPaMGjVdr0Wu/jfJ6Y2K+7rqn58sXNH85SIsXCQbYCKGJak38Ztcw87Oen1/nxm17cU6UiN85cCmYR8G5HnMb8HVuZ9ftzieIALGaf2OXwEreyfafU9sAkmFzBwMamKZGfKytHZYt3fixNy/Dku2fdwCmpMYjv2U5ukoZJJeUsXb4ghln25l3bva5wGpsv3pg8OmIu35ey8tZLyEY3wsHBle8aWtKtmknvsW8wMFAc2d70Lu0QaQXcPF+8LDYILNqhBSGL9vvFbvq1YCwjhPkS+2SYx+2R18nkJJ1sFFvAzA4A0DQAGjgnHHwFXTbGCNmKcAHGndT4fOu6n9QB3B7HmnfF3xrVDsoEpxBgWnNMZcqBrzBC80STzFBhqiNzHn11zSsOvGlAGoB2uABLfDtVLfXUVWginAaFyzcxqv7QD3TnpX7Bk7AnAKTai1QQIxs311b/z2Js3kOIN49cKRLu38l0BTtbxJ0tzU1zS5bPvome3HaeGEcTVz6xX6hfja6owEYYGerTh5Qu8nL304Ec9lr1VKwBA9/ekOAN7Xj2DTbDlgSE+5aK33hwYqM/DENY+9OMWsgJlRmeCWT27fOwP+cEGArPt5g1zGaoDKgS3u854N08KLpOibUr2TH1T89STk2x2MVQVWwnl/4JhOWgcz47O+JWQGjHoC+fO3elXcwuljFu/BAPieElU12IMBkF83qYG2Fdeu0XzRZ2UtgP++qeWxI4bqkvhYIH4CKyI8p4VfrAl33rrVAbgtasbn8igLH8449++VjwQkRvQlQ2uV7MTXLCBgXgwSeeFKedr75wCacVNMV1lWf0R7zrU22gz+ZEOnV4EZggP6bnH30C62kqQZ4AQHrsWs3redRNglNqmt6LqvZvO3Rx8cC1j/qPufLAtK8hULasYwehy7ovSFCGFVM6QVaeXczWnq0i6nMBMH1LodIHV4AsNYip/NV8XagEgzIp46qagPK70JMIqncnOCD5XwPiOHFdIYcDaty3PLfQa7YemFDUS+jjZanzME9EFIofYO+KJZ8JupA4Xp4t4MBbC/69efQ5YlYK8t3XiD22Y9u6xv0Co7T2Gp8dANdeu3q4VXwwQwaimLZUzBwlvrvwNKDeoQAaOXFmC2wMOqL4Ti1RCEFZqCtRwXYfXooT7QITrn4eGDeLRGAXDQFSH8//kcmp8zGKpgUM1ig+VhVDJZwCI/zOVBZvMPpE+k3HvwVD8t6E4DZj8k/FaUKB/feG6Zh2ujVMicpL3i69xkNc/MDbllhbo9ZfTuC247AxIzOid8nKPjFBATGaP/lOQZlIVlJXwIpmWrSiIyhC3PbKnU+7CEzXmfx/2zuaBVj0k4wIQZcT2UPE4fRDDOGr27BOnnQfvZuD3JeT6QHmNZWOx+b5pWdlvLoYw+YfdczCtGDLQ/RBQIZ0gBMjr+a9ybjAJtRV80WQVpw8YWiQn5CDYe9wFrEA5oARHScT80H2qBcERmWfSR2juAwIj/JTItkjTO4YJr8cpgXsw2p4iESRbzo7zwSxOKa+TO8xIgD9zE2NL+voviQKAtZX0BToUabrNkD1RlYBGb3VOWMIiaiwY9BRsxg9smX/o6hByMASoA04MXQ/x59o60GF9iDbXHTdfozymTPfnzUB8OkepAn+CkgFMg1NBsKASNjoyZPC19uvgj+DhREEpGg4mqB/z8O09u2x5uXutmIkCP8yECHoaHTfPBFioLVZawym6J7xUUWLL7MOMQeNjE7NtAWVxpDzRNEtB/ueazAkz6TwKlkRuejl618lv1cDsOEJgIn8rM3kYUcR73oqVSGUiV4i7kSDX3vJ/ZQC8zqTJ7Y1Yyv1XbbwaS+UumzIRMVqb94SG3OyG3I+gbkVL/oy1/bIH+9iMm3VKFd/gMhBMV/hl70Ews8moJ5v37rRfMbSvLECjiwYxMkgChETFsCrnAxyMthUwJ4INr3HV+YzxCcmOCmLwRpM9ejtMNQ0oLPtS8Z8I5Cw86A1yXTBoHn/c+W3cCdVDNTYC6Kqkw4kxlagNu8gQqZaQ4gzk5Xut4jysBVjjO9+ofzqaJD0fl3xrpJR98O7wdo4CAAHh3Dd3keS5OaGlRS1JfJjM9+KAH12CVy1CstqXn21h5ze+mPLs2rraCZ2OMI3p4RL1WuNgjqB/adDZNkGiBWtUaBz2ISpR6ZHzmvKKQee846QWtgJ4D0vxWBA2PNDFqpNUCCh2J51mqRC/LxJAj5jSIMTYTPl/jOnVTKNGcNAUPmHGoLSWM+CCUma8N/pxwlsWO/m0I5Rv3Tp0Va/B0s7x1Nq8GzOwyu3/ZFdXkU5mz/c/EFjij83j2NqRIFMZvS4Io8NDJGjwgD5AXwyOj+wuYwCVKKeRoQBF4CMMreN8ajTwlucS6TjTYITBjIU8V57+izliVSl+oi7y6Q6BgY1g+JvDIeQM5GxgmM7kN+7z+2zANlZJSnG8pAz8+74BSkD3rtCVaUCKVOEhnLSqNUAKb3Cv6RzKorzwHDM/6k8bF5Hd7IoFvm8odx8g8Uzq+lvuC4EKHpQZYLC17h4t0c1R+BINWBGH+RG5bUhKlhhj0Kyhfb2vbDShCa91okINdmGYEm4Nm37v5od1sXGsuo/nuNCIX9JHJDPwPPpRohr0hpjT8PKalZ85gi3a+ooEh2iRTclnyES4Pk4QwQ4XWJxusnllisrTWeFsRYAxaHxaDwc1LTLA/9gXG8DmwxqeXoUlCBF6JCvHhmykYxjdnAVD3vFkGkNjFSSv1elZdBGwIdW/aHsAee0iEG4g898/sZDdTtGUwPJRQAz3qX7rwMIsmOSEMsclqZPdmoNw+od/coxARxc9D868Ygf8dUArv9pkEx8OXXAPQZjDZv4VwU0C0oc24YtePpZxI3Tv0wAk0pKuUx/yhlVlcL53ino/n0G2Qd/IqzLz4AF05IxHPGMt3k4HJLZLgDKDtQEgkw+Z8ezIGd48dpt/Ut3VG1z6WBQDVhOJf/gNWG7gfVc0wRZHdgN5jsK8tB22fiVjLeIUlN04IRHLEGwUwIHHXAoMMFgzgt5GzmuCNYJP6T60vYhKh2qZHruQ/tBUMNXoHTl/72tX0s4pKECcMxEAhWLmIU/Bx9svsO3p6H0dIbf4xFOUy+U6h38Ar7NXzg4L00pADeJ6NcL5XJIm+u1R8iILsf3A2jIF6b5D5WstoOwWTuCrVt0NPtqD9pHegELWpWeXidTE3YgsMBpFIcTO8ZZ22Svlhrect0xdJ7KJJmXzLrwFFPcugU88ohmTIp9Gg9n7BHIaWvLBTq5QoL2Qcqj+rymGdSiLBbRO5h3hgkjS7riLgIw4tFTWPb2tdMg5cXBWgZlhdCMCNWkiBPPAWs08tF/BponYfzAsA/IIXDf4i6/NRu9MJNbqHQylT9Yw3BTpmH8ASIV+58BYS/tAYcAqUDrwyN+A00bNHzDYcY5cIBNTz+j0AEogMQmE1KgQy09Tccxv7UPrK6LgVd2QEscXvH8qfgPzsfPwwCKAtP5yBOB86FoRYyGd6x9FRjW+eL5RbygXAkUX9koP2eOvEsMI0r/b7Va8TTj5i9J3CAI3oNAv3gApdWj+2Ly0u5IgEkfhsMGE7ogs2AF/xeetmRKQOIARISpsUj23voBgQMjhG5uHoT1BJILwRbaHRIa7657/5JjmSasFPRXPUkII8yio7Noa6kk0HZ8kCdqtlyMR3UEpP8xqBqC7HjLKkgaGUsYvTFxxe9pA76dqfqA1WhmJGHAOWOo6MLCaGikojYWCmFyOdyOwBq6EPdH5uVDY4F2A9d2+u0wEZmNWKnKoVmPPCE5I7ERkr311/V5CekBO8aGIvjrF9mGz2Et4NQg6mihEX5c50ZPvoiimj1QByBISHJZFTuqOCBPDaPn4OAcOjxKHhZ7IhEqpWwgDhXzBCaCZdXe4PVuI9fTPzkIfY4AQ4UZoYZ0+dgWcgM94F40FG7XLus3sMcEpETOesArwanYIY9Mp8sVTkxic3JtseNaPkMU5SWvrmYAR8a8CS6w+Rt0OxIfODi5WODmcjXoFszUEwSJB1NIIK8zcpxaq0T/C7c80QtgERWAIgOWOQkRtYhC0NNkXuBhMwz6VHF85V206AaUr9w3ly59KgO0rVz4+GhPnnmAGZ5gIQREBHaP7ws/v5lwArBvCODwnNYIUiXSO2MMZUzre96+VA25LqvJCYq1bBYRKtWOCIkS8DgIOb3s81DqHyHRsCB+6CiD2CHiIBRxC5krLZBGPVuwDCnRdt7iC8MZVYGewlLGRirKYX8+gRDl4Gr8ZiS9Xl6pE54sXhF4DNh7gCd82E3cvb4HOvokIQ9EIHxnEFgrHHwDUCXxEPhlxDJYV3F/bRiZPl70kYRD3A0wYgBsMDi9ZmPbIKyDTgE9mHtpRZwQgUFSle8LF2hCIMWGDIYfmGiJjoCIioXhXLKKLBg4e0Oh7pA9KYMAbzSCMkA/CRJABF0KmI90r/7qW1L3CYUF3syytBaltlU6DCFdq6qsmF9BrIAeKjfhWpw+Ss+dL5kiirhU0xXXGP6DH2yAAm4XcOLp9W+USxkC6yBMS5bRkZd6/QYR6jE029pvoTvt4vC/ax4VkqjFaaiTdW/EcVYAj9Wy3EB0TDBLU7G+vNfduRTYImzg3YgPziDEFHzPZAaK5DND88gZMdu/H1AMETDtlF5B5TDcJqoB9Lh2wCCMkzOJLolYqi8EG19KOR+jcTDgezP79J+bEAGXpJYq7BwNoSakZ9lWKslxR5UyFdRSeT3hvVNoGx48y0jhs8s2YGom3QUzC7Uiln1MIiKrQa9U8WCok3hHZiXzFagDJzDzN5itwPu6mO6AvPxxQ8FSJk1VBRM1Qos9kJ3hEKKoJWxY08AGfD9IbKCqBFiz3nTnBipAdIPX0vtRIIH4qnGeQpUbGxTGga1BmGVHYPFbTJPWxYKwJgHT4xg1FJtQ/BuIBlkvA+MIU3Nf4kdly65GIl4zYw7nAwBpF91EtrBQJgPjawREdykI+DLw2pRbViQgE7veUYDWOPasVRPz+PPWPVf1jNgHx8ZshT9vZo92CHC9BUT++Danf2CfAEOmYI7YmiHH0h3IT9CgQpnkcUAqEbDfNiChlW5pmWZjHTvvfMPR5W1eDk44ZaP3gf3dB77S8ZE4N6B9QxqTTgIO8fsPUSDo+H4JeguKAuEVjBWaTRm70C7/yhQwGv9RlbQWvWx34elZ9I+1GgykNFlkMBkNCBdIh+jETiVN1GSeeSLHKY7sBNJWhEV/sRmx0WABODiXB/qUSh0RWSHMB2TuUt25j6kXNalBMRRuFJxCLYUQgX7l5mEXSAQR70AOMsRhgI3lzLDZxBrJ3qJzM3+/0d0VoICal462RLvqw+f7RGTekcMETJoj0CcxqdCcBj0KCQrUZThYJr4SYiFgnYc0hJzUIx0npBUmjK/vAbyVAppEfUljIWLgGu1H1AMvycl6kgCJ1mM1IEiwPzcjVP6h2FHYcJ2cFri8iVyE0LU03irQiuh/OR1M6Kfqmw0ZEXmo54WLL5qfL+NheqAsTBoHf6tQmWQn/yFB9E1OHME2H7Su2Uygo3oEkqR0NR8UtBBqbnxqQ95gFLJKx/ZMu9Q25GN94MNEcWSyjYJOEKv+OmveKSwABYPSR0ks+XZ95iy3vYI9JGVuD9Z8IWHaH/YxaNAxZPmfjaopCCXt6BqdvFzsmToHAJOKdIDmzsCBchc7XL6+QdlGE8iwMKHzOfwU6t8UoJoEgIIaPaaYOxJxEw5kf6gn2ZIU/B2SdtHGsQ/e98/TDP2Yfp79TeyIILwWE98eHq8HSw85MLGpoHGj3QeNBeqEZV37CEYKdhqK9DWsu924RONCMPoQn5DdgBSfGQMY+D4I5kXtAe2dqlR6FtGdAlkqJnl+EPMJvh94zgrURYKhab8bWRmvyP7genJnLhQjOlBP+m2YG36zfnHYaHTiXeV1B1eJeIkmiJIBCf0J2KC9UFOZDmQuHyJNOfbpL+MYB6iEm94eAUbP4ZLknVAT/jwKh9WwrN+CJWcJYaAKQCONMRkjjk+EWk5lawLLDwJx9QJRq5EI3AjYE/jEMqFwEEUa0bAFTNKHpRgYD52tSQdjHKsWzPipOElrgbRLZIxFArEjimjZNUoG0R6jz2J/8zSJWoiyw1UA3D4OSc8IkJOKeDKw5lyaBxiKxPNeiCX8xGUZukAI2miFiVCjwIwLGY5XUvxQ1sWPILTCGECL6K4jiI/0Hhlv6FQ4M88Ms6sHa+WDginQHIfRXh9H5JOSX5R1EWxOQLbyshqOJAXc8XylV0G7NKU0GKQCh0s/GBKdoG+AQiQDdwuRFKeVueq/PXvSkQLtkKB4tP3czwt6ktYTMFkBoJgEsoiFx5wDEd5uhDUJLu5rNIBGLGLwMh+IG/9WsCC4gpsqcB30L0E4no4kT853791pTeEimTV4aeNUgVHpUgkr1BipxHk+NmmuJWS2DjhrOnEf4c/7IGOIMWsWfA4w0k5YvKxMzJ3UnRgmkCjwCkQdvkvMgEXH9Q5HAxRwnm3jEGWLD1IMBnvV8YFdwFex8cFA/kORwKTsA0v7KeikiCky090B5MGSxVj/tPqMiIzyP2P5lYAYxVedmxyUiwyg1/qGgoWWGkN5cJ2wMv8lP7Vd406DEdG90xowdAPxFmSpG2abI4O/v2ih4TBScyuKozz+AdP4SVzBWVLevIDCY+/H4mmE3FY8cqZjvha9JiIKNO6sUrLSnmcDH+yolTWJU2U4NaHFAgIB+gyJecXO8EPpCv46fS0g7h1IYgbPDS6Lnbsga84v5AMCMEDJEloB+aI19nLI24KjqKYkNSuBNT8K1n0kDOJbywLM4cW4UH/0gqMcUI15445xSKWjUgogJV6v3syP1cCIY8ZJltFuWCmWb5puekOeeD6CVeddowQC9JISdBDorCfVa0AE29sHuNBx3KBZkOdP4KiMo2pWT3EuNRHiDYOicukVR5omBFIKK8QliQa4we7vYgv2YUMQkJz3DNg+H2PSahAGU49LfVT9oQ9XMlMvSxcfeeKgpheY5CBLglGk4q7AdI7s4w0KaOqCxVXyIDiZA7c6CcgvKU85WP8cHXF2cMEUBTeGF1V6unj5b6R/t4y9iVC9+V1Yus/5NCACB25MqUjHz7DtbK6cthCkm+AimUkkehAV4ZPghFR9VBa2t7H9sG6VvaHBnBiCWhFinoz+JmDBAUJlHGRBqPyEX1IgWs+LRCbbaqkU+C5UrgfmxinH7aURMNhtU+VRI6PjOjFHfiCF4jsCRX9abNabtxac4WHPSgisPSGaAhQT/cDXHEv1oPSD3JPaezoT7Fg6cnAbSZr9ccYtUOIm9N7wFsPaOJKHgU9hZduFhxYiatjtcJPlDGkHNdB5U5BYBXg3vDP0/042Yw7+T2QvMYlN53A0/W7oOKUEIMG+Ugsph9Gl+68EHGTySUBDQDBRSNqEVwBJtHNgnNZ7yhcqWwnOs8qxks8hIX3pfxeLuORJ62aQ/OB6kEpgCvSvhV9gqtzDa0UKy6Blh8Y/SVkiEn5Ib7U+1MomDtBuqBSXcjfhT7oGGJcpSIK93F1EMbKd+qymEIkKHKmoYX4pZZg3n1MRcYJncJERwfYPqIZ0JrfXPrJZa660iUCWK88f6D3auSAaxkp9bHhZLajBbAhUsFtksd4gymB773vd/PTRY1NDutlAHYfeQ6lVgg8cTPPNdDY/AqmDUBz/oBN0sgf2IdbNUna7SPOgF0zulHIPUJT6+K32dYEqxuCyNGSKdTdK6JypBXidM0Q74Sc2yqmxKlz5Y3CAz/F/u5YMBDeIWfL03BuJr4vftcVdEkB7N0K364ddJlEkP8fyCBQrPyeM1JgjXwEi3pwPpW18scKsfHGGV0kzkkcoPDQvb8EpmYi8GX2fRAgfGD4Id0sNIVYBLLhPgUZQ3LRUC0ibDCPzmMiuvg0V0LFAKhIF3NRwIfFK7jYhqXhf8CsJdULeT1U0Lj4SLqQZkYMig2RalaaLsiB6agGBCJ8aJpFH0j5QnTZIDP5fsE9Ls4ZaUo8cEX2Au0CbitHt/iA6OStvIBChPNxMUZxkVeTd//wIdHGfpchXIj9qSqkvI9u4MIsbtCpsf8UFyBwh5DI9savwbvQj+LxpU1QnkhArJXSLRJk82+kSaFq9YNf4K4LU/P7mUJK0KNIMS4JvFLjOEFMJMD5gbhNtwd1qQ4NGhOKjIzVNuEX8h740cCS0S1WdjDngWH28I2IcAN/uAapoD9zI9TBuheMaoI/9n5CPcDK8Fkg9fwi05XLFPzok/6K6BfSt4KpfKVsQf+bjQdPubNvP4YH34Lk1dLbWncBmwN1vAvewLLluKbEphNnw44yNM+Qf8E1oF+6Uhcll1pE1B4RCsX7Qm+ayyREO8XL9vzLnx2C2ldikKMEFwqoEp0MRVLrTxErVDndpVXuOGDGIgWCCo+JLokeEA35V95QYqaUY1yf5u4V/W7I7rZf6MRNwc39XerwXwLqJyAg2XK5WndTJOjjCiB0kHNPHag9Ba+JX3K9i0sjmDBvlOQYNcQjJC6TRpkucnICFx8gXaBvfgXGJJ6Rzkr6agkvWTECuWEHOSIZBKwHdcNWyU1ipJGRILkvB7l1hRVriBcpu8i1I08JC39KmiE4Q27oA6atc2EXOGzzcX26DdCOY4QVrku2B3mELyMxn9YmikPKXNIdDu507vlBFUn5YfWREVkZN1XY3owvWM68/Q/gRACgv/RoZAAAAABJRU5ErkJggg==');
+}
+
+@property --miss {
   syntax: '<number>';
   inherits: true;
   initial-value: 0;
 }
-@property --rake {
-  syntax: '<percentage>';
-  inherits: false;
-  initial-value: 50%;
+@property --gain {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
 }
 
 @layer base {
-/* ═══════════════════════════════════════════════════════════════════════════
-   БАЗА
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-html {
-  -webkit-text-size-adjust: 100%;
-  scroll-behavior: auto; /* прокруткой управляет Lenis */
-  background: var(--color-paper);
-}
-
-body {
-  margin: 0;
-  background-color: var(--color-paper);
-  color: var(--color-ink);
-  font-family: var(--font-sans);
-  font-variation-settings: 'SHRP' 0, 'CRSV' 0, 'slnt' 0;
-  font-size: 1rem;
-  line-height: 1.6;
-  font-synthesis-weight: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow-x: clip;
-}
-
-/* Волокно бумаги. Плитка 180×180, запечена в data-URI, без blend-режимов
-   и без фиксированного слоя — иначе каждый кадр прокрутки перерисовывает экран. */
-body::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.5;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23f)' opacity='0.32'/%3E%3C/svg%3E");
-  mix-blend-mode: normal;
-}
-
-::selection {
-  background: var(--color-rubine);
-  color: var(--color-paper);
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button {
-  font: inherit;
-  color: inherit;
-  background: none;
-  border: none;
-  padding: 0;
-}
-
-img,
-svg,
-canvas {
-  display: block;
-  max-width: 100%;
-}
-}
-
-@layer components {
-/* ═══════════════════════════════════════════════════════════════════════════
-   ТИПОГРАФИКА
-   Кириллица шире латиницы: строка — до 52 знаков, не до 65.
-   Строчным кириллическим текстом трекинг не правится никогда.
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-.t-display {
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-variation-settings: 'opsz' 144, 'wdth' 64, 'GRAD' 0;
-  letter-spacing: -0.025em;
-  line-height: 0.84;
-  text-wrap: balance;
-}
-
-/* Широкая дидона — манифест, выноски. Та же гарнитура, другая ось. */
-.t-didone {
-  font-family: var(--font-display);
-  font-weight: 300;
-  font-variation-settings: 'opsz' 144, 'wdth' 132, 'GRAD' 0;
-  letter-spacing: -0.01em;
-  line-height: 1.02;
-}
-
-.t-lead {
-  font-family: var(--font-sans);
-  font-weight: 380;
-  font-variation-settings: 'SHRP' 0;
-  font-size: clamp(1.0625rem, 0.95rem + 0.6vw, 1.375rem);
-  line-height: 1.48;
-  letter-spacing: -0.006em;
-  max-width: 34ch;
-}
-
-.t-body {
-  font-size: 1rem;
-  line-height: 1.62;
-  max-width: 48ch;
-  color: var(--color-ink-72);
-}
-
-/* Технический слой. Кириллическим прописным нужно больше воздуха, чем латинским. */
-.t-meta {
-  font-family: var(--font-mono);
-  font-size: var(--text-meta);
-  line-height: 1.1;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  font-weight: 500;
-  font-feature-settings: 'tnum' 1;
-}
-
-.t-num {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: 'tnum' 1;
-}
-
-/* Резкая грань — секции про лазер и рез */
-.t-sharp {
-  font-variation-settings: 'SHRP' 100;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   ЗАКОН ОДНОЙ ТЕНИ
-   Тень бывает только у блока, который вырезан из листа. Всё остальное — 1px.
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-.is-cut {
-  box-shadow:
-    0 1px 0 0 #fffdf8 inset,
-    0 -1px 0 0 var(--color-ink-10) inset,
-    var(--cut-x, 0.75rem) var(--cut-y, 1rem) 0 -0.125rem var(--color-ink-16);
-}
-
-.hairline {
-  border: 0;
-  border-top: 1px solid var(--color-ink-16);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   СЛУЖЕБНОЕ
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* Фокус — рубиновая рамка приводки, никогда не браузерный синий */
-:focus-visible {
-  outline: 2px solid var(--color-rubine);
-  outline-offset: 3px;
-  border-radius: 1px;
-}
-
-.no-scroll {
-  overflow: hidden;
-}
-
-/* Курсор прячем только там, где рисуем свой, и только на точных указателях */
-@media (pointer: fine) {
-  .cursor-hidden,
-  .cursor-hidden * {
-    cursor: none;
-  }
-}
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   ПОКОЙ
-   При prefers-reduced-motion всё уже в приводке — нечему сходиться.
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-@media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+    box-sizing: border-box;
+    /* Скругления на этом сайте не бывает нигде и никогда. */
+    border-radius: 0;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-text);
+    font-size: var(--text-body);
+    line-height: 1.6;
+    letter-spacing: -0.002em;
+    /* Синтетического жира нет: чего нет в кассе, того не печатают. */
+    font-synthesis: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  p,
+  figure,
+  blockquote,
+  fieldset {
+    margin: 0;
+  }
+
+  fieldset {
+    padding: 0;
+    border: 0;
+  }
+
+  ul,
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button,
+  input {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+  }
+
+  button {
+    cursor: pointer;
+    text-align: left;
+  }
+
+  img,
+  svg,
+  canvas {
+    display: block;
+    max-width: 100%;
+  }
+
+  ::selection {
+    background: var(--color-rubine);
+    color: var(--color-paper);
+  }
+
+  /* Единственное исключение из запрета теней — и это не тень, а обвод. */
+  :focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+  [data-ground='ink'] :focus-visible {
+    outline-color: var(--color-chalk);
+  }
+  [data-ground='paper'] :focus-visible,
+  [data-ground='paper-hi'] :focus-visible {
+    outline-color: var(--color-ink);
+  }
+  [data-ground='rubine'] :focus-visible {
+    outline: 3px solid var(--color-paper);
+    outline-offset: 2px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ЗАКОН УХОДА ПРИВОДКИ
+   Форма R сползает с формы K ровно настолько, насколько быстро листают.
+   Вектор постоянный: настоящая машина уходит всегда вдоль одной оси.
+   Ни одного filter, ни одного blur — только transform и opacity.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.plate-r {
+  transform: translate3d(
+    calc(var(--miss) * var(--gain) * -7px),
+    calc(var(--miss) * var(--gain) * 4px),
+    0
+  );
+}
+
+/* Инверсия: в секции «В печать» рубин — это грунт, поэтому уходит чёрное. */
+[data-invert='true'] .plate-k {
+  transform: translate3d(
+    calc(var(--miss) * var(--gain) * -7px),
+    calc(var(--miss) * var(--gain) * 4px),
+    0
+  );
+}
+[data-invert='true'] .plate-r {
+  transform: none;
+}
+
+/* Призраки — единственное, что получает переменную непрозрачность. */
+.plate-ghost {
+  opacity: calc(var(--miss) * 0.55);
+}
+
+/* На мобильном закон выключен целиком: большим пальцем прокрутка рвётся
+   слишком резко, а приоритет там — читаемость и конверсия. */
+@media (width < 768px) {
+  :root {
+    --miss: 0 !important;
+  }
+  .plate-ghost {
+    display: none;
   }
 }
 
 @layer components {
-/* ═══════════════════════════════════════════════════════════════════════════
-   ПРИВОДКА ПО НАВЕДЕНИЮ
-   Строка каталога в покое разведена, под курсором — сходится.
-   Всё в CSS: ни одного перерендера на движение мыши.
-   ═══════════════════════════════════════════════════════════════════════════ */
+  /* ── СЕТКА ────────────────────────────────────────────────────────────────
+     12 колонок внутри врезки, одна и та же во всех секциях. */
+  .trim {
+    width: 100%;
+    max-width: var(--grid-max);
+    margin-inline: auto;
+    padding-left: var(--margin-l);
+    padding-right: var(--margin-r);
+  }
 
-.reg-hover .reg-c,
-.reg-hover .reg-m {
-  mix-blend-mode: multiply;
-  /* Полупрозрачные формы. На листе непопадание в приводку видно цветным
-     волоском по краю очка — а не второй, целой буквой рядом. На списке из
-     десяти строк даже этот волосок суммируется в общий оттенок, поэтому
-     краска взята вполсилы: заметить можно, спорить с текстом — нельзя. */
-  opacity: 0.45;
-  transition: transform 0.62s var(--ease-register);
-  will-change: transform;
-}
-.reg-hover .reg-c {
-  color: var(--color-proc-c);
-  transform: translate3d(calc(var(--reg) * -1), calc(var(--reg) * 0.4), 0);
-}
-.reg-hover .reg-m {
-  color: var(--color-proc-m);
-  transform: translate3d(calc(var(--reg) * 0.86), calc(var(--reg) * -0.28), 0);
-}
-.group:hover .reg-hover .reg-c,
-.group:hover .reg-hover .reg-m,
-.group:focus-within .reg-hover .reg-c,
-.group:focus-within .reg-hover .reg-m {
-  transform: translate3d(0, 0, 0);
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+  }
+
+  @media (width < 640px) {
+    .cols {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      column-gap: 12px;
+    }
+  }
+
+  /* Вылет за обрез — из врезки наружу, до края вьюпорта. */
+  .bleed {
+    margin-inline: calc(50% - 50vw);
+    width: 100vw;
+  }
+
+  /* ── НАБОР ────────────────────────────────────────────────────────────── */
+  .t-h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--text-h1);
+    line-height: 0.88;
+    letter-spacing: -0.03em;
+  }
+
+  .t-h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-h2);
+    line-height: 0.94;
+    letter-spacing: -0.022em;
+  }
+
+  .t-h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--text-h3);
+    line-height: 1.06;
+    letter-spacing: -0.015em;
+  }
+
+  .t-num {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-num);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+
+  .t-lead {
+    font-size: var(--text-lead);
+    line-height: 1.4;
+    letter-spacing: -0.006em;
+  }
+
+  .t-body {
+    font-size: var(--text-body);
+    line-height: 1.6;
+    max-width: 62ch;
+  }
+
+  /* Машинный голос. Всегда прописными, всегда табличными цифрами. */
+  .t-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    line-height: 1.1;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'zero' 1;
+    font-weight: 500;
+  }
+
+  .t-mono {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    line-height: 1.5;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'zero' 1;
+    font-weight: 400;
+  }
+
+  .t-micro {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    line-height: 1.1;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'zero' 1;
+    font-weight: 400;
+  }
+
+  /* ── ГРУНТЫ ───────────────────────────────────────────────────────────────
+     Нигде нет плоской заливки: под краской всегда лежит волокно. */
+  .ground-paper {
+    background-color: var(--color-paper);
+    background-image: var(--noise), linear-gradient(#f5f4f0, #edece7);
+    background-size:
+      128px 128px,
+      100% 100%;
+    background-blend-mode: overlay, normal;
+    color: var(--color-ink);
+  }
+
+  .ground-paper-hi {
+    background-color: var(--color-paper-hi);
+    background-image: var(--noise);
+    background-size: 128px 128px;
+    background-blend-mode: overlay;
+    color: var(--color-ink);
+  }
+
+  .ground-ink {
+    background-color: var(--color-ink);
+    background-image: var(--noise);
+    background-size: 128px 128px;
+    background-blend-mode: overlay;
+    color: var(--color-chalk);
+  }
+
+  .ground-rubine {
+    background-color: var(--color-rubine);
+    background-image: var(--noise);
+    background-size: 128px 128px;
+    background-blend-mode: overlay;
+    color: var(--color-ink);
+  }
+
+  /* Тепло краски под заголовком тёмной секции. */
+  .ink-warmth::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    width: 60vw;
+    height: 40vh;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 20% 0%, rgba(213, 0, 50, 0.06), transparent 70%);
+  }
+
+  /* ── ССЫЛКА ─────────────────────────────────────────────────────────────
+     Волосяная линия растёт от левого края. Ни подчёркиваний, ни цвета. */
+  .link-rule {
+    position: relative;
+    display: inline-block;
+  }
+  .link-rule::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -3px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 180ms var(--ease-ink);
+  }
+  .link-rule:hover::after,
+  .link-rule:focus-visible::after {
+    transform: scaleX(1);
+  }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .reg-hover .reg-c,
-  .reg-hover .reg-m {
-    display: none;
+@layer utilities {
+  .hairline-b {
+    border-bottom: 1px solid var(--color-ink-32);
+  }
+  [data-ground='ink'] .hairline-b,
+  .ground-ink .hairline-b {
+    border-bottom-color: var(--color-chalk-30);
+  }
+  [data-ground='rubine'] .hairline-b,
+  .ground-rubine .hairline-b {
+    border-bottom-color: var(--color-ink);
+  }
+
+  .hairline-t {
+    border-top: 1px solid var(--color-ink-32);
+  }
+  [data-ground='ink'] .hairline-t,
+  .ground-ink .hairline-t {
+    border-top-color: var(--color-chalk-30);
+  }
+  .ground-rubine .hairline-t {
+    border-top-color: var(--color-ink);
   }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   ЛИСТ
-   Поля страницы прочерчены волосяной линией — это край печатного листа.
-   Без blend-режимов и без перерисовки при прокрутке.
+   ХРОМА СТРАНИЦЫ — перекрашивается вслед за грунтом секции.
+   Не mix-blend-mode: он даёт голубое поверх красного и ломает правило
+   двух красок.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-.sheet-rules {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
+.topbar,
+.controlstrip {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  transition:
+    background-color 240ms var(--ease-ink),
+    color 240ms var(--ease-ink);
 }
-.sheet-rules::before,
-.sheet-rules::after {
+:root[data-ground='paper-hi'] .topbar,
+:root[data-ground='paper-hi'] .controlstrip {
+  background: var(--color-paper-hi);
+}
+:root[data-ground='ink'] .topbar,
+:root[data-ground='ink'] .controlstrip {
+  background: var(--color-ink);
+  color: var(--color-chalk);
+}
+:root[data-ground='rubine'] .topbar,
+:root[data-ground='rubine'] .controlstrip {
+  background: var(--color-rubine);
+  /* Чёрным по рубину — 3,48:1. Для мелкого набора этого мало, поэтому
+     вся хрома на красном поле печатается бумагой (4,79:1). */
+  color: var(--color-paper);
+}
+
+/* Кнопка WhatsApp — залитый прямоугольник, текст инвертирован.
+   Рубин на 11 px по чёрному запрещён (3.49:1), поэтому рубиновая
+   только галочка. */
+.wa-btn {
+  background: currentColor;
+}
+.wa-btn > * {
+  mix-blend-mode: normal;
+}
+.topbar .wa-btn {
+  color: var(--color-ink);
+  background: var(--color-ink);
+}
+.topbar .wa-btn {
+  color: var(--color-paper);
+}
+:root[data-ground='ink'] .topbar .wa-btn {
+  background: var(--color-chalk);
+  color: var(--color-ink);
+}
+:root[data-ground='rubine'] .topbar .wa-btn {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+/* Телефон рубиновый по бумаге (4.79:1 — проходит); по чёрному — мелом. */
+.tel-link {
+  color: var(--color-rubine);
+}
+:root[data-ground='ink'] .tel-link {
+  color: var(--color-chalk);
+}
+:root[data-ground='rubine'] .tel-link {
+  color: var(--color-paper);
+}
+
+.naryad-badge {
+  color: inherit;
+}
+
+/* Ссылка «пропустить» — прячется, пока не понадобится клавиатуре. */
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+  background: var(--color-rubine);
+  color: var(--color-paper);
+  transform: translateY(-120%);
+  transition: transform 150ms var(--ease-blade);
+}
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* Разведение форм на плитке — transform на группе, а не перерисовка. */
+.tile-art .plate-r {
+  transition: transform 280ms var(--ease-ink);
+}
+.group:hover .tile-art .plate-r {
+  transform: translate3d(-10px, 6px, 0);
+}
+@media (hover: none) {
+  .tile-art[data-near='true'] .plate-r {
+    transform: translate3d(-10px, 6px, 0);
+  }
+}
+
+/* Лист цветопробы сдвигается относительно своей формы — и ничего больше. */
+.proof-ghost {
+  transform: translate3d(-8px, 5px, 0);
+  transition: transform 320ms var(--ease-ink);
+}
+@media (hover: hover) {
+  .group:hover .proof-ghost {
+    transform: translate3d(-20px, 12px, 0);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   КАТАЛОГ — переключение форм.
+   Неактивный список не прячется, а съезжает рубиновым призраком:
+   одно встречное движение, а не появление вкладки.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.catalogue-panel li {
+  transition:
+    transform 620ms var(--ease-land),
+    color 620ms var(--ease-ink),
+    opacity 620ms var(--ease-ink);
+}
+
+.catalogue-panel.is-active li {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+}
+
+.catalogue-panel.is-idle li {
+  transform: translate3d(-16px, 10px, 0);
+  /* Призрак должен читаться как вторая форма, а не как второй список:
+     в полную краску дубль превращается в кашу поверх активного набора. */
+  opacity: 0.26;
+}
+/* Неактивный список — призрак формы R. Обычная непрозрачность, не multiply:
+   по чёрному грунту multiply убивает рубин. */
+.catalogue-panel.is-idle .t-h3,
+.catalogue-panel.is-idle span {
+  color: var(--color-rubine-26) !important;
+  border-color: color-mix(in srgb, var(--color-rubine-26) 40%, transparent) !important;
+}
+.catalogue-panel.is-idle {
+  z-index: 0;
+}
+.catalogue-panel.is-active {
+  z-index: 1;
+}
+
+@media (width < 768px) {
+  /* На телефоне призрак второй формы убирается совсем: строки там разной
+     высоты, и наложение двух списков превращается в кашу. Приоритет на
+     мобильном — читаемость и заказ, а не демонстрация механики. */
+  .catalogue-panel.is-idle {
+    display: none;
+  }
+  .sticky-toggle {
+    position: sticky;
+    top: var(--topbar-h);
+    z-index: 20;
+    background: var(--color-ink);
+  }
+}
+
+/* Ховер строки: призрак отъезжает дальше, линия становится рубиновой. */
+@media (hover: hover) {
+  .catalogue-row:hover {
+    border-bottom-color: var(--color-rubine);
+  }
+}
+
+/* Без JS каталог всё равно читается целиком. */
+.no-js .catalogue-panel {
+  position: static !important;
+  grid-column: 1 !important;
+  grid-row: auto !important;
+}
+.no-js .catalogue-panel li {
+  transform: none !important;
+}
+
+/* Главное действие: содержимое уезжает, позади проступает контурная форма. */
+.main-action::after {
   content: '';
   position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: var(--color-ink-10);
+  inset: 0;
+  border: 1px solid var(--color-ink);
+  opacity: 0;
+  transform: translate3d(0, 0, 0);
+  transition:
+    transform 320ms var(--ease-ink),
+    opacity 320ms var(--ease-ink);
 }
-.sheet-rules::before {
-  left: calc(var(--spacing-gutter) * 0.42);
+.main-action__inner {
+  transition: transform 320ms var(--ease-ink);
 }
-.sheet-rules::after {
-  right: calc(var(--spacing-gutter) * 0.42);
-}
-@media (max-width: 640px) {
-  .sheet-rules::before,
-  .sheet-rules::after {
-    display: none;
+@media (hover: hover) {
+  .main-action:hover .main-action__inner {
+    transform: translate3d(-14px, 8px, 0);
+  }
+  .main-action:hover::after {
+    opacity: 1;
+    transform: translate3d(14px, -8px, 0);
   }
 }
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   ОТТИСК
-   Тиснение — краска вдавлена в бумагу. Две внутренние тени по 1px:
-   светлая сверху, тёмная снизу. Ни одного blur.
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-.deboss {
-  text-shadow:
-    0 1px 0 #fffdf8,
-    0 -1px 0 var(--color-ink-10);
-}
-
-/* Лаковая надпись: краски нет, есть только блик, который бежит по буквам */
-.varnish {
-  color: transparent;
-  background-image: linear-gradient(
-    100deg,
-    transparent calc(var(--rake) - 26%),
-    #fffefb calc(var(--rake) - 9%),
-    #ffffff var(--rake),
-    #b9ad97 calc(var(--rake) + 7%),
-    transparent calc(var(--rake) + 24%)
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  transition: --rake 0.14s linear;
-}
-
-/* Лазерный ожог: обугленное ядро, вокруг — прожжённая охра, уходящая
-   в древесину, и светлый кант сверху там, где луч не задел поверхность.
-   Ожог — след инструмента в материале, поэтому здесь text-shadow работает
-   краской, а не высотой: закон одной тени про блоки, а не про краску. */
-.burn {
-  color: #0d0904;
-  text-shadow:
-    0 0 2px rgba(52, 26, 6, 0.92),
-    0 0 9px rgba(126, 64, 12, 0.66),
-    0 0 24px rgba(154, 88, 26, 0.36),
-    0 1px 0 rgba(255, 246, 224, 0.34);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   МЕЛОЧИ
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-.underline-ink {
-  /* currentColor, а не чёрная краска: на тёмной земле подчёркивание
-     должно идти мелом вместе с текстом. */
-  background-image: linear-gradient(currentColor, currentColor);
-  background-size: 0% 1px;
-  background-position: 0 100%;
-  background-repeat: no-repeat;
-  transition: background-size 0.5s var(--ease-register);
-}
-.underline-ink:hover,
-a:hover > .underline-ink,
-.group:hover .underline-ink {
-  background-size: 100% 1px;
-}
-
-.tab-nums {
-  font-variant-numeric: tabular-nums;
-}
-
-/* Тиснение фольгой: металлический градиент, обрезанный по контуру букв,
-   плюс фаска в один пиксель. При наведении свет приходит с другой стороны —
-   ровно так тиснение и читают в руках, наклоняя лист. */
-.foil-emboss {
-  color: transparent;
-  background-image: linear-gradient(
-    166deg,
-    #6b5a3c 0%,
-    #d8c08a 16%,
-    #f8efd7 32%,
-    #c7a96d 46%,
-    #86704a 60%,
-    #e7d6ad 78%,
-    #7b6541 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  text-shadow:
-    0 1px 0 rgba(0, 0, 0, 0.62),
-    0 -1px 0 rgba(255, 240, 214, 0.2);
-  transition: text-shadow 0.5s var(--ease-register);
-}
-.group:hover .foil-emboss {
-  text-shadow:
-    0 -1px 0 rgba(0, 0, 0, 0.62),
-    0 1px 0 rgba(255, 240, 214, 0.24);
-}
-
-/* Ожог глубже под курсором — лазер прошёл ещё раз */
-.burn {
-  transition: text-shadow 0.5s var(--ease-register);
-}
-.group:hover .burn {
-  text-shadow:
-    0 0 2px rgba(38, 18, 4, 0.96),
-    0 0 13px rgba(132, 66, 10, 0.82),
-    0 0 32px rgba(160, 92, 28, 0.5),
-    0 1px 0 rgba(255, 246, 224, 0.4);
-}
-
+.main-action:active .main-action__inner {
+  transform: translate3d(-14px, 8px, 0);
 }

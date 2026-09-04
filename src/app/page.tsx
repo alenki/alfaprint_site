@@ -1,43 +1,32 @@
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
-import { Hero } from '@/components/sections/Hero';
-import { OneDay } from '@/components/sections/OneDay';
-import { Production } from '@/components/sections/Production';
-import { Ladder } from '@/components/sections/Ladder';
-import { Ottisk } from '@/components/sections/Ottisk';
-import { Materials } from '@/components/sections/Materials';
-import { Works } from '@/components/sections/Works';
-import { Reviews } from '@/components/sections/Reviews';
-import { Naryad } from '@/components/sections/Naryad';
-import { Contacts } from '@/components/sections/Contacts';
+import { PervyiProgon } from '@/components/sections/PervyiProgon';
+import { Dopusk } from '@/components/sections/Dopusk';
+import { DveFormy } from '@/components/sections/DveFormy';
+import { Rastr } from '@/components/sections/Rastr';
+import { ZaOdinDen } from '@/components/sections/ZaOdinDen';
+import { PodpisnoiList } from '@/components/sections/PodpisnoiList';
+import { VPechat } from '@/components/sections/VPechat';
+import { VykhodnyeDannye } from '@/components/sections/VykhodnyeDannye';
 
 /**
- * ГЛАВНАЯ ПОЛОСА
+ * ГЛАВНАЯ ПОЛОСА.
  *
- * Порядок листа: заявка → доказательство → производство → форматы → отделка →
- * материалы → работы → отзывы → наряд → цех. Каждая секция пронумерована так,
- * как нумеруют полосы в вёрстке: читатель всегда знает, где он на листе.
+ * Ритм грунтов: бумага · бумага · чёрный · бумага-hi · чёрный · бумага ·
+ * РУБИН · чёрный. Красное поле — одно на весь сайт, и стоит оно ровно там,
+ * где заказ подписывают в печать.
  *
- * Остальные страницы ещё не собраны — пункты меню пока ведут на разделы этой.
+ * Остальные страницы ещё не собраны; пункты меню ведут в разделы этой.
  */
 export default function Home() {
   return (
-    <>
-      <div className="sheet-rules" aria-hidden />
-      <Header />
-      <main id="main" className="relative z-10">
-        <Hero />
-        <OneDay />
-        <Production />
-        <Ladder />
-        <Ottisk />
-        <Materials />
-        <Works />
-        <Reviews />
-        <Naryad />
-        <Contacts />
-      </main>
-      <Footer />
-    </>
+    <main id="main">
+      <PervyiProgon />
+      <Dopusk />
+      <DveFormy />
+      <Rastr />
+      <ZaOdinDen />
+      <PodpisnoiList />
+      <VPechat />
+      <VykhodnyeDannye />
+    </main>
   );
 }

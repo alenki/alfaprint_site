@@ -1,124 +1,112 @@
 import type { Metadata, Viewport } from 'next';
+import { MotionConfig } from 'motion/react';
 import './globals.css';
-import { fontVariables } from './fonts';
-import { SmoothScroll } from '@/components/providers/SmoothScroll';
-import { Motion } from '@/components/providers/Motion';
-import { Cursor } from '@/components/ui/Cursor';
-import { SushkaLayer } from '@/components/ui/Sushka';
-import { COMPANY, CONTACTS } from '@/content/site';
+import { fontVariables } from '@/app/fonts';
+import { PlateProvider, type SectionMeta } from '@/components/chrome/PlateProvider';
+import { TopBar } from '@/components/chrome/TopBar';
+import { ControlStrip } from '@/components/chrome/ControlStrip';
+import { MobileCta } from '@/components/chrome/MobileCta';
+import { Filters } from '@/components/print/Filters';
+import { NaryadProvider } from '@/state/NaryadContext';
+import { localBusinessSchema } from '@/lib/schema';
+import { SECTIONS } from '@/content/site';
 
-const SITE = 'https://alfaprint07.ru';
+const SITE_URL = 'https://alfaprint07.ru';
+
+/** Грунт и усиление ухода приводки: у хвоста листа она держится хуже. */
+const GROUNDS: Record<string, { ground: string; gain: number }> = {
+  '01': { ground: 'paper', gain: 0.6 },
+  '02': { ground: 'paper', gain: 0.8 },
+  '03': { ground: 'ink', gain: 1.0 },
+  '04': { ground: 'paper-hi', gain: 1.0 },
+  '05': { ground: 'ink', gain: 1.25 },
+  '06': { ground: 'paper', gain: 1.0 },
+  '07': { ground: 'rubine', gain: 1.4 },
+  '08': { ground: 'ink', gain: 0.5 },
+};
+
+const SECTION_META: SectionMeta[] = SECTIONS.map((s) => ({
+  id: s.id,
+  n: s.n,
+  title: s.title,
+  ...GROUNDS[s.n],
+}));
 
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'Альфа Принт — типография и рекламное агентство в Нальчике',
     template: '%s · Альфа Принт',
   },
   description:
-    'Печатаем то, с чем не справляются другие типографии города. Оперативная полиграфия, УФ-печать, лазерная резка, гравировка, широкоформатная печать. Нальчик, ул. Тарчокова, 29. С 2014 года.',
+    'Оперативная полиграфия, широкоформатная и УФ-печать, лазерная резка, гравировка, вышивка и сувениры в Нальчике. Тираж от одного экземпляра — часто в тот же день. Тарчокова, 29.',
   keywords: [
     'типография Нальчик',
     'полиграфия Нальчик',
     'печать визиток Нальчик',
-    'УФ-печать',
+    'баннеры Нальчик',
     'лазерная резка Нальчик',
-    'гравировка',
-    'широкоформатная печать',
+    'гравировка Нальчик',
     'рекламное агентство Нальчик',
-    'Альфа Принт',
+    'УФ-печать КБР',
   ],
-  authors: [{ name: COMPANY.name }],
+  alternates: { canonical: '/' },
   openGraph: {
     type: 'website',
     locale: 'ru_RU',
-    url: SITE,
-    siteName: COMPANY.name,
-    title: 'Альфа Принт — типография и рекламное агентство в Нальчике',
+    url: SITE_URL,
+    siteName: 'Альфа Принт',
+    title: 'Альфа Принт — печатаем в Нальчике с 2014 года',
     description:
-      'Печатаем то, с чем не справляются другие типографии города. С 2014 года. 4,8 на Яндекс.Картах.',
+      'Визитки, баннеры, наклейки, гравировка, лазерная резка, печать по акрилу, дереву, ткани и шоколаду. Срочный тираж — часто в тот же день.',
   },
   robots: { index: true, follow: true },
-  alternates: { canonical: SITE },
+  formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#efeae0',
+  themeColor: '#121110',
   colorScheme: 'light',
-  width: 'device-width',
-  initialScale: 1,
 };
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'LocalBusiness',
-  '@id': `${SITE}/#organization`,
-  name: COMPANY.name,
-  alternateName: COMPANY.latin,
-  description:
-    'Типография и рекламное агентство полного цикла: оперативная полиграфия, интерьерная и широкоформатная печать, УФ-печать, гравировка, лазерная резка, сувенирная продукция.',
-  url: SITE,
-  telephone: '+79674257979',
-  foundingDate: '2014',
-  priceRange: '₽₽',
-  image: `${SITE}/og.png`,
-  address: {
-    '@type': 'PostalAddress',
-    streetAddress: COMPANY.address,
-    addressLocality: COMPANY.city,
-    addressRegion: COMPANY.region,
-    addressCountry: 'RU',
-  },
-  geo: {
-    '@type': 'GeoCoordinates',
-    latitude: COMPANY.coords.lat,
-    longitude: COMPANY.coords.lng,
-  },
-  aggregateRating: {
-    '@type': 'AggregateRating',
-    ratingValue: COMPANY.rating,
-    reviewCount: COMPANY.reviewCount,
-    bestRating: 5,
-  },
-  openingHoursSpecification: [
-    {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      opens: '09:00',
-      closes: '18:00',
-    },
-    {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Saturday'],
-      opens: '10:00',
-      closes: '15:00',
-    },
-  ],
-  sameAs: [CONTACTS.instagram, CONTACTS.vk, CONTACTS.telegram, CONTACTS.maps],
-};
-
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ru" className={fontVariables}>
+    <html lang="ru" className={fontVariables} data-ground="paper">
       <body>
-        <a
-          href="#main"
-          className="t-meta sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:left-4 focus-visible:top-4 focus-visible:z-[200] focus-visible:bg-ink focus-visible:px-4 focus-visible:py-3 focus-visible:text-paper"
-        >
+        <a href="#main" className="skip-link t-label">
           К содержанию
         </a>
-        <Motion>
-          <SmoothScroll />
-          <Cursor />
-          <SushkaLayer />
-          {children}
-        </Motion>
+
+        {/* Без JS ракель не проходит — значит, маску надо снять, иначе набор
+            останется под ней. Каталог при этом показывает обе формы стопкой. */}
+        <noscript>
+          <style
+            dangerouslySetInnerHTML={{
+              __html: `
+                [data-reveal]{clip-path:none!important;opacity:1!important}
+                .catalogue-panel{grid-column:1!important;grid-row:auto!important;position:static!important}
+                .catalogue-panel li{transform:none!important;opacity:1!important}
+                .catalogue-panel.is-idle{display:block!important}
+                .catalogue-panel.is-idle .t-h3,.catalogue-panel.is-idle span{color:inherit!important}
+              `,
+            }}
+          />
+        </noscript>
+
+        <MotionConfig reducedMotion="user">
+          <NaryadProvider>
+            <PlateProvider sections={SECTION_META} />
+            <Filters />
+            <TopBar />
+            {children}
+            <ControlStrip />
+            <MobileCta />
+          </NaryadProvider>
+        </MotionConfig>
+
         <script
           type="application/ld+json"
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema(SITE_URL)) }}
         />
       </body>
     </html>
