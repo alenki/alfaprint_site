@@ -1,0 +1,463 @@
+@import 'tailwindcss';
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   АЛЬФА ПРИНТ — ПРИВОДКА
+   Дизайн-система. Один закон: всё приходит не в приводке и сходится под взглядом.
+
+   Три правила, которые здесь никогда не нарушаются:
+   1.  ТЕНЬ — только у блока, который вырезан из листа. Всё остальное
+       разделяется волосяной линией 1px. Тень — это событие, а не оформление.
+   2.  ТРИАДА C/M/Y живёт только внутри механизма (приводка, контрольная шкала,
+       растровая розетка). Она никогда не становится фирменным цветом и никогда
+       не красит текст.
+   3.  РУБИН — единственный акцент. Одна краска на весь сайт.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* ── БУМАГА ───────────────────────────────────────────────────────────── */
+  --color-paper: #efeae0; /* офсетная бумага без покрытия, тёплая */
+  --color-paper-2: #e7e1d5; /* второй лист — чуть глубже */
+  --color-paper-3: #ddd6c7; /* обрезь, поля, неактивное */
+
+  /* ── КРАСКА ───────────────────────────────────────────────────────────── */
+  --color-ink: #16120f; /* составной чёрный, тёплый. Никогда не #000 */
+  --color-ink-72: #16120fb8;
+  --color-ink-48: #16120f7a;
+  --color-ink-32: #16120f52;
+  --color-ink-16: #16120f29;
+  --color-ink-10: #16120f1a;
+  --color-ink-06: #16120f0f;
+
+  /* ── ЦЕХ (тёмная инверсия — секция «Оттиск») ──────────────────────────── */
+  --color-press: #100d0b;
+  --color-press-2: #1b1613;
+  --color-chalk: #ece7dd;
+  --color-chalk-56: #ece7dd8f;
+  --color-chalk-24: #ece7dd3d;
+
+  /* ── ЕДИНСТВЕННЫЙ АКЦЕНТ ──────────────────────────────────────────────── */
+  --color-rubine: #d4003c; /* Pantone Rubine Red — база пурпура в триаде */
+  --color-rubine-deep: #96002b;
+
+  /* ── ТРИАДА. Только механизм. Никогда не бренд, никогда не текст ─────── */
+  --color-proc-c: #009fe3;
+  --color-proc-m: #e6007e;
+  --color-proc-y: #ffed00;
+
+  /* ── ГАРНИТУРЫ ────────────────────────────────────────────────────────── */
+  --font-display: var(--ff-display);
+  --font-sans: var(--ff-sans);
+  --font-mono: var(--ff-mono);
+
+  /* ── КЕГЛИ ────────────────────────────────────────────────────────────── */
+  --text-meta: 0.6875rem;
+  --text-meta--line-height: 1.1;
+  --text-micro: 0.75rem;
+  --text-micro--line-height: 1.3;
+
+  /* ── РИТМ ─────────────────────────────────────────────────────────────── */
+  --spacing-gutter: clamp(1.25rem, 4vw, 3.5rem);
+  --spacing-section: clamp(5.5rem, 12vw, 11rem);
+
+  /* ── ДВИЖЕНИЕ ─────────────────────────────────────────────────────────── */
+  /* Приводка защёлкивается — быстро в конце, без пружины и отскока */
+  --ease-register: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-press: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-out-ink: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ── Анимируемые свойства ──────────────────────────────────────────────── */
+@property --slip {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+@property --rake {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 50%;
+}
+
+@layer base {
+/* ═══════════════════════════════════════════════════════════════════════════
+   БАЗА
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: auto; /* прокруткой управляет Lenis */
+  background: var(--color-paper);
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-variation-settings: 'SHRP' 0, 'CRSV' 0, 'slnt' 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+}
+
+/* Волокно бумаги. Плитка 180×180, запечена в data-URI, без blend-режимов
+   и без фиксированного слоя — иначе каждый кадр прокрутки перерисовывает экран. */
+body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23f)' opacity='0.32'/%3E%3C/svg%3E");
+  mix-blend-mode: normal;
+}
+
+::selection {
+  background: var(--color-rubine);
+  color: var(--color-paper);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+img,
+svg,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+}
+
+@layer components {
+/* ═══════════════════════════════════════════════════════════════════════════
+   ТИПОГРАФИКА
+   Кириллица шире латиницы: строка — до 52 знаков, не до 65.
+   Строчным кириллическим текстом трекинг не правится никогда.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.t-display {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: 'opsz' 144, 'wdth' 64, 'GRAD' 0;
+  letter-spacing: -0.025em;
+  line-height: 0.84;
+  text-wrap: balance;
+}
+
+/* Широкая дидона — манифест, выноски. Та же гарнитура, другая ось. */
+.t-didone {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-variation-settings: 'opsz' 144, 'wdth' 132, 'GRAD' 0;
+  letter-spacing: -0.01em;
+  line-height: 1.02;
+}
+
+.t-lead {
+  font-family: var(--font-sans);
+  font-weight: 380;
+  font-variation-settings: 'SHRP' 0;
+  font-size: clamp(1.0625rem, 0.95rem + 0.6vw, 1.375rem);
+  line-height: 1.48;
+  letter-spacing: -0.006em;
+  max-width: 34ch;
+}
+
+.t-body {
+  font-size: 1rem;
+  line-height: 1.62;
+  max-width: 48ch;
+  color: var(--color-ink-72);
+}
+
+/* Технический слой. Кириллическим прописным нужно больше воздуха, чем латинским. */
+.t-meta {
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  line-height: 1.1;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-feature-settings: 'tnum' 1;
+}
+
+.t-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* Резкая грань — секции про лазер и рез */
+.t-sharp {
+  font-variation-settings: 'SHRP' 100;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ЗАКОН ОДНОЙ ТЕНИ
+   Тень бывает только у блока, который вырезан из листа. Всё остальное — 1px.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.is-cut {
+  box-shadow:
+    0 1px 0 0 #fffdf8 inset,
+    0 -1px 0 0 var(--color-ink-10) inset,
+    var(--cut-x, 0.75rem) var(--cut-y, 1rem) 0 -0.125rem var(--color-ink-16);
+}
+
+.hairline {
+  border: 0;
+  border-top: 1px solid var(--color-ink-16);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   СЛУЖЕБНОЕ
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Фокус — рубиновая рамка приводки, никогда не браузерный синий */
+:focus-visible {
+  outline: 2px solid var(--color-rubine);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+/* Курсор прячем только там, где рисуем свой, и только на точных указателях */
+@media (pointer: fine) {
+  .cursor-hidden,
+  .cursor-hidden * {
+    cursor: none;
+  }
+}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ПОКОЙ
+   При prefers-reduced-motion всё уже в приводке — нечему сходиться.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@layer components {
+/* ═══════════════════════════════════════════════════════════════════════════
+   ПРИВОДКА ПО НАВЕДЕНИЮ
+   Строка каталога в покое разведена, под курсором — сходится.
+   Всё в CSS: ни одного перерендера на движение мыши.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.reg-hover .reg-c,
+.reg-hover .reg-m {
+  mix-blend-mode: multiply;
+  /* Полупрозрачные формы. На листе непопадание в приводку видно цветным
+     волоском по краю очка — а не второй, целой буквой рядом. На списке из
+     десяти строк даже этот волосок суммируется в общий оттенок, поэтому
+     краска взята вполсилы: заметить можно, спорить с текстом — нельзя. */
+  opacity: 0.45;
+  transition: transform 0.62s var(--ease-register);
+  will-change: transform;
+}
+.reg-hover .reg-c {
+  color: var(--color-proc-c);
+  transform: translate3d(calc(var(--reg) * -1), calc(var(--reg) * 0.4), 0);
+}
+.reg-hover .reg-m {
+  color: var(--color-proc-m);
+  transform: translate3d(calc(var(--reg) * 0.86), calc(var(--reg) * -0.28), 0);
+}
+.group:hover .reg-hover .reg-c,
+.group:hover .reg-hover .reg-m,
+.group:focus-within .reg-hover .reg-c,
+.group:focus-within .reg-hover .reg-m {
+  transform: translate3d(0, 0, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reg-hover .reg-c,
+  .reg-hover .reg-m {
+    display: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ЛИСТ
+   Поля страницы прочерчены волосяной линией — это край печатного листа.
+   Без blend-режимов и без перерисовки при прокрутке.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.sheet-rules {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.sheet-rules::before,
+.sheet-rules::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--color-ink-10);
+}
+.sheet-rules::before {
+  left: calc(var(--spacing-gutter) * 0.42);
+}
+.sheet-rules::after {
+  right: calc(var(--spacing-gutter) * 0.42);
+}
+@media (max-width: 640px) {
+  .sheet-rules::before,
+  .sheet-rules::after {
+    display: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ОТТИСК
+   Тиснение — краска вдавлена в бумагу. Две внутренние тени по 1px:
+   светлая сверху, тёмная снизу. Ни одного blur.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.deboss {
+  text-shadow:
+    0 1px 0 #fffdf8,
+    0 -1px 0 var(--color-ink-10);
+}
+
+/* Лаковая надпись: краски нет, есть только блик, который бежит по буквам */
+.varnish {
+  color: transparent;
+  background-image: linear-gradient(
+    100deg,
+    transparent calc(var(--rake) - 26%),
+    #fffefb calc(var(--rake) - 9%),
+    #ffffff var(--rake),
+    #b9ad97 calc(var(--rake) + 7%),
+    transparent calc(var(--rake) + 24%)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  transition: --rake 0.14s linear;
+}
+
+/* Лазерный ожог: обугленное ядро, вокруг — прожжённая охра, уходящая
+   в древесину, и светлый кант сверху там, где луч не задел поверхность.
+   Ожог — след инструмента в материале, поэтому здесь text-shadow работает
+   краской, а не высотой: закон одной тени про блоки, а не про краску. */
+.burn {
+  color: #0d0904;
+  text-shadow:
+    0 0 2px rgba(52, 26, 6, 0.92),
+    0 0 9px rgba(126, 64, 12, 0.66),
+    0 0 24px rgba(154, 88, 26, 0.36),
+    0 1px 0 rgba(255, 246, 224, 0.34);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   МЕЛОЧИ
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.underline-ink {
+  /* currentColor, а не чёрная краска: на тёмной земле подчёркивание
+     должно идти мелом вместе с текстом. */
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.5s var(--ease-register);
+}
+.underline-ink:hover,
+a:hover > .underline-ink,
+.group:hover .underline-ink {
+  background-size: 100% 1px;
+}
+
+.tab-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Тиснение фольгой: металлический градиент, обрезанный по контуру букв,
+   плюс фаска в один пиксель. При наведении свет приходит с другой стороны —
+   ровно так тиснение и читают в руках, наклоняя лист. */
+.foil-emboss {
+  color: transparent;
+  background-image: linear-gradient(
+    166deg,
+    #6b5a3c 0%,
+    #d8c08a 16%,
+    #f8efd7 32%,
+    #c7a96d 46%,
+    #86704a 60%,
+    #e7d6ad 78%,
+    #7b6541 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.62),
+    0 -1px 0 rgba(255, 240, 214, 0.2);
+  transition: text-shadow 0.5s var(--ease-register);
+}
+.group:hover .foil-emboss {
+  text-shadow:
+    0 -1px 0 rgba(0, 0, 0, 0.62),
+    0 1px 0 rgba(255, 240, 214, 0.24);
+}
+
+/* Ожог глубже под курсором — лазер прошёл ещё раз */
+.burn {
+  transition: text-shadow 0.5s var(--ease-register);
+}
+.group:hover .burn {
+  text-shadow:
+    0 0 2px rgba(38, 18, 4, 0.96),
+    0 0 13px rgba(132, 66, 10, 0.82),
+    0 0 32px rgba(160, 92, 28, 0.5),
+    0 1px 0 rgba(255, 246, 224, 0.4);
+}
+
+}
