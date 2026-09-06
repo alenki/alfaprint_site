@@ -1,33 +1,31 @@
 @import 'tailwindcss';
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   «АЛЬФА ПРИНТ» — ДВЕ ФОРМЫ
-   Дизайн-система главной полосы.
+   «АЛЬФА ПРИНТ»: ДВЕ ФОРМЫ
+   Дизайн-система главной полосы. Редакция «во весь лист».
 
    ЗАКОН, КОТОРЫЙ ОТВЕЧАЕТ НА ЛЮБОЙ ВОПРОС:
-   каждый элемент — это либо БУМАГА (грунт, не двигается никогда),
+   каждый элемент это либо БУМАГА (грунт, не двигается никогда),
    либо ФОРМА K (чёрная краска, несёт весь читаемый текст, стоит намертво),
    либо ФОРМА R (рубиновая краска, подчиняется переменной --miss),
    либо МЕТКА ПЕЧАТНИКА (служебная графика, делающая работу интерфейса).
-   Если элемент нельзя отнести ни к одной из четырёх категорий —
+   Если элемент нельзя отнести ни к одной из четырёх категорий,
    его на странице нет.
 
-   СЛЕДСТВИЯ:
-   1. Читаемый текст никогда не двигается. Уход приводки касается только
-      рубиновых слоёв и декоративных дублей. Ни одного кадра с нерезким
-      абзацем, ни одного блюра на тексте.
-   2. Рубин тратится ровно на пять вещей: галочка в знаке, моноширинный
-      текст, второй растровый экран под 15°, галочки на цветопробах,
-      заливка секции «В печать». Ни одной рубиновой кнопки, ни одной рамки.
-   3. Ни одного числа, которого клиент не может подтвердить.
+   ВТОРОЙ ЗАКОН О ФОРМАТЕ:
+   у этой страницы нет колонки по центру. Лист это вьюпорт целиком,
+   а край экрана это линия реза. Поля ровно два: слева и справа по
+   --edge, и они одинаковые. Всё, что шире полей, идёт в вылет до самого
+   края. Ни одного max-width на макете; мера ограничивается только там,
+   где её ограничивает глаз, на сплошном тексте.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 @theme {
   /* ── КРАСКИ И БУМАГА ──────────────────────────────────────────────────── */
   --color-paper: #f2f1ec; /* основной лист */
-  --color-paper-hi: #faf9f7; /* мелованная 300 г/м² — только «Растр» */
+  --color-paper-hi: #faf9f7; /* мелованная 300 г/м², только «Растр» */
   --color-paper-lo: #e9e7e1; /* вылеты, поля, неактивное */
-  --color-proof: #ffffff; /* чистый лист цветопробы — белее грунта */
+  --color-proof: #ffffff; /* чистый лист цветопробы, белее грунта */
 
   --color-ink: #121110; /* форма K. Никогда не #000 */
   --color-ink-70: rgba(18, 17, 16, 0.7);
@@ -36,8 +34,8 @@
   --color-ink-14: rgba(18, 17, 16, 0.14); /* только плашки */
 
   --color-rubine: #d50032; /* Pantone 199 C. Единственная хрома */
-  --color-rubine-26: #e5b2bc; /* растр 26 % по бумаге — призрак формы */
-  --color-rubine-15: #eecdd0; /* растр 15 % — подложка активной строки */
+  --color-rubine-26: #e5b2bc; /* растр 26 % по бумаге, призрак формы */
+  --color-rubine-15: #eecdd0; /* растр 15 %, подложка активной строки */
 
   --color-chalk: #edebe6; /* бумага по чёрному */
   --color-chalk-70: rgba(237, 235, 230, 0.7);
@@ -49,33 +47,81 @@
   --font-text: var(--font-golos), 'Segoe UI', system-ui, sans-serif;
   --font-mono: var(--font-martian), ui-monospace, monospace;
 
-  /* ── КЕГЛИ ────────────────────────────────────────────────────────────── */
-  --text-h1: clamp(2.875rem, 10.4vw, 11.5rem);
-  --text-h2: clamp(2rem, 5.6vw, 5.5rem);
-  --text-h3: clamp(1.375rem, 2.5vw, 2.25rem);
-  --text-num: clamp(2.5rem, 4.6vw, 4.5rem);
-  --text-lead: clamp(1.125rem, 1.6vw, 1.5rem);
-  --text-body: clamp(0.9375rem, 1vw, 1.0625rem);
-  --text-small: 0.8125rem;
-  --text-label: clamp(0.6875rem, 0.72vw, 0.75rem);
-  --text-mono: 0.75rem;
-  --text-micro: 0.6875rem;
-  --text-emboss: clamp(3.5rem, 15vw, 15rem);
+  /* ── КЕГЛИ ────────────────────────────────────────────────────────────────
+     Все дисплейные кегли привязаны к vw без верхнего потолка «на глазок»:
+     лист шириной 2560 px обязан читаться как разворот, а не как зум. */
+  /* H1 выключается во ВСЕ двенадцать колонок, поэтому он и привязан к vw.
+     H2 и числа реестра живут в колонке на пять-восемь долей, и им vw героя
+     противопоказан: на 1600 px заголовок в 100 px разваливался на четыре
+     строки в колонке шириной 620. Кегль обязан считаться от МЕСТА, где он
+     стоит, а не от ширины экрана. */
+  --text-h1: clamp(2.875rem, 10.1vw, 17rem);
+  --text-h2: clamp(1.875rem, 4.4vw, 6.75rem);
+  /* Заявление §02: набор во весь формат, поэтому кегль между H1 и H2.
+     Здесь объявлен ТЕЛЕФОННЫЙ кегль; настольный стоит ниже, в медиазапросе.
+     Двух значений не избежать: строки в §02 авторские, и на четырёх долях
+     их семь, а на двенадцати четыре. Один множитель vw не может выключить
+     оба набора, поэтому у каждого свой. */
+  --text-statement: clamp(1.35rem, 7.9vw, 3.25rem);
+  --text-h3: clamp(1.3125rem, 1.95vw, 2.75rem);
+  --text-num: clamp(2.25rem, 4vw, 6rem);
+  --text-lead: clamp(1.0625rem, 1.38vw, 1.875rem);
+  --text-body: clamp(0.9375rem, 0.92vw, 1.1875rem);
+  --text-quote: clamp(1.25rem, 1.9vw, 2.5rem);
+  --text-small: clamp(0.8125rem, 0.78vw, 1rem);
+  --text-label: clamp(0.6875rem, 0.63vw, 0.8125rem);
+  --text-mono: clamp(0.75rem, 0.66vw, 0.875rem);
+  --text-micro: clamp(0.6875rem, 0.6vw, 0.8125rem);
+  --text-emboss: clamp(4rem, 17.5vw, 26rem);
+
+  /* Верхняя полоса. Знак набран дисплейной антиквой и потому крупнее всего
+     остального в полосе; навигация набрана корпусным гротеском, потому что это
+     речь, а не показание прибора. Ниже 20 px антиква с таким контрастом
+     штриха теряет тонкие линии: предел проверен на экране, а не на глаз. */
+  --text-wordmark: clamp(1.375rem, 1.75vw, 2rem);
+  --text-nav: clamp(0.9375rem, 1.15vw, 1.0625rem);
+  --text-menu: clamp(2.5rem, 13vw, 3.5rem);
 
   /* ── РИТМ ─────────────────────────────────────────────────────────────── */
-  --section-pad: clamp(72px, 10vw, 168px);
+  --section-pad: clamp(76px, 8.2vw, 210px);
+  --block-gap: clamp(40px, 4.4vw, 116px);
 
-  /* ── СЕТКА ────────────────────────────────────────────────────────────── */
-  --grid-max: 1680px;
-  --gutter: clamp(14px, 1.5vw, 26px);
-  --margin-l: clamp(20px, 3.4vw, 56px);
-  --margin-r: clamp(20px, 4.4vw, 72px);
+  /* ── ФОРМАТ ───────────────────────────────────────────────────────────────
+     Единственное поле на сайте. Никакого max-width, никакой центральной
+     колонки: край вьюпорта и есть линия реза. */
+  --edge: clamp(18px, 2.4vw, 56px);
+  --gutter: clamp(10px, 1.05vw, 30px);
+  --cols: 12;
 
   /* ── ХРОМА ИНТЕРФЕЙСА ─────────────────────────────────────────────────── */
-  --topbar-h: 48px;
+  /* 56 / 72 px. Полоса потеряла подчёркивающую линию: воздух отбивает её от
+     листа надёжнее, чем волосяная, и обходится странице дешевле: линия на
+     формате «край в край» режет лист пополам.
+
+     Высота полосы больше не число, а сумма. Плашка это вырубленная форма,
+     и у неё есть собственная высота --bar-h; вокруг неё лежит поле --bar-pad,
+     то самое, которым полоса и отбивается от листа. Поток же по-прежнему
+     считает --topbar-h, и ответ на вопрос «сколько места занимает шапка»
+     остаётся верным по построению: §01 берёт от него свою высоту, §03 свою
+     приводку, и ни одна из этих формул не знает про вырубку.
+
+     --bar-inset это расстояние от стенки плашки до действия. Из него же
+     считается высота действия, поэтому плашка и кнопка стоят соосно
+     и на телефоне, и на развороте. */
+  --bar-h: 44px;
+  --bar-pad: 10px;
+  --bar-inset: 6px;
+  --bar-tail: 6px;
+  --bar-lead: clamp(20px, 1.7vw, 30px);
+  /* Вырубка скруглена, но не в торец: у полной пилюли радиус равен половине
+     высоты, и форма перестаёт быть плашкой — становится капсулой. Здесь
+     радиус задан числом, и плашка остаётся прямоугольной формой со снятым
+     углом. Действие внутри повторяет его на два пункта мельче: вложенный
+     угол обязан быть меньше внешнего, иначе просвет между ними «плывёт». */
+  --bar-radius: 8px;
+  --topbar-h: calc(var(--bar-h) + var(--bar-pad) * 2);
   --strip-h: 10px;
-  --striplabel-h: 18px;
-  --mobilecta-h: 56px;
+  --mobilecta-h: 58px;
 
   /* ── ДВИЖЕНИЕ ─────────────────────────────────────────────────────────────
      Ни одной пружины. Печатная машина не пружинит. */
@@ -89,12 +135,45 @@
   --miss: 0; /* 0..1, пишет единственный rAF-цикл */
   --gain: 1; /* задаётся на каждой секции */
   --progress: 0;
+  --run-p: 0; /* 0..1, фаза ленты знаков; пишет тот же цикл */
   --mx: 62%;
   --my: 40%;
-  --noise: url('data:image/png;base64,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');
+  --reg-x: 0; /* -1..1, наводка шильда на курсор; пишет тот же цикл */
+  --reg-y: 0;
+  --reg-throw: 7px; /* вылет точки на полной наводке в единицах viewBox, не в пикселях */
+}
+
+/* Настольный кегль заявления. Порог тот же, по которому Dopusk.tsx
+   переключает массивы строк: 768 px. Множитель подобран так, чтобы самая
+   длинная строка занимала 93–96 % формата на всём диапазоне от 768 до
+   2560 px: заявление обязано доходить до реза, иначе оно не заявление. */
+@media (width >= 768px) {
+  :root {
+    --text-statement: clamp(2rem, 4.45vw, 7.25rem);
+    /* --topbar-h складывается из этих двух и даёт 72 px. */
+    --bar-h: 56px;
+    --bar-pad: 14px;
+    /* Просвет от стенки плашки до действия. Из него же считается высота
+       действия, поэтому чем он меньше, тем кнопка выше, а соосность
+       сверху, снизу и справа держится сама. 8 px дают 40 px высоты. */
+    --bar-inset: 8px;
+    /* Хвост шире вертикального просвета: у правой стенки плашки действие
+       стоит чуть глубже, чем от верхней и нижней кромки. Соосность здесь
+       уступает воздуху — сплошная рубиновая заливка у самого торца читается
+       теснее, чем прозрачный просвет сверху и снизу. */
+    --bar-tail: 12px;
+    --bar-radius: 10px;
+  }
 }
 
 @property --miss {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+/* Фаза объявлена типом, а не строкой: до первого кадра rAF-цикла лента обязана
+   стоять на нуле, а не считать -50 % от невалидного значения. */
+@property --run-p {
   syntax: '<number>';
   inherits: true;
   initial-value: 0;
@@ -104,18 +183,35 @@
   inherits: true;
   initial-value: 1;
 }
+/* Наводка объявлена типом по той же причине, что и фаза: до первого кадра
+   точка обязана стоять в приводке, а не считать вылет от невалидного нуля. */
+@property --reg-x {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+@property --reg-y {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
 
 @layer base {
   *,
   *::before,
   *::after {
     box-sizing: border-box;
-    /* Скругления на этом сайте не бывает нигде и никогда. */
+    /* Скругление на этом сайте одно: вырубленная плашка верхней полосы
+       (.bar-plate и то, что стоит внутри неё), радиус --bar-radius.
+       Больше нигде и никогда. */
     border-radius: 0;
   }
 
   html {
     -webkit-text-size-adjust: 100%;
+    /* Полосу прокрутки резервируем всегда: иначе вылет в 100 % ширины
+       прыгает на секцию, у которой контент короче экрана. */
+    scrollbar-gutter: stable;
   }
 
   body {
@@ -130,7 +226,7 @@
     font-synthesis: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   h1,
@@ -187,19 +283,13 @@
     color: var(--color-paper);
   }
 
-  /* Единственное исключение из запрета теней — и это не тень, а обвод. */
+  /* Единственное исключение из запрета теней, и это не тень, а обвод. */
   :focus-visible {
-    outline: 2px solid currentColor;
+    outline: 2px solid var(--fg, currentColor);
     outline-offset: 2px;
   }
-  [data-ground='ink'] :focus-visible {
-    outline-color: var(--color-chalk);
-  }
-  [data-ground='paper'] :focus-visible,
-  [data-ground='paper-hi'] :focus-visible {
-    outline-color: var(--color-ink);
-  }
-  [data-ground='rubine'] :focus-visible {
+  [data-ground='rubine'] :focus-visible,
+  .ground-rubine :focus-visible {
     outline: 3px solid var(--color-paper);
     outline-offset: 2px;
   }
@@ -209,7 +299,7 @@
    ЗАКОН УХОДА ПРИВОДКИ
    Форма R сползает с формы K ровно настолько, насколько быстро листают.
    Вектор постоянный: настоящая машина уходит всегда вдоль одной оси.
-   Ни одного filter, ни одного blur — только transform и opacity.
+   Ни одного filter, ни одного blur: только transform и opacity.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .plate-r {
@@ -220,7 +310,25 @@
   );
 }
 
-/* Инверсия: в секции «В печать» рубин — это грунт, поэтому уходит чёрное. */
+/* НАВОДКА. Приводочный шильд выведен из-под общего закона: разгон прокрутки
+   его не трогает вовсе, точка слушает один только курсор. Прибор обязан
+   показывать одно и то же и на ходу, и на остановленной машине: иначе по
+   нему нечего проверять, и вместо приводки читается тряска. Отсюда и полное
+   отсутствие --miss в этой строке: не забыт, а убран.
+
+   Вылет ограничен --reg-throw: точка сползает с креста, а не гоняется за
+   мышью. Второго transform на этом узле по-прежнему быть не может. */
+[data-register-mark] .plate-r {
+  transform: translate3d(
+    calc(var(--reg-x) * var(--reg-throw)),
+    calc(var(--reg-y) * var(--reg-throw)),
+    0
+  );
+}
+
+/* Инверсия: в секции «В печать» рубин это грунт, поэтому уходит чёрное.
+   Стоит ПОСЛЕ наводки: специфичность та же, и порядок здесь решает всё. На
+   инверсном грунте рубин обязан стоять, курсор ему не указ. */
 [data-invert='true'] .plate-k {
   transform: translate3d(
     calc(var(--miss) * var(--gain) * -7px),
@@ -232,74 +340,496 @@
   transform: none;
 }
 
-/* Призраки — единственное, что получает переменную непрозрачность. */
+/* Призраки это единственное, что получает переменную непрозрачность. */
 .plate-ghost {
   opacity: calc(var(--miss) * 0.55);
 }
 
 /* На мобильном закон выключен целиком: большим пальцем прокрутка рвётся
-   слишком резко, а приоритет там — читаемость и конверсия. */
+   слишком резко, а приоритет там отдан читаемости и конверсии. */
 @media (width < 768px) {
   :root {
     --miss: 0 !important;
+    /* Курсора здесь нет вовсе: шильд стоит в идеальной приводке. */
+    --reg-x: 0 !important;
+    --reg-y: 0 !important;
   }
   .plate-ghost {
     display: none;
   }
 }
 
-@layer components {
-  /* ── СЕТКА ────────────────────────────────────────────────────────────────
-     12 колонок внутри врезки, одна и та же во всех секциях. */
-  .trim {
-    width: 100%;
-    max-width: var(--grid-max);
-    margin-inline: auto;
-    padding-left: var(--margin-l);
-    padding-right: var(--margin-r);
+/* ═══════════════════════════════════════════════════════════════════════════
+   §01. ПЕРВЫЙ ПРОГОН. ДВЕ ФОРМЫ В ОДНОЙ СТРОКЕ.
+
+   Последнее слово заголовка стоит на форме R: вторая краска, и только.
+   Приводку заголовок держит всегда: закон ухода на него не заведён, и при
+   прокрутке слово не двигается ни на пиксель.
+
+   Единственное движение здесь это приладка на загрузке, и она живёт на
+   translate. Отсюда же запрет на motion в этом узле: он пишет в стиль
+   элемента inline transform, а inline transform спорил бы с приладкой.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.plate-word-r {
+  /* Строчный бокс transform игнорирует: форме нужен блок. */
+  display: inline-block;
+  color: var(--color-rubine);
+}
+
+/* ── РИТМ ПОЛОСЫ ───────────────────────────────────────────────────────────
+   Поля объявлены здесь, а не произвольным значением в классе: calc() с
+   вложенным clamp() Tailwind сгенерировал не всегда, и подвал молча съезжал
+   под контрольную шкалу. Такие вещи не должны зависеть от разбора строки.
+
+   Снизу к полю прибавлена высота шкалы: она стоит fixed и непрозрачна,
+   поэтому подвал обязан кончаться ВЫШЕ неё, а не под ней. */
+.hero-sheet {
+  padding-top: clamp(24px, 6vh, 84px);
+  padding-bottom: calc(var(--strip-h) + clamp(26px, 5.4vh, 64px));
+}
+
+/* Воздух над заголовком и под ним в отношении 0,382 : 0,618, под ним
+   больше. На высоком окне подвал не всплывает к заголовку, а заголовок
+   не сползает в середину: обе пустоты растут вместе, в постоянной доле. */
+.hero-air-t {
+  flex: 0.382 1 0;
+}
+.hero-air-b {
+  flex: 0.618 1 0;
+}
+
+/* ── ПРИЛАДКА ──────────────────────────────────────────────────────────────
+   Один прогон, полторы секунды, и больше никогда. Ракель идёт снизу вверх:
+   это тот же глагол появления, что и на остальных семи полосах.
+
+   fill-mode: backwards, а не both. После прогона маска СНИМАЕТСЯ совсем:
+   иначе clip-path: inset(0 0 0 0) остался бы на элементе навсегда и срезал
+   бы выносные элементы у «у», «р», «д» по нижнему краю строчного бокса:
+   при интерлиньяже 0,86 очко крупнее бокса, и это не придирка, а брак.
+   По той же причине полоса заголовка несёт поле, пропорциональное кеглю:
+   пока маска идёт, ей есть что не резать. */
+
+@keyframes hero-strike {
+  from {
+    clip-path: inset(102% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* Второй прогон приходит не в приводке и садится. Тот же вектор, что и у
+   закона ухода (влево-вниз), только амплитуда крупнее: это самая грубая
+   приводка, которую страница себе позволит, и дальше она только точнее. */
+@keyframes hero-register {
+  from {
+    translate: -20px 12px;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+.hero-line,
+.hero-strike {
+  animation: hero-strike 0.52s var(--ease-blade) backwards;
+  animation-delay: var(--d, 0s);
+}
+
+.hero-strike {
+  /* Поле считается от кегля, а не от высоты экрана: срезает маска ровно
+     столько, сколько свисает очко, а свисает оно пропорционально кеглю. */
+  padding-block: calc(var(--text-h1) * 0.28);
+  animation-duration: 0.78s;
+}
+
+.plate-word-r {
+  animation: hero-register 0.72s var(--ease-land) 0.56s backwards;
+}
+
+/* ── ОГОВОРКА ──────────────────────────────────────────────────────────────
+   Между корпусным (--text-body) и ведущим (--text-lead) кеглями, ближе
+   к первому. Оговорка стоит в одном столбике с действием и НАД ним, поэтому
+   набрана мельче его: иначе в подвале два ведущих кегля подряд, и глаз
+   не знает, что из них кнопка. Отдельный токен темы заводить не за чем:
+   размер живёт ровно в одном месте страницы. */
+.hero-sub {
+  font-size: clamp(1rem, 1.1vw, 1.5rem);
+  line-height: 1.44;
+  letter-spacing: -0.006em;
+}
+
+/* ── ЕДИНСТВЕННОЕ ДЕЙСТВИЕ ПОЛОСЫ ──────────────────────────────────────────
+   Оговорка и действие стоят в одном столбике. Отбивка 32 px по §01: на 24 px
+   две строки одного гротеска читались абзацем с висячей второй строкой. */
+.hero-act {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(24px, 2.1vw, 40px);
+}
+
+/* Действие набрано СВОИМ кеглем, а не --text-lead: ведущий кегль это голос
+   корпуса, им набран корпус §02, и действие полосы, поставленное в тот же
+   размер, читалось вторым абзацем, а не кнопкой. 1,19vw даёт 18 px на 1512,
+   ровно спецификацию, и держит постоянное отношение к оговорке (1,1vw)
+   по всему диапазону. Потолок 26, а не 24, чтобы кегли не сошлись на 2200 px.
+
+   width: fit-content объявлена явно, а не взята из блокировки flex-элемента:
+   линейка идёт left:0/right:0, и ширина бокса это и есть длина линейки.
+   Правило обязано пережить снятие flex с родителя.
+
+   Линейка живёт ВНУТРИ бокса: маска приладки идёт по border-box, и линейка,
+   вынесенная наружу отрицательным bottom, была бы срезана весь прогон
+   и выскочила бы кадром позже набора. Отрицательные поля возвращают боксу
+   прежнюю высоту: иначе подвал (md:items-end) увёл бы указатель прокрутки. */
+.hero-cta {
+  /* Замерено, а не выбрано: на 1512 это 5,6 px под базовой при выносном
+     элементе Golos в 4,0 px, то есть линейка проходит в 1,6 px под «у» и «р».
+     Спецификация просит 3 px, но 3 px режут выносные: в текущей строке
+     «Посчитать стоимость» их нет ни одного, и брак вылез бы на первой же
+     смене копии. Тронуть можно только это число. */
+  --rule-y: 0.62em;
+
+  position: relative;
+  display: block;
+  width: fit-content;
+  font-size: clamp(1.0625rem, 1.19vw, 1.625rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.008em;
+  color: var(--fg);
+  padding-block: 0.3em 0.62em;
+  margin-block: -0.3em -0.62em;
+}
+
+/* Направляющая. Стоит ВСЕГДА: действие обязано опознаваться на стоящей
+   странице, а не после наведения. Ссылка, у которой нет линейки в покое,
+   это просто набор покрупнее. Та же волосяная --rule, что у направляющей
+   указателя у правого реза: подвал полосы держат две одинаковые линейки. */
+.hero-cta::before,
+.hero-cta::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--rule-y);
+  height: 1px;
+}
+
+.hero-cta::before {
+  background: var(--rule);
+}
+
+/* Краска по направляющей: ракель слева направо, 180 ms. Больше не меняется
+   ничего: ни кегль, ни цвет набора, ни место строки. */
+.hero-cta::after {
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 180ms var(--ease-ink);
+}
+
+.hero-cta:hover::after,
+.hero-cta:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* Спецификация §01, «Мобильная адаптация»: действие становится строкой во
+   весь формат с волосяной сверху и снизу, высота 56 px. Это не кнопка:
+   ни заливки, ни контура, ни скругления: две линейки и набор между ними.
+   Оправдано механикой, а не вкусом: на телефоне указателя «вниз» нет вовсе,
+   а MobileCta выезжает только после 8 % прокрутки, то есть в первом кадре
+   это единственная точка конверсии на всей странице. */
+@media (width < 768px) {
+  .hero-act {
+    align-items: stretch;
+    gap: clamp(22px, 6vw, 34px);
   }
 
-  .cols {
+  /* Вылет считается от полей родителя, а не от 100vw: полоса прокрутки
+     зарезервирована (scrollbar-gutter: stable) и спорить с ней нельзя:
+     это ровно тот приём, что снят поправкой §0.1. Слово стоит у левого
+     реза, на одной вертикали со всем набором выше; правый конец пуст:
+     строку держат две линейки, а не содержимое. */
+  .hero-cta {
+    display: flex;
+    align-items: center;
+    width: auto;
+    height: 56px;
+    padding-block: 0;
+    margin-block: 0;
+    margin-inline: calc(var(--edge) * -1);
+    padding-inline: var(--edge);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    transition: border-color 180ms var(--ease-ink);
+  }
+
+  /* Подчёркивания под словами здесь нет: строку уже держат две линейки,
+     третья была бы повтором. Нажатие докатывает обе до полной краски:
+     наведения на телефоне не существует. */
+  .hero-cta::before,
+  .hero-cta::after {
+    content: none;
+  }
+
+  .hero-cta:active {
+    border-color: var(--fg);
+  }
+
+  /* Обвод уходит внутрь: строка стоит от реза до реза, и наружные 2 px
+     срезал бы overflow-x: clip на body. */
+  .hero-cta:focus-visible {
+    outline-offset: -2px;
+  }
+}
+
+/* ── УКАЗАТЕЛЬ ПРОКРУТКИ ───────────────────────────────────────────────────
+   Слово и волосяная направляющая справа от него. Направляющая длиннее
+   строчного бокса и свисает под базовую линию: движение показано местом,
+   а не стрелкой.
+
+   Display объявлен здесь, а не утилитой `hidden md:flex`: блок стоит вне
+   @layer и специфичнее утилит Tailwind, поэтому спор за display пришлось
+     бы выигрывать !important-ом. На телефоне указателя нет: там нижнюю
+   кромку занимает панель `MobileCta`. */
+.hero-scroll {
+  display: none;
+  align-items: center;
+  gap: clamp(10px, 0.9vw, 18px);
+  flex: none;
+}
+
+@media (width >= 768px) {
+  .hero-scroll {
+    display: flex;
+  }
+}
+
+.hero-scroll-rail {
+  position: relative;
+  display: block;
+  width: 1px;
+  /* Считается от кегля указателя, а не от высоты окна: направляющая обязана
+     быть кратна строке, рядом с которой стоит, иначе на низком окне она
+     упирается в контрольную шкалу. */
+  height: calc(var(--text-micro) * 4.2);
+  /* Слово стоит серединой очка против середины направляющей. Очко прописных
+     сидит на 0,075 кегля выше середины строки, поэтому волосяная поднята на
+     столько же; при центрировании отрицательное поле двигает её на половину
+     своей величины: отсюда 0,15, а не 0,075. */
+  margin-top: calc(var(--text-micro) * -0.15);
+  background: var(--rule);
+  overflow: hidden;
+}
+
+/* Ракель по направляющей: сверху вниз, с паузой между прогонами. Тот же
+   глагол, что и у приладки заголовка, только вечный и в четверть громкости:
+   это единственное движение на сайте, которое не привязано к прокрутке,
+   и потому ему разрешено ровно одно: показать, куда прокручивать. */
+.hero-scroll-rail::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 42%;
+  background: var(--fg-56);
+  animation: hero-scroll-ink 3.2s var(--ease-blade) infinite;
+}
+
+@keyframes hero-scroll-ink {
+  0% {
+    transform: translateY(-100%);
+  }
+  /* 56 % хода это прогон, остальное стоянка: машина печатает не непрерывно. */
+  56%,
+  100% {
+    transform: translateY(238%);
+  }
+}
+
+/* Приладку смотрят один раз. Кто просил не двигать, получает готовый лист:
+   чистая media-query, без состояния React, поэтому ни одного кадра
+   анимации не проскакивает до гидратации. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-line,
+  .hero-strike,
+  .plate-word-r {
+    animation: none;
+  }
+
+  /* Состояние доставляется, движение не доставляется. Направляющая стоит в покое
+     и потому переживает отказ от движения целиком. */
+  .hero-cta::after {
+    transition: none;
+  }
+
+  /* Направляющая остаётся, ракель по ней больше не ходит: указатель
+     обязан читаться и на неподвижном листе. */
+  .hero-scroll-rail::after {
+    animation: none;
+    top: auto;
+    bottom: 0;
+  }
+}
+
+@layer components {
+  /* ═════════════════════════════════════════════════════════════════════════
+     ФОРМАТ. Одна полоса на весь вьюпорт, два одинаковых поля, двенадцать
+     колонок между ними. Центральной колонки не существует.
+     ═════════════════════════════════════════════════════════════════════════ */
+
+  /** Полоса набора: поля по --edge и больше ничего. */
+  .sheet {
+    width: 100%;
+    padding-inline: var(--edge);
+  }
+
+  /** Двенадцать колонок внутри полосы. На телефоне четыре. */
+  .grid12 {
     display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
     column-gap: var(--gutter);
   }
 
-  @media (width < 640px) {
-    .cols {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      column-gap: 12px;
+  @media (width < 768px) {
+    .grid12 {
+      --cols: 4;
+      column-gap: max(10px, var(--gutter));
     }
   }
 
-  /* Вылет за обрез — из врезки наружу, до края вьюпорта. */
+  /** Вылет за обрез: выходит из полей ровно на их величину, до края листа.
+      Считается от родителя, а не от 100vw, поэтому не спорит с полосой
+      прокрутки и не даёт горизонтального сдвига. */
   .bleed {
-    margin-inline: calc(50% - 50vw);
-    width: 100vw;
+    margin-inline: calc(var(--edge) * -1);
+    width: calc(100% + var(--edge) * 2);
   }
 
-  /* ── НАБОР ────────────────────────────────────────────────────────────── */
+  /** Вылет только влево / только вправо, для блоков, уходящих в один край. */
+  .bleed-l {
+    margin-left: calc(var(--edge) * -1);
+  }
+  .bleed-r {
+    margin-right: calc(var(--edge) * -1);
+  }
+
+  /** Мера сплошного текста. Формат во весь лист, мера человеческая:
+      кириллица длиннее латиницы, поэтому 60 знаков, а не 75. */
+  .measure {
+    max-width: 60ch;
+  }
+  .measure-tight {
+    max-width: 46ch;
+  }
+  .measure-wide {
+    max-width: 76ch;
+  }
+
+  /* ═════════════════════════════════════════════════════════════════════════
+     ГРУНТЫ. Секция объявляет грунт, и вместе с ним весь набор смысловых
+     цветов. Компоненты внутри пишут --fg / --fg-70 / --rule и ничего не знают
+     про то, на какой краске они стоят.
+     ═════════════════════════════════════════════════════════════════════════ */
+
+  .ground-paper {
+    --fg: var(--color-ink);
+    --fg-70: var(--color-ink-70);
+    --fg-56: var(--color-ink-62);
+    --rule: var(--color-ink-32);
+    --rule-soft: var(--color-ink-14);
+    --accent: var(--color-rubine);
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+  }
+
+  .ground-paper-hi {
+    --fg: var(--color-ink);
+    --fg-70: var(--color-ink-70);
+    --fg-56: var(--color-ink-62);
+    --rule: var(--color-ink-32);
+    --rule-soft: var(--color-ink-14);
+    --accent: var(--color-rubine);
+    background-color: var(--color-paper-hi);
+    color: var(--color-ink);
+  }
+
+  .ground-ink {
+    --fg: var(--color-chalk);
+    --fg-70: var(--color-chalk-70);
+    --fg-56: var(--color-chalk-56);
+    --rule: var(--color-chalk-30);
+    --rule-soft: rgba(237, 235, 230, 0.13);
+    --accent: var(--color-rubine);
+    background-color: var(--color-ink);
+    color: var(--color-chalk);
+  }
+
+  /* Крупный дисплей идёт чёрным (3,48:1, законно от 40 px). Весь мелкий набор
+     и метки идут бумагой (4,79:1, AA). Исключений нет. */
+  .ground-rubine {
+    --fg: var(--color-ink);
+    --fg-70: var(--color-paper);
+    --fg-56: var(--color-paper);
+    --rule: var(--color-ink);
+    --rule-soft: rgba(18, 17, 16, 0.34);
+    --accent: var(--color-paper);
+    background-color: var(--color-rubine);
+    color: var(--color-ink);
+  }
+
+  /* Тепло краски под заголовком тёмной секции. */
+  .ink-warmth::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    width: 62%;
+    height: 46vh;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 18% 0%, rgba(213, 0, 50, 0.075), transparent 68%);
+  }
+
+  /* ═════════════════════════════════════════════════════════════════════════
+     НАБОР
+     ═════════════════════════════════════════════════════════════════════════ */
   .t-h1 {
     font-family: var(--font-display);
     font-weight: 800;
     font-size: var(--text-h1);
-    line-height: 0.88;
-    letter-spacing: -0.03em;
+    line-height: 0.86;
+    letter-spacing: -0.032em;
   }
 
   .t-h2 {
     font-family: var(--font-display);
     font-weight: 700;
     font-size: var(--text-h2);
-    line-height: 0.94;
-    letter-spacing: -0.022em;
+    line-height: 0.92;
+    letter-spacing: -0.024em;
+  }
+
+  /* ЗАЯВЛЕНИЕ ПОЛОСЫ. H2 живёт в колонке и потому набирается плотно; это
+     набирается во весь формат, поэтому интерлиньяж чуть свободнее: иначе
+     четыре строки в 69 px слипаются в плашку. Выключки нет: §01 уже занят
+     выключенным заголовком, и второй такой на полосе был бы повтором. */
+  .t-statement {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-statement);
+    line-height: 1.02;
+    letter-spacing: -0.026em;
+    text-wrap: balance;
   }
 
   .t-h3 {
     font-family: var(--font-display);
     font-weight: 600;
     font-size: var(--text-h3);
-    line-height: 1.06;
+    line-height: 1.04;
     letter-spacing: -0.015em;
   }
 
@@ -307,21 +837,20 @@
     font-family: var(--font-display);
     font-weight: 700;
     font-size: var(--text-num);
-    line-height: 0.9;
-    letter-spacing: -0.02em;
+    line-height: 0.86;
+    letter-spacing: -0.024em;
     font-variant-numeric: lining-nums tabular-nums;
   }
 
   .t-lead {
     font-size: var(--text-lead);
-    line-height: 1.4;
-    letter-spacing: -0.006em;
+    line-height: 1.38;
+    letter-spacing: -0.008em;
   }
 
   .t-body {
     font-size: var(--text-body);
-    line-height: 1.6;
-    max-width: 62ch;
+    line-height: 1.62;
   }
 
   /* Машинный голос. Всегда прописными, всегда табличными цифрами. */
@@ -350,64 +879,18 @@
   .t-micro {
     font-family: var(--font-mono);
     font-size: var(--text-micro);
-    line-height: 1.1;
-    letter-spacing: 0.14em;
+    line-height: 1.15;
+    letter-spacing: 0.13em;
     text-transform: uppercase;
     font-variant-numeric: tabular-nums;
     font-feature-settings: 'zero' 1;
     font-weight: 400;
   }
 
-  /* ── ГРУНТЫ ───────────────────────────────────────────────────────────────
-     Нигде нет плоской заливки: под краской всегда лежит волокно. */
-  .ground-paper {
-    background-color: var(--color-paper);
-    background-image: var(--noise), linear-gradient(#f5f4f0, #edece7);
-    background-size:
-      128px 128px,
-      100% 100%;
-    background-blend-mode: overlay, normal;
-    color: var(--color-ink);
-  }
 
-  .ground-paper-hi {
-    background-color: var(--color-paper-hi);
-    background-image: var(--noise);
-    background-size: 128px 128px;
-    background-blend-mode: overlay;
-    color: var(--color-ink);
-  }
-
-  .ground-ink {
-    background-color: var(--color-ink);
-    background-image: var(--noise);
-    background-size: 128px 128px;
-    background-blend-mode: overlay;
-    color: var(--color-chalk);
-  }
-
-  .ground-rubine {
-    background-color: var(--color-rubine);
-    background-image: var(--noise);
-    background-size: 128px 128px;
-    background-blend-mode: overlay;
-    color: var(--color-ink);
-  }
-
-  /* Тепло краски под заголовком тёмной секции. */
-  .ink-warmth::before {
-    content: '';
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline-start: 0;
-    width: 60vw;
-    height: 40vh;
-    pointer-events: none;
-    background: radial-gradient(ellipse at 20% 0%, rgba(213, 0, 50, 0.06), transparent 70%);
-  }
-
-  /* ── ССЫЛКА ─────────────────────────────────────────────────────────────
-     Волосяная линия растёт от левого края. Ни подчёркиваний, ни цвета. */
+  /* ═════════════════════════════════════════════════════════════════════════
+     ССЫЛКА. Волосяная линия растёт от левого края. Ни подчёркиваний, ни цвета.
+     ═════════════════════════════════════════════════════════════════════════ */
   .link-rule {
     position: relative;
     display: inline-block;
@@ -430,103 +913,455 @@
   }
 }
 
-@layer utilities {
-  .hairline-b {
-    border-bottom: 1px solid var(--color-ink-32);
-  }
-  [data-ground='ink'] .hairline-b,
-  .ground-ink .hairline-b {
-    border-bottom-color: var(--color-chalk-30);
-  }
-  [data-ground='rubine'] .hairline-b,
-  .ground-rubine .hairline-b {
-    border-bottom-color: var(--color-ink);
-  }
+/* Объявлены через @utility, а не как классы в @layer utilities: только так
+   Tailwind разрешает варианты вроде lg:rule-r, а на формате во весь лист
+   линия обязана появляться и исчезать вместе с раскладкой. */
+@utility rule-t {
+  border-top: 1px solid var(--rule);
+}
+@utility rule-b {
+  border-bottom: 1px solid var(--rule);
+}
+@utility rule-l {
+  border-left: 1px solid var(--rule);
+}
+@utility rule-r {
+  border-right: 1px solid var(--rule);
+}
+@utility rule-soft-t {
+  border-top: 1px solid var(--rule-soft);
+}
+@utility rule-soft-b {
+  border-bottom: 1px solid var(--rule-soft);
+}
 
-  .hairline-t {
-    border-top: 1px solid var(--color-ink-32);
-  }
-  [data-ground='ink'] .hairline-t,
-  .ground-ink .hairline-t {
-    border-top-color: var(--color-chalk-30);
-  }
-  .ground-rubine .hairline-t {
-    border-top-color: var(--color-ink);
-  }
+@utility fg {
+  color: var(--fg);
+}
+@utility fg-70 {
+  color: var(--fg-70);
+}
+@utility fg-56 {
+  color: var(--fg-56);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   ХРОМА СТРАНИЦЫ — перекрашивается вслед за грунтом секции.
+   ХРОМА СТРАНИЦЫ перекрашивается вслед за грунтом секции.
    Не mix-blend-mode: он даёт голубое поверх красного и ломает правило
    двух красок.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-.topbar,
+/* ВЕРХНЯЯ ПОЛОСА ГРУНТА НЕ НЕСЁТ.
+   Плашка вырублена и лежит НАД листом, а не в нём, поэтому полоса под ней
+   прозрачна: набор проходит под плашкой и виден в поле вокруг неё. Пока
+   полоса красилась под секцию, она была не воздухом, а заслонкой — сплошной
+   лентой во весь формат, обрезавшей спуск ровно там, где он начинался.
+   Плашка при этом ничего не теряет: краски она объявляет сама (.bar-plate)
+   и от грунта под собой не зависит. */
+.topbar {
+  background: transparent;
+  /* Полоса уезжает под верхний рез на ходу вниз и возвращается на ходу
+     вверх. Метку `data-bar` пишет единственный rAF-цикл; здесь только ход
+     формы. Уезжает быстрее, чем возвращается: лист освобождают одним
+     движением, а полосу подают обратно, как форму в приводку. */
+  transition: transform 260ms var(--ease-ink);
+  will-change: transform;
+}
+:root[data-bar='gone'] .topbar {
+  /* -100 % это ВСЯ полоса: вырубка плюс поле --bar-pad, которым она отбита
+     от реза. Увозить плашку без её поля значило бы оставить у верхнего края
+     пустую рейку в четырнадцать пикселей. */
+  transform: translateY(-100%);
+}
+:root[data-bar='open'] .topbar {
+  transition-duration: 380ms;
+  transition-timing-function: var(--ease-land);
+}
+
+/* Контрольная шкала грунт берёт: её ступени печатаются процентом краски
+   по бумаге, и без грунта растр читать не по чему. */
 .controlstrip {
+  --fg: var(--color-ink);
+  --rule: var(--color-ink-32);
   background: var(--color-paper);
   color: var(--color-ink);
   transition:
     background-color 240ms var(--ease-ink),
     color 240ms var(--ease-ink);
 }
-:root[data-ground='paper-hi'] .topbar,
 :root[data-ground='paper-hi'] .controlstrip {
   background: var(--color-paper-hi);
 }
-:root[data-ground='ink'] .topbar,
 :root[data-ground='ink'] .controlstrip {
+  --fg: var(--color-chalk);
+  --rule: var(--color-chalk-30);
   background: var(--color-ink);
   color: var(--color-chalk);
 }
-:root[data-ground='rubine'] .topbar,
 :root[data-ground='rubine'] .controlstrip {
+  --fg: var(--color-paper);
+  --rule: var(--color-ink);
   background: var(--color-rubine);
-  /* Чёрным по рубину — 3,48:1. Для мелкого набора этого мало, поэтому
+  /* Чёрным по рубину выходит 3,48:1. Для мелкого набора этого мало, поэтому
      вся хрома на красном поле печатается бумагой (4,79:1). */
   color: var(--color-paper);
 }
 
-/* Кнопка WhatsApp — залитый прямоугольник, текст инвертирован.
-   Рубин на 11 px по чёрному запрещён (3.49:1), поэтому рубиновая
-   только галочка. */
-.wa-btn {
-  background: currentColor;
-}
-.wa-btn > * {
-  mix-blend-mode: normal;
-}
-.topbar .wa-btn {
-  color: var(--color-ink);
-  background: var(--color-ink);
-}
-.topbar .wa-btn {
-  color: var(--color-paper);
-}
-:root[data-ground='ink'] .topbar .wa-btn {
-  background: var(--color-chalk);
-  color: var(--color-ink);
-}
-:root[data-ground='rubine'] .topbar .wa-btn {
-  background: var(--color-ink);
-  color: var(--color-paper);
+/* ═══════════════════════════════════════════════════════════════════════════
+   СЛЕД КУРСОРА
+   Одна линия, которую указатель тянет за собой. Сам указатель СИСТЕМНЫЙ и
+   ничем не подменён: ни мишеней, ни колец, ни координатных выносок на листе
+   нет, гашения курсора нет тоже. Всё, что делает этот блок, это ставит холст
+   и объявляет краску; путь считает и рисует src/lib/trail.ts, кадр ему даёт
+   единственный rAF-цикл сайта.
+
+   ЕДИНСТВЕННАЯ ТРЕТЬЯ КРАСКА НА ЛИСТЕ, и объявлена она ЗДЕСЬ, на самом слое,
+   а не среди красок в @theme. Это не лень: пока переменная живёт на .trail,
+   дотянуться до неё неоткуда, и закон «красок две» продолжает держать всю
+   остальную страницу. Документировано в §4.5 спецификации.
+
+   Блок стоит среди хромы, а не среди полос: след не принадлежит ни одной
+   секции, он лежит поверх всего листа.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Слой. Выше всего, что есть на листе: шкала 55, панель 58, полоса 60,
+   содержание 70, ссылка «К содержанию» 100. Двести это тот же ряд с запасом.
+   Прямой потомок body и только он: внутри секции холст заперло бы isolation,
+   внутри содержания срезало бы clip-path.
+
+   Размер стоит и здесь, и в атрибутах холста, и это разные вещи: атрибут
+   задаёт число пикселей в буфере (его пишет модуль, с поправкой на плотность
+   экрана), правило задаёт место на листе. */
+.trail {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+  --trail-ink: #a3ec26;
 }
 
-/* Телефон рубиновый по бумаге (4.79:1 — проходит); по чёрному — мелом. */
-.tel-link {
-  color: var(--color-rubine);
-}
-:root[data-ground='ink'] .tel-link {
-  color: var(--color-chalk);
-}
-:root[data-ground='rubine'] .tel-link {
-  color: var(--color-paper);
+/* Холст фиксированный, а фиксированное в части движков печатается на КАЖДОЙ
+   странице. display: none, а не opacity: прозрачная коробка осталась бы
+   коробкой и могла бы вытолкнуть лишнюю полосу. */
+@media print {
+  .trail {
+    display: none;
+  }
 }
 
-.naryad-badge {
-  color: inherit;
+/* Система форсирует краски: третьей у неё нет, и линия схлопнулась бы в тот
+   же CanvasText, которым набран весь текст, то есть в мазок поверх набора.
+   Вдобавок это ровно те пользователи, которые настраивали контраст руками.
+   Прецедент правки в §03 уже есть. */
+@media (forced-colors: active) {
+  .trail {
+    display: none;
+  }
 }
 
-/* Ссылка «пропустить» — прячется, пока не понадобится клавиатуре. */
+/* ═══════════════════════════════════════════════════════════════════════════
+   ВЕРХНЯЯ ПОЛОСА
+
+   Три зоны и восемь слов: знак у левого реза, разделы по центру формата,
+   одно действие у правого. Ни линии, ни счётчика, ни иконки, ни номера
+   телефона. Всё, что полоса умеет сказать, она говорит набором.
+
+   Весь блок объявлен в слое components: раскладка полосы переключается
+   утилитами (`hidden lg:hidden md:inline-flex`), а утилиты обязаны бить
+   компонентные классы. Вне слоя `.menu-btn { display: inline-flex }`
+   пересиливал `hidden`, и слово «Меню» оставалось стоять на настольном.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  /* ═══ ПЕЧАТНАЯ ПЛАШКА ═══════════════════════════════════════════════════
+     Форма K, вырубленная в штамп: сплошная краска, несущая весь читаемый
+     набор полосы. Скругление на этом листе одно, и оно объявлено поимённо:
+     это вырубка, а не оформление. Глобальный сброс border-radius лежит
+     в слое base, плашка в слое components, поэтому !important не нужен.
+
+     Плашка сама себе грунт. Смысловые краски внутри неё считаются от её
+     СОБСТВЕННОЙ заливки, а не от грунта под полосой: иначе на бумаге --fg
+     разрешался бы в чёрный, и по чёрной плашке шли бы чёрный набор и чёрный
+     же обвод фокуса, то есть ничего. Наследование берёт ближайшего предка,
+     а плашка стоит к ссылке ближе, чем полоса.
+
+     По чёрному грунту плашка переворачивается: краска становится бумагой.
+     Чёрных грунтов на листе три из восьми (§03, §05, §08), и без переворота
+     чёрная плашка по чёрному исчезла бы вместе с полосой. */
+  .bar-plate {
+    --fg: var(--color-chalk);
+    --fg-70: var(--color-chalk-70);
+    --fg-56: var(--color-chalk-56);
+    --rule: var(--color-chalk-30);
+
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    width: 100%;
+    height: var(--bar-h);
+    padding-left: var(--bar-lead);
+    padding-right: var(--bar-tail);
+    border-radius: var(--bar-radius);
+    background: var(--color-ink);
+    color: var(--color-chalk);
+    transition:
+      background-color 240ms var(--ease-ink),
+      color 240ms var(--ease-ink);
+  }
+  @media (width >= 1024px) {
+    .bar-plate {
+      grid-template-columns: 1fr auto 1fr;
+    }
+  }
+  :root[data-ground='ink'] .bar-plate {
+    --fg: var(--color-ink);
+    --fg-70: var(--color-ink-70);
+    --fg-56: var(--color-ink-62);
+    --rule: var(--color-ink-32);
+
+    background: var(--color-chalk);
+    color: var(--color-ink);
+  }
+
+  /* ── ЗНАК: ДВЕ ФОРМЫ, НАБРАННЫЕ СЛОВОМ ─────────────────────────────────────
+     «Альфа» это форма K, «Принт» это форма R. Обе стоят намертво: в знаке фирмы
+     уход приводки читался бы не как дрожь машины, а как опечатка в
+     собственном названии, поэтому закон ухода сюда не заведён.
+
+     Рубин по чёрному даёт 3,49:1. На кегле от 20 px и жирности 700 это
+     крупный набор, для которого порог AA равен 3:1, и он проходит. По рубину
+     краснить нечем, поэтому там форма R печатается бумагой. */
+  .wordmark {
+    display: inline-flex;
+    align-items: baseline;
+    /* Просвет считается от кегля, а не задан числом: он обязан расти
+       вместе с кеглем. */
+    gap: 0.3em;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--text-wordmark);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    white-space: nowrap;
+    color: var(--fg);
+    --wm-r: var(--color-rubine);
+  }
+  .wordmark-r {
+    color: var(--wm-r);
+    transition: color 240ms var(--ease-ink);
+  }
+
+  /* ── РАЗДЕЛЫ ───────────────────────────────────────────────────────────────
+     Набраны корпусным гротеском в две трети краски. Раздел, который сейчас
+     на экране, единственный отпечатан в полную силу. Ни подчёркивания,
+     ни точки, ни плашки: разница в подаче краски и есть указатель. */
+  /* ВСЕ РАЗДЕЛЫ ПЕЧАТАЮТСЯ В ПОЛНУЮ СИЛУ.
+     Прежде полосу вёл указатель текущего раздела: читаемый раздел стоял
+     краской, остальные вполсилы. Указатель снят с краски — по плашке пять
+     слов разной плотности читались как брак приводки, а не как навигация.
+
+     Наведение гасит СОСЕДЕЙ, а не красит наведённое. Разница та же, но
+     работу делает не подсветка одного слова, а отступление четырёх:
+     на плашке прибавить краски некуда, а убавить есть куда.
+     Указатель раздела остался в разметке (aria-current) и в содержании
+     на телефоне, где его несёт колонцифра. */
+  .navlink {
+    display: inline-flex;
+    align-items: center;
+    height: 34px;
+    font-size: var(--text-nav);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.006em;
+    color: var(--fg);
+    transition: color 200ms var(--ease-ink);
+  }
+  @media (hover: hover) {
+    .bar-nav:hover .navlink {
+      color: var(--fg-56);
+    }
+    .bar-nav .navlink:hover {
+      color: var(--fg);
+    }
+  }
+
+  /* ── ДЕЙСТВИЕ ──────────────────────────────────────────────────────────────
+     Вылет до правого реза снят вместе с прямым углом: внутри вырубленной
+     плашки краску некуда доводить, там нет реза. Действие стоит соосно
+     правому торцу: расстояние до стенки одно и то же сверху, снизу и справа
+     и равно --bar-inset. Высота считается оттуда же, поэтому кнопка держит
+     соосность и на телефоне, и на развороте.
+
+     Заливка рубиновая на всех четырёх грунтах, и это уступка: §1 запрещает
+     рубиновую кнопку, до сих пор форма набирала рубин только по наведению.
+     Плашка чёрная, действие обязано читаться на ней с первого взгляда,
+     и единственная хрома листа и есть единственное, чем это делается, не заводя
+     на страницу третью краску.
+
+     По наведению форма выбеливается: рубин уходит в бумагу, набор в рубин
+     (4,79:1, AA). Кружок меняется с плашкой местами в ту же сторону. */
+  .bar-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(var(--bar-h) - var(--bar-inset) * 2);
+    padding-inline: clamp(18px, 1.45vw, 28px);
+    /* ВЫКЛЮЧКА ПО ВЫСОТЕ ОПТИЧЕСКАЯ, А НЕ ГЕОМЕТРИЧЕСКАЯ.
+       Геометрически слово уже стоит по центру: над очком 11,25 px, под
+       базовой 10,75 px. Но «Заказать» это одна прописная и семь строчных,
+       а глаз ищет середину по строчным, и их полоса лежит ниже середины
+       очка на 1,7 px. Поле снизу поднимает набор и ставит на ось массу
+       слова, а не габарит. Считается от кегля: высота плашки переменная. */
+    padding-bottom: 0.14em;
+    border-radius: calc(var(--bar-radius) - 2px);
+    background: var(--color-rubine);
+    color: var(--color-paper);
+    font-size: var(--text-nav);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.004em;
+    white-space: nowrap;
+    transition:
+      background-color 200ms var(--ease-ink),
+      color 200ms var(--ease-ink);
+  }
+
+  /* Наряд считается сигнатурой на плече слова: так набирают сноску, а не
+     бейдж. Один знак, табличная цифра, появляется только когда наряд не пуст.
+     Ни отдельной плашки, ни точки-разделителя. */
+  .bar-cta-n {
+    align-self: center;
+    /* Подъём на плечо слова считается от кегля, а не от высоты плашки:
+       высота теперь переменная, а сноска обязана стоять одинаково на всех. */
+    margin-bottom: 0.62em;
+    margin-left: 0.14em;
+    font-size: 0.68em;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  @media (hover: hover) {
+    .bar-cta:hover {
+      background: var(--color-paper);
+      color: var(--color-rubine);
+    }
+  }
+
+  /* Слово, открывающее содержание. Хит-зона 44 px по высоте при кегле 15. */
+  .menu-btn {
+    display: inline-flex;
+    align-items: center;
+    height: 44px;
+    font-size: var(--text-nav);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.006em;
+    color: var(--fg);
+  }
+  @media (width < 768px) {
+    .menu-btn {
+      padding-right: calc(var(--bar-lead) - var(--bar-tail));
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     СОДЕРЖАНИЕ: полноэкранная полоса на чёрном грунте.
+
+     Ракель идёт снизу вверх: тот же глагол появления, что у заголовка §01 и
+     у всех восьми полос. Сначала поднимается сам лист, следом по одной
+     встают строки. Ни одной волосяной линии: их место занимают колонцифры.
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .menu-sheet {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    display: flex;
+    flex-direction: column;
+    padding-inline: var(--edge);
+    overscroll-behavior: contain;
+    clip-path: inset(0 0 100% 0);
+    pointer-events: none;
+    transition: clip-path 420ms var(--ease-blade);
+  }
+  .menu-sheet[data-open='true'] {
+    clip-path: inset(0 0 0 0);
+    pointer-events: auto;
+  }
+
+  .menu-row {
+    display: flex;
+    align-items: baseline;
+    gap: clamp(12px, 3.4vw, 18px);
+    padding-block: clamp(4px, 0.9vw, 8px);
+  }
+  .menu-row-n {
+    flex: none;
+    width: 2.2em;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.13em;
+    font-variant-numeric: tabular-nums;
+    color: var(--fg-56);
+    transition: color 200ms var(--ease-ink);
+  }
+  /* «Вы здесь» набрано колонцифрой, а не подсветкой строки. Состояние всё равно
+     объявлено через aria-current; краска только повторяет его глазу. */
+  .menu-row[aria-current='true'] .menu-row-n {
+    color: var(--fg);
+  }
+
+  /* Поле по кеглю: маска обязана пройти мимо выносных элементов «у» и «р».
+     Считается от размера набора, а не от высоты строки: при интерлиньяже
+     0,94 очко крупнее строчного бокса, и это брак, а не придирка. */
+  .menu-row-word {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-menu);
+    line-height: 0.94;
+    letter-spacing: -0.03em;
+    color: var(--fg);
+    padding-block: 0.16em;
+    margin-block: -0.16em;
+    clip-path: inset(102% 0 0 0);
+    transition: clip-path 520ms var(--ease-blade);
+  }
+  .menu-sheet[data-open='true'] .menu-row-word {
+    clip-path: inset(0 0 0 0);
+    transition-delay: calc(140ms + var(--i) * 52ms);
+  }
+
+  .menu-phone {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.375rem, 6.4vw, 1.75rem);
+    line-height: 1;
+    letter-spacing: -0.028em;
+    color: var(--fg);
+  }
+  .menu-channels {
+    display: flex;
+    gap: clamp(18px, 5vw, 28px);
+    font-size: var(--text-nav);
+    font-weight: 500;
+    color: var(--fg-56);
+  }
+
+  /* Кто просил не двигать, получает готовый лист: маска снимается разом. */
+  @media (prefers-reduced-motion: reduce) {
+    .menu-sheet,
+    .menu-sheet[data-open='true'] .menu-row-word,
+    .menu-row-word {
+      transition: none;
+    }
+  }
+}
+
+/* Ссылка «пропустить» прячется, пока не понадобится клавиатуре. */
 .skip-link {
   position: fixed;
   top: 0;
@@ -542,7 +1377,7 @@
   transform: translateY(0);
 }
 
-/* Разведение форм на плитке — transform на группе, а не перерисовка. */
+/* Разведение форм на плитке это transform на группе, а не перерисовка. */
 .tile-art .plate-r {
   transition: transform 280ms var(--ease-ink);
 }
@@ -555,7 +1390,7 @@
   }
 }
 
-/* Лист цветопробы сдвигается относительно своей формы — и ничего больше. */
+/* Лист цветопробы сдвигается относительно своей формы, и ничего больше. */
 .proof-ghost {
   transform: translate3d(-8px, 5px, 0);
   transition: transform 320ms var(--ease-ink);
@@ -567,73 +1402,735 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   КАТАЛОГ — переключение форм.
-   Неактивный список не прячется, а съезжает рубиновым призраком:
-   одно встречное движение, а не появление вкладки.
+   §03. ФОРМА И ОТТИСК. ПЯТЬ СТРОК, ОДНА РАСКРЫТА.
+
+   НА МАШИНЕ СТОИТ ОДНА ФОРМА. Десять целей под курсором это не каталог, а
+   список, и глаз в нём не держит ни одной; полоса показывает пять строк, а
+   вторая пятёрка приходит сменой формы. Это не вкладки ради вкладок: ровно
+   так и работает печатник: ставит одну форму, печатает тираж, смывает и
+   ставит другую.
+
+   Каталог разложен не по прайсу, а по природе изображения, и это деление
+   несут САМИ БУКВЫ. Пять названий формы K напечатаны: на них лежит краска.
+   Пять названий формы R не напечатаны вовсе: только контур, и чёрное внутри
+   очка не цвет, а материал, видный там, где прошёл резак. Смена формы
+   переводит в контур ВСЮ полосу разом: деление видно набором, а не подписью.
+
+   ЛИНИЯ РЕЗА НИКУДА НЕ ДЕЛАСЬ. Прежде это была волосяная строки 06,
+   набранная в полную силу: выше краска, ниже её нет. Теперь та же линейка
+   открывает полосу и в полную краску набрана ровно на половине стоящей
+   формы: она говорит «краска подана сюда» и переезжает вместе с формой.
+
+   РАСКРЫТИЕ ЕСТЬ, ГАРМОШКИ НЕТ, и это не игра словами.
+   Панель вынута из потока целиком (position: absolute, постоянная высота
+   --dv-panel-h), место под неё держат transform-сдвиг строк ниже и хвостовой
+   спейсер .dv-tail той же высоты. Сумма высот полосы одинакова во всех пяти
+   состояниях ОБЕИХ форм (группы равной длины, строки одного кегля), поэтому
+   не бывает ни рефлоу, ни толчка Lenis, ни перезапуска IntersectionObserver,
+   ни перекраски грунта на :root, ни при раскрытии, ни при смене формы.
+   Раскрытая строка ровно одна и всегда: иначе листу оттиска нечего печатать.
+
+   Блок стоит ВНЕ @layer: правила обязаны бить утилиты Tailwind.
+   Порядок правил внутри блока НЕСУЩИЙ: призраки приводки набраны двумя
+   классами и стоят последними.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-.catalogue-panel li {
+.dv {
+  /* Кегль ЗАМЕРЕН, а не выбран. Ширина самого широкого имени («Интерьерная
+     печать») = 10,57 × кегль при трекинге −0,026em. Мера строки = ширина
+     полосы (шесть долей) минус гнездо кнопки. Связывающий формат это 1024:
+     мера 437 при потребности 316, запас 27,7 %. На 1440 это 28,9 % (627/446).
+     100 px эталона по-русски недостижимы (потребовали бы 1057 px при
+     доступных 627), поэтому перенесён РИТМ строки, а не размер очка.
+
+     Полоса набрана НА ДВЕ СТУПЕНИ НИЖЕ прежнего: 3,0vw против 3,82vw. Десять
+     имён кеглем в 55 px забивали разворот целиком: лист оттиска оставался
+     при них подписью. Ступени вниз возвращают полосе поля, и запас меры
+     растёт впятеро: ломаться теперь нечему ни на одном формате. Всё, что
+     считается от кегля (поля кнопки, гнездо квадрата, высота панели),
+     садится следом само. */
+  --dv-name: clamp(1.375rem, 3vw, 4.75rem);
+  --dv-lead: clamp(0.9375rem, 1.28vw, 1.25rem);
+
+  /* ТЕМП РАСКРЫТИЯ ОДНИМ ЧИСЛОМ. Все четыре срока жеста считаются
+     отсюда целыми долями: уход краски 2, задержка ракеля 1, приводка 4,
+     сам ракель 4,5. Менять темп следует ТОЛЬКО здесь: свобода от
+     наложений держится не на абсолютных миллисекундах, а на их ОТНОШЕНИИ
+     (строка успевает уйти раньше, чем ракель дойдёт до её полосы), а
+     общий множитель отношений не трогает. Править сроки поотдельности
+     значит ломать именно то, на чём всё держится. */
+  --dv-beat: 64ms;
+
+  /* ВЕРХНЕЕ ПОЛЕ ПАНЕЛИ. Стояло clamp(12px, 1vw, 22px), и описание висело
+     в полутора сантиметрах от своего имени: читалось не подписью к строке,
+     а отдельным абзацем. Отбивку от имени даёт НЕ оно, а нижнее поле
+     кнопки (0,56em), посчитанное по выносным: «р», «у», «ф» уходят вниз
+     на 0,375em, и оставшиеся 0,185em есть та самая отбивка. Здесь
+     добавлять к ней вторую было нечем: остаётся волос на просвет под
+     призрак приводки, который уходит ниже строки на 9px. */
+  /* ПОДЪЁМ ПАНЕЛИ ПОД СВОЁ ИМЯ. Нижнее поле кнопки считано по выносным
+     и держит ритм ВСЕХ строк, трогать его ради одной раскрытой нельзя.
+     Поэтому вверх едет САМА панель, а не строка: описание принадлежит
+     имени над собой и обязано стоять ближе к нему, чем к чужому ниже.
+     Высота полосы от этого не меняется: --dv-panel-h та же, сдвигается
+     лишь положение набора внутри неё. */
+  --dv-panel-lift: clamp(6px, 0.9vw, 16px);
+
+  --dv-panel-top: clamp(0px, 0.3vw, 6px);
+
+  --dv-desc-ink: rgba(237, 235, 230, 0.86);
+
+  --dv-toggle: 22px;
+  --dv-gap: clamp(16px, 1.5vw, 42px);
+  --dv-reserve: calc(var(--dv-toggle) + var(--dv-gap));
+
+  /* Высота панели считается формулой, а не подбирается: по закону оттиска
+     высоту задаёт самая высокая панель, и она не меняется никогда.
+
+     В панели теперь ОДНО ОПИСАНИЕ. Короткая линейка и строка spec сняты,
+     и вместе с ними ушли три слагаемых формулы: отбивка перед линейкой,
+     её собственные 2px и строки мелкого кегля. Остались три слагаемых:
+     верхнее поле, само описание и нижнее поле. Закон тот же, членов меньше.
+
+     ЧИСЛО СТРОК ЗАМЕРЕНО НА НОВОМ КЕГЛЕ, а не оставлено от старого:
+     описание стало крупнее, а мера осталась прежней, значит в строку
+     входит меньше знаков. Резерв поставлен по самому длинному из десяти
+     описаний на самой узкой мере каждой раскладки. */
+  --dv-desc-lines: 2;
+  --dv-panel-h: calc(
+    var(--dv-panel-top) + var(--dv-desc-lines) * (var(--dv-lead) * 1.5) +
+      clamp(20px, 1.9vw, 34px)
+  );
+}
+
+/* ── ЛЕВАЯ КОЛОНКА: ОТТИСК ────────────────────────────────────────────────── */
+
+/* Липнет ТОЛЬКО лист: колонцифра, заголовок и лид уезжают нормально. Полоса
+   строк вчетверо длиннее левой колонки, и без липкости под ней осталось бы
+   метров восемьсот пустоты. Ни у одного предка не должно появиться
+   overflow: он молча выключает sticky. */
+.dv-sheet {
+  position: sticky;
+  top: calc(var(--topbar-h) + clamp(24px, 4vh, 64px));
+  display: grid;
+  /* Колонка ОБЪЯВЛЕНА, и minmax(0,1fr) здесь не украшение: неявная колонка
+     сетки меряется по max-content, то есть по самой длинной строке оттиска, и
+     на узком листе полное имя вылезало за правый край бумаги вместо того,
+     чтобы перенестись. Нулевой минимум разрешает набору переноситься. */
+  grid-template-columns: minmax(0, 1fr);
+  padding: clamp(18px, 1.5vw, 30px);
+  background: var(--color-proof); /* вне слоя → бьёт фон из .ground-paper */
+}
+
+/* Пропорция эталона это НИЖНЯЯ граница, а не жёсткая рамка. Держит её пустая
+   доля сетки, положенная в те же координаты, что и оттиски: высота ряда
+   выходит наибольшей из «пропорция» и «самый длинный перечень», и лист
+   растёт под позицию 01, а не режет её. Сам aspect-ratio на листе этого не
+   умеет: он считает высоту от ширины и роняет содержимое в вылет. */
+.dv-sheet::before {
+  content: '';
+  grid-area: 1 / 1;
+  width: 100%;
+  aspect-ratio: 1 / 0.86;
+}
+
+/* Все десять оттисков в одних координатах: высоту листа задаёт самый высокий,
+   и она не меняется никогда.
+
+   ЛИСТ СНИМАЮТ, А НЕ СВОДЯТ. Уход не анимирован вовсе: ни одного кадра, в
+   котором на листе стоят два оттиска разом. Прежде уход шёл тем же ракелем и
+   той же длительностью, что приход: 280 мс два имени лежали друг на друге,
+   срезанные по горизонтали на середине очка, и это читалось не печатью, а
+   поломкой. Печатник не сводит два оттиска: он снимает лист и кладёт
+   следующий. Анимирован ровно приход: один проход ракеля на чистой бумаге. */
+.dv-print {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  visibility: hidden;
+  clip-path: inset(0 0 102% 0);
+  /* УХОДИТ КРАСКОЙ, А НЕ РЕЗОМ. Мгновенное исчезновение снятое
+     одним кадром читается щелчком: разрыв без движения. Старый оттиск
+     гаснет краской за 150 мс, а рез при этом СТОИТ НА МЕСТЕ: clip-path
+     переключается нулёвой длительностью ПОСЛЕ файнала, когда смотреть уже
+     не на что. Так нет ни срезанных пополам букв, ни рывка. */
   transition:
-    transform 620ms var(--ease-land),
-    color 620ms var(--ease-ink),
-    opacity 620ms var(--ease-ink);
+    opacity calc(var(--dv-beat) * 2) var(--ease-ink),
+    clip-path 0s linear calc(var(--dv-beat) * 2),
+    visibility 0s linear calc(var(--dv-beat) * 2);
 }
-
-.catalogue-panel.is-active li {
-  transform: translate3d(0, 0, 0);
+/* ПРИХОД РАЗВЁДЁН С УХОДОМ ПО КРАСКЕ, А НЕ ПО ВРЕМЕНИ. Ракель идёт
+   с первого кадра, но сам оттиск набирает краску только с 150 мс, то есть
+   ровно с того мгновения, когда прежний её отдал. Двух читаемых оттисков
+   в одном кадре нет ни разу, а движение не прерывается ни на кадр. */
+.dv-print[data-on] {
   opacity: 1;
+  visibility: visible;
+  clip-path: inset(0 0 0 0);
+  transition:
+    opacity calc(var(--dv-beat) * 2.5) var(--ease-ink) calc(var(--dv-beat) * 2),
+    clip-path calc(var(--dv-beat) * 4) var(--ease-blade) calc(var(--dv-beat) * 2),
+    visibility 0s;
 }
 
-.catalogue-panel.is-idle li {
-  transform: translate3d(-16px, 10px, 0);
-  /* Призрак должен читаться как вторая форма, а не как второй список:
-     в полную краску дубль превращается в кашу поверх активного набора. */
-  opacity: 0.26;
-}
-/* Неактивный список — призрак формы R. Обычная непрозрачность, не multiply:
-   по чёрному грунту multiply убивает рубин. */
-.catalogue-panel.is-idle .t-h3,
-.catalogue-panel.is-idle span {
-  color: var(--color-rubine-26) !important;
-  border-color: color-mix(in srgb, var(--color-rubine-26) 40%, transparent) !important;
-}
-.catalogue-panel.is-idle {
-  z-index: 0;
-}
-.catalogue-panel.is-active {
-  z-index: 1;
+/* ПОЛНОЕ торговое имя видимым текстом на всех форматах: на форме стоит
+   короткое слово, и полное не имеет права остаться только в sr-only. */
+.dv-print-title {
+  margin-top: clamp(10px, 0.9vw, 18px);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.0625rem, 1.32vw, 1.625rem);
+  line-height: 1.08;
+  letter-spacing: -0.018em;
 }
 
-@media (width < 768px) {
-  /* На телефоне призрак второй формы убирается совсем: строки там разной
-     высоты, и наложение двух списков превращается в кашу. Приоритет на
-     мобильном — читаемость и заказ, а не демонстрация механики. */
-  .catalogue-panel.is-idle {
+/* Перечень изделий. Он и есть содержание листа: то, что заказчик ищет
+   глазами; описание процесса стоит на полосе, у своей строки, и здесь не
+   повторяется ни словом. */
+.dv-print-items {
+  margin-top: clamp(12px, 1vw, 20px);
+  font-size: clamp(0.875rem, 0.92vw, 1.0625rem);
+  line-height: 1.36;
+  font-weight: 500;
+}
+
+.dv-print-foot {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 0.7vw, 14px);
+  margin-top: auto;
+  padding-top: clamp(16px, 1.5vw, 28px);
+}
+
+/* ── ПОЛОСА: ФОРМА НА МАШИНЕ ──────────────────────────────────────────────────
+   Ни одного нового объекта на полосе: это те же две метки групп, тем же
+   голосом, что колонцифра, и с той же разрядкой. Человеческое слово стоит
+   первым, буква формы вторым: «K» и «R» в одиночку не значат ничего. Раньше
+   метки подписывали две половины списка, теперь выбирают, какая из них стоит
+   на машине.
+
+   Волосяная открывает полосу ровно так же, как волосяная открывает каждую
+   строку ниже. Разница только в том, что эту линейку заводит форма: каждая
+   заводит свою. На половине стоящей формы линейка набрана в полную краску.
+
+   ГНЕЗДО, А НЕ ИМЯ. Ширина указателя это половина полосы, а не мера набора:
+   форм ровно две, они делят полосу поровну, и указатель показывает гнездо
+   формы. Едет он composited-трансформом: полоса от этого не пересчитывается
+   и Lenis не получает толчка. */
+.dv-mount {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--rule);
+  margin-bottom: clamp(14px, 1.2vw, 22px);
+}
+/* top: -1px кладёт указатель НА волосяную, оставаясь внутри бокса рамки:
+   ракель PrintReveal клипует по нему, и вылезший наружу указатель был бы
+   срезан вместе с первым появлением полосы. */
+.dv-mount::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 50%;
+  height: 0;
+  border-top: 2px solid var(--fg);
+  transition: transform 320ms var(--ease-land);
+}
+.dv-mount[data-forme='r']::after {
+  transform: translate3d(100%, 0, 0);
+}
+
+/* Метка формы. Кегль на ступень выше .t-label: это уже не подпись, а орган
+   управления. Высота 44 держит цель нажатия на телефоне, где полоса набрана
+   в четыре доли. */
+.dv-mount-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.55ch;
+  min-height: 44px;
+  padding-block: clamp(10px, 0.9vw, 16px);
+  padding-right: var(--gutter);
+  font-family: var(--font-mono);
+  font-size: clamp(0.6875rem, 0.8vw, 0.875rem);
+  line-height: 1.1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-align: left;
+  color: var(--fg-56);
+  transition: color 180ms var(--ease-ink);
+}
+/* Форма уже на машине, ставить её второй раз некуда. */
+.dv-mount-tab[aria-selected='true'] {
+  color: var(--fg);
+  cursor: default;
+}
+@media (hover: hover) {
+  .dv-mount-tab:hover {
+    color: var(--fg);
+  }
+}
+/* Кольцо внутрь, иначе ляжет на волосяную полосы. */
+.dv-mount-tab:focus-visible {
+  outline-offset: -2px;
+}
+
+/* ── СТРОКА ───────────────────────────────────────────────────────────────── */
+
+/* ПРИВОДКА ИДЁТ РОВНО, А НЕ ЩЁЛКАЕТ. Здесь стояло 120 мс на ease-land,
+   и это была не посадка, а рывок: экспонента отдаёт девять десятых хода
+   за первую треть срока, то есть за сорок миллисекунд целыми сто пикселями.
+   Глаз читает такой ход не как движение, а как подмену кадра.
+
+   ease-blade симметричная: мягко трогается и мягко встаёт. Мягкий старт
+   здесь не только красивее, он НЕСУЩИЙ: пока уходящая панель гаснет
+   свои 150 мс, строка под ней успевает уйти меньше чем на треть хода,
+   и сводить в кадре оказывается нечего. Резкая кривая увезла бы её
+   на чужое имя раньше, чем та успела отдать краску. */
+.dv-item {
+  position: relative;
+  border-top: 1px solid var(--rule);
+  transition:
+    border-top-color 180ms var(--ease-ink),
+    transform calc(var(--dv-beat) * 4) var(--ease-blade);
+}
+
+/* ПЕРВАЯ СТРОКА ВЕРХНЕЙ ЛИНЕЙКИ НЕ НЕСЁТ: её линейка уже набрана, и это
+   волосяная под метками формы, та самая, по которой едет указатель. Своя
+   линейка у первой строки делала из одного реза два, стоящие в одну метку
+   друг от друга, и полоса открывалась не резом, а полем между двумя резами.
+   Линейка одна, и она же показывает, какая форма на машине. */
+.dv-plate > .dv-item:first-child {
+  border-top: 0;
+}
+
+/* ПРИВОДКА, А НЕ ГАРМОШКА: элементы ниже раскрытой строки садятся на
+   постоянную величину. Только composited transform: ни рефлоу, ни
+   пересчёта IntersectionObserver, ни толчка Lenis. */
+.dv-item[data-shift] {
+  transform: translate3d(0, var(--dv-panel-h), 0);
+}
+
+/* Хвост держит полосу постоянной: при раскрытой десятой строке её панель
+   садится ровно сюда, при раскрытой первой сюда доезжает десятая строка. */
+.dv-tail {
+  height: var(--dv-panel-h);
+}
+
+/* Ракель клипует по боксу обёртки, а призрак уходит влево и вниз. Поле ровно
+   на величину ухода, снятое отрицательным margin: сумма нулевая, ритм строк
+   не сбивается. ПАНЕЛЬ ЛЕЖИТ СНАРУЖИ этой обёртки: внутри она унаследовала
+   бы отрицательные поля и была бы срезана маской. */
+.dv-reveal {
+  padding-left: 14px;
+  margin-left: -14px;
+  padding-bottom: 9px;
+  margin-bottom: -9px;
+}
+
+.dv-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--dv-gap);
+  width: 100%;
+  font-size: var(--dv-name);
+  /* 0,94 + 0,38 + 0,56 = 1,88em = 103 px на 1440 (эталон 100…110).
+     Нижнее поле больше верхнего ровно на выносные: при интерлиньяже 0,94
+     «р», «у», «ф» выходят за строчный бокс на ≈0,375em, и 0,56 > 0,375. */
+  padding-block: 0.38em 0.56em;
+  text-align: left;
+}
+.dv-btn[aria-disabled='true'] {
+  cursor: default;
+}
+/* Кольцо внутрь, иначе ляжет на волосяные соседей. */
+.dv-btn:focus-visible {
+  outline-offset: -4px;
+}
+
+.dv-head {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.dv-name {
+  position: relative;
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Имя стоит в ПОЛНУЮ краску всегда, как в эталоне, где все названия чёрные
+   независимо от состояния. Поэтому цветового отклика у набора нет вовсе, и
+   специфичность призрака ни с чем не воюет. */
+.dv-word {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1em;
+  line-height: 0.94;
+  letter-spacing: -0.026em;
+  color: var(--fg);
+  /* Поле по КЕГЛЮ, не по строке: маска ракеля обязана пройти мимо выносных. */
+  padding-block: 0.16em;
+  margin-block: -0.16em;
+}
+
+/* ФОРМА R: краски нет вовсе, есть контурный рез. Толщина обводки идёт по
+   кеглю: фиксированные 1,5 px были посчитаны на 77 и забивают очко на 26. */
+.dv-word--r {
+  color: transparent;
+  -webkit-text-stroke-width: clamp(1px, 0.024em, 2.2px);
+  -webkit-text-stroke-color: var(--fg);
+  paint-order: stroke fill;
+}
+
+/* Наведение на строке РАСКРЫВАЕТ её (см. Formy.tsx), а правило ниже только
+   договаривает вслух, какую строку указатель сейчас держит: краска подаётся
+   в волосяную. Название поднимать некуда, оно уже в полную силу. Отклик
+   заперт в (hover: hover) намеренно: там, где наведения нет, нет и раскрытия
+   по наведению: строка ждёт тапа. */
+@media (hover: hover) {
+  .dv-item:hover {
+    border-top-color: var(--fg);
+  }
+}
+
+/* ── КНОПКА «+» / «−» ─────────────────────────────────────────────────────── */
+
+.dv-toggle {
+  position: relative;
+  flex: none;
+  width: var(--dv-toggle);
+  height: var(--dv-toggle);
+  /* Центр квадрата садится на середину высоты прописных названия, а не на
+     середину бокса: 0,38 (поле) + 0,144 (верх прописной) + 0,357 (полукегль)
+     = 0,881em. */
+  margin-top: calc(var(--dv-name) * 0.881 - var(--dv-toggle) / 2);
+  /* Радиус 7 эталона переведён в прямой угол: @layer base сбрасывает
+     border-radius на *, скруглений на этом сайте нет ни одного. */
+  background: var(--color-rubine);
+}
+.dv-toggle::before,
+.dv-toggle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+/* Черты нарисованы БОРДЕРАМИ, а не заливками: только так они переживают
+   forced-colors, где background выбрасывается, а border переназначается. */
+.dv-toggle::before {
+  width: 10px;
+  height: 0;
+  border-top: 2px solid var(--color-paper);
+  transform: translate(-50%, -50%);
+}
+.dv-toggle::after {
+  width: 0;
+  height: 10px;
+  border-left: 2px solid var(--color-paper);
+  transform: translate(-50%, -50%);
+  transition: transform 200ms var(--ease-blade);
+}
+
+/* ── ПАНЕЛЬ ───────────────────────────────────────────────────────────────── */
+
+/* Вынута из потока целиком: высота строки при раскрытии не меняется, место
+   держат --dv-panel-h на элементах ниже и хвостовой спейсер. */
+.dv-panel {
+  position: absolute;
+  top: calc(100% - var(--dv-panel-lift));
+  left: 0;
+  right: var(--dv-reserve);
+  height: var(--dv-panel-h);
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--dv-panel-top);
+  padding-bottom: clamp(20px, 1.9vw, 34px);
+  opacity: 0;
+  visibility: hidden;
+  clip-path: inset(0 0 102% 0);
+  /* УХОД ГАСНЕТ, А НЕ ОБРЫВАЕТСЯ. Панель лежит в СВОЕЙ СТРОКЕ,
+     под ней (top: 100%), и уезжает вместе с ней на собственную высоту,
+     то есть ровно на строку под собой. Именно поэтому её нельзя уводить
+     резом: срезанный текст, едущий по чужому имени, и был тем самым
+     наложением. Но и рубить её одним кадром нельзя: разрыв без движения
+     читается щелчком. Краска СХОДИТ за 150 мс, и к тому моменту, когда
+     строка успела пройти заметную часть пути, смотреть уже не на что:
+     ease-blade на приводке отдаёт за первую половину файнала меньше
+     трети хода. Рез при этом СТОИТ НА МЕСТЕ и переключается нулёвой
+     длительностью после файнала: ни одного срезанного очка. */
+  transition:
+    opacity calc(var(--dv-beat) * 2) var(--ease-ink),
+    clip-path 0s linear calc(var(--dv-beat) * 2),
+    visibility 0s linear calc(var(--dv-beat) * 2);
+}
+/* РАКЕЛЬ ИДЁТ СВЕРХУ ВНИЗ, И ЭТО НЕ ВКУС, А ГЕОМЕТРИЯ.
+   Полоса под панель освобождается СВЕРХУ: строка, которая её занимала,
+   уходит вниз и отдаёт верхний край первым, а нижний последним. Ракель,
+   шедший снизу вверх, клал краску РОВНО В ОБРАТНОМ порядке: первым
+   туда, что освободится последним. Оттого и приходилось держать его
+   задержкой, а описание, стоящее вверху панели, вскрывалось ПОСЛЕДНИМ,
+   то есть ПОСЛЕ всего движения, а не вместе с ним.
+
+   Сверху вниз рез идёт ЗА ОСВОБОЖДАЮЩЕЙСЯ ПОЛОСОЙ, шаг в шаг. Задержка
+   больше не нужна вовсе (была одна доля темпа, стал ноль), а описание
+   вскрывается ПЕРВЫМ и проявляется самим ходом реза, а не отдельным
+   проявлением поверх него. Замерено: первая краска 194 → 116 мс,
+   описание 354 → 170 мс, наложений как было ноль, так и осталось.
+
+   ВАЖНО: это касается ТОЛЬКО смены состояния внутри §03. Первое появление
+   полосы по-прежнему ведёт PrintReveal снизу вверх: единый глагол появления
+   текста на сайте не тронут. Разные события, разные ходы. */
+.dv-panel[data-on] {
+  opacity: 1;
+  visibility: visible;
+  clip-path: inset(0 0 0 0);
+  transition:
+    opacity calc(var(--dv-beat) * 1.375) var(--ease-ink),
+    clip-path calc(var(--dv-beat) * 4.5) var(--ease-blade),
+    visibility 0s;
+}
+
+.dv-desc {
+  max-width: 52ch;
+  font-size: var(--dv-lead);
+  font-weight: 400;
+  line-height: 1.5;
+  /* Разрядка чуть шире обычной: корпус сайта набран на −0,002em. */
+  letter-spacing: 0.006em;
+  /* Белое с просветом, а не серое. Здесь стоял --fg-70, общий тон корпуса
+     по всему сайту. Описание в панели больше не корпус: после снятия
+     линейки и spec оно осталось в панели одно и говорит за всю строку.
+     0,86 держит его белым, но не в полную краску: полная отдана именам. */
+  color: var(--dv-desc-ink);
+}
+
+/* ── СОСТОЯНИЕ ────────────────────────────────────────────────────────────── */
+
+/* Раскрытая строка: вертикаль плюса уходит, и на месте знака остаётся минус. */
+[aria-expanded='true'] .dv-toggle::after {
+  transform: translate(-50%, -50%) scaleY(0);
+}
+
+/* Отказ text-stroke обязан вернуть НАБОР, а не пустоту: без этого пять
+   названий из десяти исчезли бы с полосы. */
+@supports not (-webkit-text-stroke: 1px #000) {
+  .dv-word--r {
+    color: var(--fg);
+    -webkit-text-stroke: 0;
+  }
+}
+
+/* ── ПРИЗРАК: ЗАКОН ПРИВОДКИ ──────────────────────────────────────────────────
+   Стоит ПОСЛЕДНИМ и набран ДВУМЯ классами намеренно. transform и opacity
+   приходят ИЗВНЕ §03, из .plate-r / .plate-ghost: своего transform или
+   opacity на этом узле быть не может: он убил бы закон. Рубин здесь стоит
+   кеглем от 26 px и выше, то есть крупным набором. */
+.dv-word.dv-ghost {
+  position: absolute;
+  inset: 0;
+  --gain: 1.6;
+  color: var(--color-rubine);
+}
+.dv-word--r.dv-ghost {
+  color: transparent;
+  -webkit-text-stroke-color: var(--color-rubine);
+}
+
+/* ── СВЯЗКА ДЕЙСТВИЯ ──────────────────────────────────────────────────────────
+   Одна ссылка из двух половин вплотную: пара «плашка + квадрат со стрелкой»
+   читается как ОДНО действие, и разделять её на два контрола значит соврать
+   про её устройство. Отбивку сверху даёт хвостовой спейсер плюс этот margin. */
+.dv-cta {
+  /* ВЫСОТА ОБЪЯВЛЕНА ОДИН РАЗ. Квадрат со стрелкой берёт её же шириной:
+     так он остаётся квадратом при любой высоте связки, а не только при той,
+     на которую его однажды посчитали. 44 берётся не на глаз: это та же
+     цель нажатия, что уже стоит на метках форм выше (min-height: 44px),
+     и два органа управления одной полосы обязаны мериться одним числом. */
+  --dv-cta-h: 44px;
+  display: inline-flex;
+  align-items: stretch;
+  gap: 0;
+  height: var(--dv-cta-h);
+  margin-top: clamp(20px, 2vw, 40px);
+}
+/* Пилюля эталона становится плашкой: пилюль на этом сайте нет вовсе. */
+.dv-cta-pill {
+  display: inline-flex;
+  align-items: center;
+  padding-inline: clamp(16px, 1.25vw, 22px);
+  background: var(--color-chalk);
+  color: var(--color-ink);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.004em;
+  white-space: nowrap;
+  transition:
+    background-color 200ms var(--ease-ink),
+    color 200ms var(--ease-ink);
+}
+/* Чёрный кружок эталона на чёрном грунте исчез бы, поэтому инверсия идёт по
+   грунту: там тёмный на светлом, здесь акцент на тёмном. Та же геометрия и
+   тот же акцент, что у десяти квадратов выше, и связка читается продолжением
+   полосы, а не отдельной кнопкой. */
+.dv-cta-go {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--dv-cta-h);
+  background: var(--color-rubine);
+  color: var(--color-paper);
+}
+.dv-cta-go svg {
+  transition: transform 200ms var(--ease-ink);
+}
+@media (hover: hover) {
+  .dv-cta:hover .dv-cta-pill {
+    background: var(--color-rubine);
+    color: var(--color-paper);
+  }
+  .dv-cta:hover .dv-cta-go svg {
+    transform: translate3d(2px, -2px, 0);
+  }
+}
+
+/* ── WINDOWS HIGH CONTRAST ────────────────────────────────────────────────── */
+@media (forced-colors: active) {
+  /* Заливка обнуляется системой: контур обязан вернуть краску. */
+  .dv-word--r {
+    -webkit-text-fill-color: CanvasText;
+  }
+  /* Система гасит и цвет метки, и разницу волосяной с указателем: стоящую
+     форму обязан назвать не цвет, а подчёркивание. */
+  .dv-mount-tab[aria-selected='true'] {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  /* Рубин форсируется в Canvas: квадрат остался бы без границы. */
+  .dv-toggle {
+    outline: 1px solid ButtonText;
+  }
+  .dv-toggle::before,
+  .dv-toggle::after {
+    border-color: ButtonText;
+  }
+  .dv-cta-pill,
+  .dv-cta-go {
+    background: ButtonFace;
+    color: ButtonText;
+    outline: 1px solid ButtonText;
+  }
+  /* Белый лист форсируется в Canvas и слился бы с полосой. */
+  .dv-sheet {
+    outline: 1px solid CanvasText;
+  }
+}
+
+/* ── ДВИЖЕНИЕ ВЫКЛЮЧЕНО ──────────────────────────────────────────────────────
+   Единого глобального гашения в файле нет: у каждой полосы своя ветка. */
+@media (prefers-reduced-motion: reduce) {
+  .dv-item,
+  .dv-mount::after,
+  .dv-toggle::after,
+  .dv-cta-pill,
+  .dv-cta-go svg {
+    transition: none;
+  }
+  /* Закон уходящей краски здесь тот же, что и при полном движении: сведения
+     двух оттисков в одном кадре не бывает и здесь. */
+  .dv-panel,
+  .dv-print {
+    clip-path: none;
+    opacity: 0;
+    transition: none;
+  }
+  .dv-panel[data-on],
+  .dv-print[data-on] {
+    opacity: 1;
+    transition: opacity 200ms var(--ease-ink);
+  }
+}
+
+/* ── ПЛАНШЕТ: раскладка разворота перестаёт держаться ─────────────────────────
+   На 1024 правая колонка даёт 482 px, на 768 уже 361: двухколонник теряет
+   смысл. Полоса складывается в один столбец, и кегль идёт по новой мере.
+   Ступенька на 1024 всего 1,0 px: меняется не кегль, а раскладка. */
+@media (768px <= width < 1024px) {
+  .dv {
+    --dv-name: clamp(1.5rem, 3.1vw, 2.5rem);
+  }
+  .dv-sheet {
+    position: static;
+  }
+  .dv-sheet::before {
     display: none;
   }
-  .sticky-toggle {
+}
+
+/* ── ТЕЛЕФОН ─────────────────────────────────────────────────────────────────
+   Колонки под лист нет, поэтому он уходит наверх и липнет под шапку: так он
+   виден всё время, пока читают форму, и НИЧЕГО не вставляется в поток.
+   Закон приводки здесь выключен целиком (--miss: 0 и .plate-ghost display:
+   none стоят выше по файлу). Призраков на телефоне нет вовсе. */
+@media (width < 768px) {
+  .dv {
+    --dv-gap: 16px;
+    /* Пол clamp'а (26 px) держится до 375 и ломается на 360: «Интерьерная
+       печать» уходит там во вторую строку, а одна сломанная строка в столбце
+       из десяти убивает весь его ритм. Ниже 389 px кегль идёт по вьюпорту, и
+       мера остаётся больше набора на всех телефонах вплоть до 320. Строка при
+       этом 45 px, цель нажатия 44 держится. */
+    --dv-name: min(1.625rem, 6.6vw);
+    /* Мера здесь вдвое уже, а кегль описания вырос: число строк замерено
+       по самому длинному описанию на 320 px. Без резерва одна панель из десяти
+       была бы выше остальных, и полоса перестала бы быть постоянной. */
+    --dv-desc-lines: 3;
+  }
+  .dv-sheet {
     position: sticky;
     top: var(--topbar-h);
     z-index: 20;
-    background: var(--color-ink);
+    max-height: calc(100svh - var(--topbar-h) - 12vh);
+    overflow: hidden;
+    margin-inline: calc(var(--edge) * -1);
+    padding-inline: var(--edge);
   }
-}
-
-/* Ховер строки: призрак отъезжает дальше, линия становится рубиновой. */
-@media (hover: hover) {
-  .catalogue-row:hover {
-    border-bottom-color: var(--color-rubine);
+  /* 1:0,86 дало бы почти три сотни пикселей и вытолкнуло первую строку за
+     сгиб: лист становится полосой во всю ширину и уходит в оба реза. */
+  .dv-sheet::before {
+    display: none;
   }
-}
-
-/* Без JS каталог всё равно читается целиком. */
-.no-js .catalogue-panel {
-  position: static !important;
-  grid-column: 1 !important;
-  grid-row: auto !important;
-}
-.no-js .catalogue-panel li {
-  transform: none !important;
+  .dv-panel {
+    right: 0;
+  }
+  /* Половина полосы здесь это 170 px, и «МАТЕРИАЛ · ФОРМА R» в базовом кегле
+     уходит во вторую строку сиротской буквой. Кегль и разрядка идут по мере,
+     а слово и буква встают друг под друга, ровно в две строки
+     одной высоты. */
+  .dv-mount-tab {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 3px;
+    font-size: 0.6875rem;
+    letter-spacing: 0.05em;
+    padding-right: 8px;
+  }
+  /* Точка разделяет строку, а не столбик. */
+  .dv-mount-dot {
+    display: none;
+  }
+  .dv-cta {
+    height: 44px;
+  }
+  .dv-cta-go {
+    width: 44px;
+  }
 }
 
 /* Главное действие: содержимое уезжает, позади проступает контурная форма. */
@@ -662,4 +2159,175 @@
 }
 .main-action:active .main-action__inner {
   transform: translate3d(-14px, 8px, 0);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ЛЕНТА ЗНАКОВ ЗАКАЗЧИКОВ
+
+   ПРОГОН, а не карусель. Лист идёт через машину с постоянной скоростью, и
+   мимо проходят знаки, которые через неё уже прошли. Отсюда `linear` и ни
+   одной пружины: машина не разгоняется к середине и не тормозит к краю.
+
+   ЛЕНТУ НЕ ОБРЕЗАЕТ ГРАДИЕНТ. Край экрана на этом сайте это линия реза, а не
+   туман. Знак, доехавший до края, просто отрезан; растяжка в прозрачность
+   нарисовала бы третью краску там, где их две.
+
+   ЗНАК ПРИХОДИТ МАСКОЙ, А НЕ КАРТИНКОЙ. Альфа-маска в 300 px высотой
+   красится currentColor, то есть чужой логотип печатается формой K, не
+   приносит на лист своей краски и на чёрном грунте выворачивается сам.
+   Ширина считается из `--ar` (ширина маски ÷ 300 px), высота у всех общая:
+   знаки приведены по оптическому весу ещё в PNG, а не растянуты в CSS.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Ленту не отбивают ни линейки, ни подпись: её отбивает воздух. Так и велит
+   поправка v1.2: «отбивают разделы грунт и воздух». Грунт здесь отбить не
+   может, он с §01 общий, и вся работа ложится на поле. Сняв над лентой
+   подпись, поле пришлось поднять: строка «Печатали для» сама держала часть
+   отбивки, и без неё лента села бы на заголовок первого экрана. */
+.marks-band {
+  padding-top: clamp(64px, 6.8vw, 150px);
+}
+
+.marks {
+  /* Воздух ленты один и тот же сверху и снизу: полоса лежит на бумаге сама по
+     себе, и держать её на разных полях не за что. Просвет поднят вместе с
+     кеглем знаков: на мелком поле выросшие марки читались бы как строка,
+     набранная в обрез. */
+  --marks-pad: clamp(44px, 4.8vw, 92px);
+  /* --mark-h это высота КАНВЫ маски, а не самого знака. В канве 300 px знак
+     занимает от 128 до 235 px: так работает приведение по оптическому весу,
+     и общая ось у всех марок одна. Поэтому кегль ленты задан с запасом:
+     самая рослая марка (эмблема «Динамо») выходит в 0,78 от этого числа.
+
+     Просвет держится вровень со средней шириной знака (на 1440 px это 95
+     против 99). Он же держит и ДЛИНУ прогона: в строке стоит половина
+     списка, восемь-девять марок, и прогон обязан перекрывать кадр: на 1440
+     он в 1,15 формата, на 2160 уже в 1,02. Ужать просвет ради ритма нельзя,
+     не потеряв длину прогона. */
+  --mark-h: clamp(52px, 5.4vw, 92px);
+  --mark-gap: clamp(48px, 6.6vw, 142px);
+  /* Между строками стоит ИНТЕРЛИНЬЯЖ, а не отбивка: две строки это две
+     ветви одной ленты, и разделять их надо тем же, чем разделяют строки
+     текста. Поэтому число привязано к кеглю ленты, а не к экрану, и держится
+     заведомо меньше просвета между знаками (на 1440 это 39 против 95): по
+     вертикали теснее, чем по горизонтали, значит строки читаются одним
+     блоком, а не двумя полосами. */
+  --mark-lead: calc(var(--mark-h) * 0.5);
+  position: relative;
+  overflow: hidden;
+  padding-block: var(--marks-pad);
+}
+
+/* Две ветви одной ленты. Обёртка общая для обеих форм: у призрака высота
+   задана `inset`, и совпасть с формой K он может только потому, что собран из
+     тех же кегля и интерлиньяжа: ни одного числа своего у него нет. */
+.marks-lines {
+  display: flex;
+  flex-direction: column;
+  row-gap: var(--mark-lead);
+}
+
+/* Форма R: тот же прогон под чёрным. На стоящем листе его нет, opacity
+   считается из --miss, а на разгоне из-под каждой марки выезжает след.
+   Усиление своё: на знаке в 41 px общий уход полосы не прочитался бы. */
+.marks-ghost {
+  --gain: 0.9;
+  position: absolute;
+  inset: var(--marks-pad) 0;
+  z-index: 0;
+  color: var(--color-rubine);
+  pointer-events: none;
+}
+
+/* Форма K стоит НАД формой R. Порядок красок нельзя оставлять на волю
+   потока: абсолютный узел рисуется поверх статичного, и рубин закрыл бы
+   чёрное. Оттиск всегда снизу вверх: сначала R, потом K. */
+.marks > .marks-lines {
+  position: relative;
+  z-index: 1;
+}
+
+/* Ход ленты. Рабочая ветвь едет ровно на один прогон, треть своей ширины при
+   трёх прогонах в дорожке: на фазе 1 второй прогон стоит там же, где стоял
+   первый, и шва нет. Трансформ хода живёт здесь, трансформ ухода приводки
+   на обёртке выше: свойство одно, и на одном узле они перебили бы друг друга.
+
+   ПОЧЕМУ НЕ @keyframes. Ход ленты больше не задан временем: скорость подачи
+   пишет прокрутка, и на развороте она меняет знак. Ни animation-duration, ни
+   animation-direction нельзя тронуть в середине без скачка: CSS-анимация
+   пересчитает прогресс от новой длительности и лента дёрнется. Поэтому фазу
+   копит единственный rAF-цикл и кладёт сюда числом: смена скорости и переход
+   через ноль остаются непрерывными по построению. */
+.marks-track {
+  display: flex;
+  width: max-content;
+  /* Доля дорожки, приходящаяся на ОДИН прогон, и есть весь шаг хода. Число
+     прогонов приходит из разметки (`RUNS` в ClientMarks.tsx): считать их
+     здесь второй раз значило бы завести вторую правду. */
+  --run-span: calc(100% / var(--run-copies, 3));
+  transform: translate3d(calc(var(--run-p) * var(--run-span) * -1), 0, 0);
+  will-change: transform;
+}
+
+/* ОБРАТНАЯ ВЕТВЬ идёт навстречу: та же фаза, тот же период, обратный знак.
+   Шва нет по той же причине, что и у рабочей: дорожка стоит на прогон назад
+   при фазе 0 и приходит в ноль при фазе 1, а это один и тот же кадр,
+   сомкнутый с другого конца.
+
+   Фаза на обе ветви ОДНА намеренно. Ход ленты пишет прокрутка, и на развороте
+   обе строки обязаны развернуться в одном кадре; второй счётчик разошёлся бы
+   с первым на первом же переходе через ноль. Скорости при этом равны не по
+   уговору, а по длине: ветви несут разные половины списка, и половины эти
+   приведены по оптическому весу: на 2160 и выше прогоны совпадают до
+   пикселя, на 1440 расходятся на 25 px из 1640. */
+.marks-back {
+  transform: translate3d(calc(var(--run-p) * var(--run-span) - var(--run-span)), 0, 0);
+}
+
+.marks-run {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--mark-gap);
+  /* Поле справа равно просвету: на стыке прогонов шаг не сбивается. */
+  padding-inline-end: var(--mark-gap);
+}
+.marks-item {
+  display: flex;
+  align-items: center;
+}
+.marks-mark {
+  display: block;
+  flex: none;
+  height: var(--mark-h);
+  width: calc(var(--mark-h) * var(--ar));
+  background: currentColor;
+  -webkit-mask: var(--mask) center / contain no-repeat;
+  mask: var(--mask) center / contain no-repeat;
+}
+
+/* При отключённом движении лента не едет вовсе и становится обычной
+   прокручиваемой строкой: все знаки обязаны остаться достижимыми. Дубли
+   прогона при этом лишние: цикла больше нет. Это же и есть механизм,
+   которого требует WCAG 2.2.2: rAF-цикл не стартует, фаза не копится, лента
+   стоит и листается руками.
+
+   ОБЕ СТРОКИ ОСТАЮТСЯ. Пока ветви несли один и тот же список, вторую здесь
+   снимали как повтор; теперь каждая несёт свою половину, и снять её значило
+   бы отнять у читателя девять марок из семнадцати. */
+@media (prefers-reduced-motion: reduce) {
+  .marks {
+    overflow-x: auto;
+  }
+  .marks-track {
+    transform: none;
+    will-change: auto;
+  }
+  .marks-ghost {
+    display: none;
+  }
+  .marks-track > .marks-run + .marks-run {
+    display: none;
+  }
 }

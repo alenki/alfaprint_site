@@ -15,14 +15,14 @@ export type Shift = {
   promise: string;
   /** Обратный отсчёт: до конца смены или до приёма. */
   countdown: string | null;
-  /** Индекс дня недели по МСК — чтобы подсветить строку в часах. */
+  /** Индекс дня недели по МСК, чтобы подсветить строку в часах. */
   day: number;
   open: boolean;
 };
 
 /** Нейтральный вариант для SSR: одинаков на сервере и до гидратации. */
 export const NEUTRAL_SHIFT: Shift = {
-  promise: 'Заявка до 12:00 — тираж сегодня · тираж от одного экземпляра',
+  promise: 'Заявка до 12:00, тираж сегодня · тираж от одного экземпляра',
   countdown: null,
   day: -1,
   open: false,
@@ -81,15 +81,15 @@ export function getShift(now = new Date()): Shift {
     const untilOpen = minutes < open ? open - minutes : 24 * 60 - minutes + open;
     return {
       promise: `Цех закрыт · заявку примем сейчас, запустим в ${today.open}`,
-      countdown: `До приёма — ${fmtLeft(untilOpen)}`,
+      countdown: `До приёма: ${fmtLeft(untilOpen)}`,
       day,
       open: false,
     };
   }
 
-  const countdown = `До конца смены — ${fmtLeft(close - minutes)}`;
+  const countdown = `До конца смены: ${fmtLeft(close - minutes)}`;
 
-  // Суббота — короткая смена.
+  // Суббота: короткая смена.
   if (day === 6) {
     return {
       promise: `Короткая смена до ${today.close} · срочное берём`,
@@ -101,7 +101,7 @@ export function getShift(now = new Date()): Shift {
 
   if (minutes < 12 * 60) {
     return {
-      promise: 'Заявка до 12:00 — тираж сегодня · тираж от одного экземпляра',
+      promise: 'Заявка до 12:00, тираж сегодня · тираж от одного экземпляра',
       countdown,
       day,
       open: true,

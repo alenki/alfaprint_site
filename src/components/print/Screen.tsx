@@ -5,8 +5,8 @@ import { drawScreen, drawWhenIdle } from '@/lib/halftone';
 import { cn } from '@/lib/cn';
 
 /**
- * ОДИН РАСТРОВЫЙ ЭКРАН. Рисуется ровно один раз, при ресайзе — с дебаунсом.
- * Форма K идёт под 45°, форма R — под 15°. Разница углов и даёт розетку.
+ * ОДИН РАСТРОВЫЙ ЭКРАН. Рисуется ровно один раз, при ресайзе с дебаунсом.
+ * Форма K идёт под 45°, форма R под 15°. Разница углов и даёт розетку.
  */
 export function Screen({
   pitch,
@@ -15,6 +15,7 @@ export function Screen({
   word = 'АЛЬФА',
   fit,
   anchorY,
+  zoom,
   className,
 }: {
   pitch: number;
@@ -23,6 +24,7 @@ export function Screen({
   word?: string;
   fit?: number;
   anchorY?: number;
+  zoom?: number;
   className?: string;
 }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -31,7 +33,7 @@ export function Screen({
     const canvas = ref.current;
     if (!canvas) return;
 
-    const paint = () => drawScreen(canvas, { pitch, angle, colour, word, fit, anchorY });
+    const paint = () => drawScreen(canvas, { pitch, angle, colour, word, fit, anchorY, zoom });
     drawWhenIdle(paint);
 
     let t: ReturnType<typeof setTimeout>;
@@ -45,7 +47,7 @@ export function Screen({
       clearTimeout(t);
       ro.disconnect();
     };
-  }, [pitch, angle, colour, word, fit, anchorY]);
+  }, [pitch, angle, colour, word, fit, anchorY, zoom]);
 
   return <canvas ref={ref} className={cn('font-display h-full w-full', className)} aria-hidden />;
 }

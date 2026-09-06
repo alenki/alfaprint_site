@@ -5,36 +5,47 @@ import { CityFilm } from '@/components/print/CityFilm';
 import { EmbossWord } from '@/components/print/EmbossWord';
 import { Tick } from '@/components/chrome/Mark';
 import { useShift } from '@/components/ui/ShiftStatus';
+import { Section, Sheet, Grid } from '@/components/layout/Sheet';
 import { HOURS_DISPLAY } from '@/content/hours';
-import { COMPANY, CONTACTS, IMPRINT } from '@/content/site';
+import { COMPANY, CONTACTS, IMPRINT, SECTIONS } from '@/content/site';
 
 /**
  * §08 · ВЫХОДНЫЕ ДАННЫЕ
  *
- * Не строка копирайта, а колофон — техническая правда о самой странице.
+ * Не строка копирайта, а колофон, техническая правда о самой странице.
  * Ровно та выходная полоса, которую несёт каждая напечатанная книга, и
  * единственная форма подвала, допустимая для типографии.
  *
- * Реквизиты выводятся только если клиент их прислал: ИНН и ОГРНИП —
+ * Колофон набран во весь формат: ключ на левом резе, значение на правом,
+ * линия между ними идёт от края до края. Прежняя редакция жала его в две
+ * узкие колонки посреди листа, а это ровно та таблица, которой формат
+ * во весь лист идёт на пользу больше всего.
+ *
+ * Реквизиты выводятся только если клиент их прислал: ИНН и ОГРНИП это
  * юридически значимые данные, выдумывать их нельзя.
  */
 export function VykhodnyeDannye() {
   const shift = useShift();
   const year = new Date().getFullYear();
+  const S = SECTIONS[7];
+
+  const half = Math.ceil(IMPRINT.colophon.length / 2);
+  const columns = [IMPRINT.colophon.slice(0, half), IMPRINT.colophon.slice(half)];
 
   return (
-    <footer
-      id="vykhodnye-dannye"
-      data-section-ground="ink"
-      style={{ ['--gain' as string]: 0.5 }}
-      className="ground-ink relative overflow-hidden pt-[var(--section-pad)]"
+    <Section
+      as="footer"
+      id={S.id}
+      ground="ink"
+      gain={0.5}
+      className="overflow-hidden pt-[var(--section-pad)]"
     >
-      <div className="trim">
-        {/* ── Цех ────────────────────────────────────────────────────────── */}
-        <div className="cols gap-y-14">
-          <div className="col-span-4 md:col-span-5">
+      <Sheet>
+        {/* ── Цех ──────────────────────────────────────────────────────── */}
+        <Grid className="gap-y-14">
+          <div className="col-span-4 md:col-span-4">
             <PrintReveal as="div">
-              <p className="font-display text-[clamp(1.75rem,3.2vw,3rem)] font-bold leading-[1.05] tracking-[-0.02em] text-[var(--color-chalk)]">
+              <p className="font-display fg text-[clamp(1.875rem,3.4vw,4.25rem)] font-bold leading-[1.02] tracking-[-0.024em]">
                 {IMPRINT.addressLines.map((l) => (
                   <span key={l} className="block">
                     {l}
@@ -50,7 +61,7 @@ export function VykhodnyeDannye() {
                   <li
                     key={h.days}
                     className="t-mono flex items-center gap-2.5"
-                    style={{ color: today ? 'var(--color-chalk)' : 'var(--color-chalk-70)' }}
+                    style={{ color: today ? 'var(--fg)' : 'var(--fg-70)' }}
                   >
                     <span
                       className="inline-block h-[5px] w-[5px] shrink-0 rounded-full"
@@ -63,13 +74,11 @@ export function VykhodnyeDannye() {
               })}
             </ul>
 
-            <p className="t-micro mt-6 leading-relaxed text-[var(--color-chalk-56)]">
-              {IMPRINT.terms}
-            </p>
+            <p className="t-micro fg-56 mt-6 leading-relaxed">{IMPRINT.terms}</p>
 
             <a
               href={CONTACTS.phoneHref}
-              className="link-rule mt-8 inline-block text-[22px] font-medium text-[var(--color-chalk)]"
+              className="link-rule fg mt-8 inline-block text-[22px] font-medium"
             >
               {CONTACTS.phone}
             </a>
@@ -82,9 +91,12 @@ export function VykhodnyeDannye() {
                     href={c.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="link-rule inline-flex items-center gap-2.5 text-[var(--color-chalk)]"
+                    className="link-rule fg inline-flex items-center gap-2.5"
                   >
-                    <Tick className="h-2.5 w-3 shrink-0 text-[var(--color-rubine)]" strokeWidth={3} />
+                    <Tick
+                      className="h-2.5 w-3 shrink-0 text-[var(--color-rubine)]"
+                      strokeWidth={3}
+                    />
                     {c.label}
                   </a>
                 </li>
@@ -92,44 +104,47 @@ export function VykhodnyeDannye() {
             </ul>
           </div>
 
-          <div className="col-span-4 md:col-span-6 md:col-start-7">
+          <div className="col-span-4 md:col-span-7 md:col-start-6">
             <CityFilm />
           </div>
-        </div>
+        </Grid>
 
-        {/* ── Колофон ────────────────────────────────────────────────────── */}
-        <div className="mt-[88px] h-px w-full bg-[var(--color-chalk-30)]" />
-
-        <p className="mt-10 text-[13px] font-medium text-[var(--color-chalk-70)]">
+        {/* ── Колофон ──────────────────────────────────────────────────── */}
+        <p className="rule-t fg-70 mt-[clamp(56px,6vw,128px)] pt-8 text-[13px] font-medium">
           {COMPANY.legalName} · {COMPANY.name}
           {COMPANY.legal ? ` · ${COMPANY.legal}` : ''}
         </p>
 
-        <dl className="mt-8 grid grid-cols-1 gap-x-[var(--gutter)] gap-y-2 md:grid-cols-2">
-          {IMPRINT.colophon.map(([k, v]) => (
-            <div key={k} className="flex justify-between gap-6 md:justify-start">
-              <dt className="t-micro w-[46%] shrink-0 text-[var(--color-chalk-56)] md:w-[13rem]">
-                {k}
-              </dt>
-              <dd className="t-micro text-right text-[var(--color-chalk-56)] md:text-left">{v}</dd>
-            </div>
+        <div className="mt-8 grid grid-cols-1 gap-x-[clamp(24px,4vw,96px)] lg:grid-cols-2">
+          {columns.map((col, ci) => (
+            <dl key={ci}>
+              {col.map(([k, v]) => (
+                <div
+                  key={k}
+                  className="rule-soft-b flex items-baseline justify-between gap-6 py-2.5"
+                >
+                  <dt className="t-micro fg-56 shrink-0">{k}</dt>
+                  <dd className="t-micro fg-70 text-right">{v}</dd>
+                </div>
+              ))}
+            </dl>
           ))}
-        </dl>
-      </div>
+        </div>
+      </Sheet>
 
-      {/* ── Слепое тиснение во весь вылет ──────────────────────────────── */}
-      <div className="mt-16 md:mt-24">
+      {/* ── Слепое тиснение во весь вылет ────────────────────────────────── */}
+      <div className="mt-[clamp(48px,6vw,140px)]">
         <EmbossWord />
       </div>
 
-      <div className="trim flex items-center justify-between gap-6 pb-[calc(var(--strip-h)+var(--striplabel-h)+16px)] pt-8">
-        <p className="t-micro text-[var(--color-chalk-56)]">
-          © {COMPANY.since}—{year} · {COMPANY.legalName} · {COMPANY.city}
+      <Sheet className="flex items-center justify-between gap-6 pb-[calc(var(--strip-h)+16px)] pt-8">
+        <p className="t-micro fg-56">
+          © {COMPANY.since}…{year} · {COMPANY.legalName} · {COMPANY.city}
         </p>
-        <a href="#pervyi-progon" className="t-micro link-rule text-[var(--color-chalk-56)]">
+        <a href="#pervyi-progon" className="t-micro link-rule fg-56">
           Наверх ↑
         </a>
-      </div>
-    </footer>
+      </Sheet>
+    </Section>
   );
 }

@@ -1,0 +1,250 @@
+[
+ {
+  "slug": "gazprom-mrg",
+  "name": "Газпром межрегионгаз Нальчик",
+  "raster": "gazprom-mrg.png",
+  "seen": "подарочный набор: ежедневник, пауэрбанк, ручка",
+  "gallery": [
+   "p000",
+   "p004",
+   "p162",
+   "p165",
+   "p204",
+   "p205",
+   "p206",
+   "v021"
+  ],
+  "origin": "https://www.mrgkbr.ru/wp-content/uploads/2017/08/LOGO-GMN.%D1%81%D0%B8%D0%BD%D0%B8%D0%B9-e1503497087545.jpg",
+  "from": "https://www.mrgkbr.ru/",
+  "note": "Медиабиблиотека самого mrgkbr.ru, файл «LOGO GMN.синий». Именно нальчикская версия локапа, а не федеральный знак «Газпрома» и не АО «Газпром газораспределение Нальчик» это другая организация."
+ },
+ {
+  "slug": "istoki",
+  "name": "Ресторан «Истоки»",
+  "raster": "istoki.png",
+  "seen": "винная и алкогольная карта",
+  "gallery": [
+   "p282",
+   "v016"
+  ],
+  "origin": "https://avatars.mds.yandex.net/get-altay/17765111/2a0000019d2a4c0749964f3d41053feec436/orig",
+  "from": "https://yandex.ru/maps/org/istoki/89230305347/",
+  "note": "Логотип с подтверждённой карточки заведения на Яндекс.Картах. Марка САМА является плашкой с вывороткой: тёмный круг, из которого выбито «исmоки», поэтому `invert` здесь НЕ ставится."
+ },
+ {
+  "slug": "moi-biznes",
+  "name": "Мойбизнес.рф",
+  "raster": "moi-biznes.png",
+  "seen": "ролл-ап конференции, пауэрбанк",
+  "gallery": [
+   "p145",
+   "p215",
+   "p268",
+   "v018",
+   "v038"
+  ],
+  "origin": "https://xn--90aifddrld7a.xn--p1ai/local/templates/mybiz/images/logo.svg",
+  "from": "https://xn--90aifddrld7a.xn--p1ai/",
+  "note": "Шапка мойбизнес.рф. На ролл-апе p145 знак стоит рядом с Минэкономразвития КБР."
+ },
+ {
+  "slug": "zhk-kvartal",
+  "name": "ЖК «Квартал»",
+  "raster": "zhk-kvartal.png",
+  "seen": "кубок и медали «Кубок ЖК Квартал»",
+  "gallery": [
+   "p177",
+   "p178",
+   "p179",
+   "p180",
+   "p181",
+   "p214",
+   "v030"
+  ],
+  "origin": "https://t.me/kvartal_nalchik, аватар канала (cdn4.telesco.pe)",
+  "from": "https://t.me/kvartal_nalchik/13",
+  "note": "Своего сайта у комплекса нет; знак взят с аватара его собственного канала. Белая линейная графика по чёрному, отсюда `invert`.",
+  "invert": true
+ },
+ {
+  "slug": "rosmolodezh",
+  "name": "Росмолодёжь",
+  "raster": "rosmolodezh.png",
+  "seen": "ежедневник форума, ручки",
+  "gallery": [
+   "p227",
+   "p237",
+   "p238"
+  ],
+  "origin": "https://fadm.gov.ru/local/templates/fadmgovru/assets/img/globa/logo.svg",
+  "from": "https://fadm.gov.ru/",
+  "note": "Брендовый словесный знак из пресс-кита fadm.gov.ru (не геральдическая эмблема ведомства: на форумной сувенирке стоит именно бренд). Кислотно-жёлтый #DAEF14: по яркости почти бумага, поэтому маска считается по тёмному каналу."
+ },
+ {
+  "slug": "dinamo",
+  "name": "Общество «Динамо»",
+  "raster": "dinamo.png",
+  "seen": "вымпелы всероссийских соревнований по дзюдо",
+  "gallery": [
+   "p197"
+  ],
+  "origin": "https://www.dynamo.su/local/templates/dynamo/assets/images/symbols/dynamo-new.svg",
+  "from": "https://www.dynamo.su/",
+  "note": "Знак с сайта самого Общества «Динамо»."
+ },
+ {
+  "slug": "fazenda07",
+  "name": "Fazenda 07 Family Market",
+  "raster": "fazenda07.png",
+  "seen": "этикетки на упаковку",
+  "gallery": [
+   "p254",
+   "v035"
+  ],
+  "origin": "https://fazenda07.ru/catalog/view/theme/default/image/logo.svg",
+  "from": "https://fazenda07.ru/",
+  "note": "Вектор из шапки собственного интернет-магазина."
+ },
+ {
+  "slug": "spartak",
+  "name": "Спартак",
+  "raster": "spartak.png",
+  "seen": "футболки турнира по дзюдо",
+  "gallery": [
+   "p193",
+   "p194",
+   "p196"
+  ],
+  "origin": "https://upload.wikimedia.org/wikipedia/commons/3/3e/HC_Spartak_Moscow_Logo.svg",
+  "from": "https://commons.wikimedia.org/",
+  "note": "Ромб общества с литерой С, сверено с оттиском на груди футболки в p193. Не футбольный клуб: у того в знаке мяч."
+ },
+ {
+  "slug": "le-rucci",
+  "name": "Le Rucci",
+  "raster": "le-rucci.png",
+  "seen": "акриловый QR-стенд, визитки",
+  "gallery": [
+   "p203",
+   "v020"
+  ],
+  "origin": "https://lerucci.ru/image/catalog/596703.jpg",
+  "from": "https://lerucci.ru/",
+  "note": "Знак со страницы «О компании» собственного магазина."
+ },
+ {
+  "slug": "pervye",
+  "name": "Движение Первых",
+  "raster": "pervye.png",
+  "seen": "акриловые плакетки, медали, ручки",
+  "gallery": [
+   "p186",
+   "p209",
+   "p212",
+   "p279",
+   "p319",
+   "p324",
+   "v029",
+   "v109"
+  ],
+  "origin": "https://upload.wikimedia.org/wikipedia/commons/f/fc/Logo_of_the_Movement_of_the_First.svg",
+  "from": "https://commons.wikimedia.org/",
+  "note": "В галерее встречаются и суббренды: «Бутса Первых», «Наставник Первых»; в ленте стоит головной знак."
+ },
+ {
+  "slug": "kiberone",
+  "name": "KIBERone",
+  "raster": "kiberone.png",
+  "seen": "ролл-ап и промо-стойка",
+  "gallery": [
+   "p195",
+   "p228"
+  ],
+  "origin": "https://kiber-one.com/img/redesign2/logo.svg",
+  "from": "https://nalchik.kiber-one.com/",
+  "note": "Общий для всех городов знак франшизы; нальчикский поддомен отдаёт тот же файл. Серая рамка локапа снята `deframe`: в одну краску она стала бы плашкой."
+ },
+ {
+  "slug": "cheget-star",
+  "name": "Отель Cheget Star",
+  "raster": "cheget-star.png",
+  "seen": "меню завтраков и ресторана",
+  "gallery": [
+   "p352",
+   "p353",
+   "p354"
+  ],
+  "origin": "https://cheget-star.ru/img/a02f003b3b6555ea.webp",
+  "from": "https://cheget-star.ru/",
+  "note": "Отель в Терсколе, Приэльбрусье. Знак отрисован светлым по прозрачному, силуэтом взят альфа-канал исходника."
+ },
+ {
+  "slug": "natsproekty",
+  "name": "Национальные проекты России",
+  "raster": "natsproekty.png",
+  "seen": "ролл-ап баннер, ручки",
+  "gallery": [
+   "p145",
+   "p215",
+   "v038"
+  ],
+  "origin": "https://logo-teka.com/wp-content/uploads/2025/09/national-projects-of-russia-logo.png",
+  "from": "https://logo-teka.com/nacionalnye-proekty-rossii/",
+  "note": "Бренд образца 2019…2024, тот самый, что стоит на ролл-апе p145. НЕ старая эмблема «Приоритетные национальные проекты» 2006 года и НЕ нынешний знак «По решению Президента», обе были отвергнуты при сверке. Марка сама является плашкой с вывороткой, `invert` не ставится."
+ },
+ {
+  "slug": "foster",
+  "name": "Foster",
+  "raster": "foster.png",
+  "seen": "визитки на soft-touch картоне",
+  "gallery": [
+   "p158",
+   "p161",
+   "p211"
+  ],
+  "origin": "https://avatars.mds.yandex.net/get-altay/11924971/2a000001915fcd90c5fc1b18ec52f8d27a80/XXL",
+  "from": "https://yandex.ru/maps/org/foster/206180719769/",
+  "note": "Спортивный магазин. Монограмма FR светлым по чёрной плашке, отсюда `invert`.",
+  "invert": true
+ },
+ {
+  "slug": "daimond",
+  "name": "Daimond",
+  "raster": "daimond.png",
+  "seen": "буклет, бланк, визитки",
+  "gallery": [
+   "p149",
+   "p185",
+   "v032"
+  ],
+  "origin": "https://avatars.mds.yandex.net/get-maps-adv-crm/3927175/2a0000018817f3d88b37aef57204f500a2f0/orig",
+  "from": "https://okna-daimond.clients.site/",
+  "note": "Оконные и дверные системы. Написание через AI: DAIMOND, не DIAMOND: так набрано и на визитке в галерее, и в фирменном знаке. Светлое по чёрному, `invert`.",
+  "invert": true
+ },
+ {
+  "slug": "volrota",
+  "name": "Волонтёрская рота",
+  "raster": "volrota.png",
+  "seen": "ролл-ап баннер",
+  "gallery": [
+   "p222"
+  ],
+  "origin": "https://volrota.ru/wp-content/uploads/2020/07/rota_logo-2.png",
+  "from": "https://volrota.ru/",
+  "note": "Знак отрисован белым по прозрачному: на белой бумаге он бы исчез, поэтому силуэтом взят альфа-канал исходника."
+ },
+ {
+  "slug": "avenue-hotel",
+  "name": "Бутик-отель «Avenue»",
+  "raster": "avenue-hotel.png",
+  "seen": "деревянные брелоки для ключей",
+  "gallery": [
+   "p303",
+   "v005"
+  ],
+  "origin": "https://hotel-avenue.ru/_next/image?url=http%3A%2F%2F127.0.0.1%3A8090%2Fapi%2Ffiles%2F87wnq8ztmirq1ww%2Fdewiyrgcatsyhyx%2Fnew_06_OAqfKMZOK4.png&w=1920&q=100",
+  "from": "https://hotel-avenue.ru/",
+  "note": "Знак из шапки собственного сайта отеля."
+ }
+]

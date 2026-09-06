@@ -2,10 +2,10 @@
 
 import { PrintReveal } from '@/components/type/PrintReveal';
 import { WorkTile } from '@/components/print/WorkTile';
-import { Rosette } from '@/components/print/Rosette';
 import { TrimMarks } from '@/components/chrome/TrimMarks';
+import { Section, Sheet, Grid } from '@/components/layout/Sheet';
 import { WORKS } from '@/content/works';
-import { RASTR } from '@/content/site';
+import { RASTR, SECTIONS } from '@/content/site';
 
 /**
  * §04 · РАСТР
@@ -14,79 +14,47 @@ import { RASTR } from '@/content/site';
  * сказано вслух: заявленный плейсхолдер перестаёт быть дырой и становится
  * позицией.
  *
- * Единственное место, где два вылетных блока идут подряд, — сознательный
- * переход от спуска к лупе.
+ * Спуск: двойная плитка занимала весь экран целиком, визитка 90×50 мм
+ * показывалась в полтора метра. Колонок теперь четыре на широком листе,
+ * три на среднем и две на телефоне: плитка вернулась к масштабу изделия.
  */
 export function Rastr() {
-  return (
-    <section
-      id="rastr"
-      data-section-ground="paper-hi"
-      style={{ ['--gain' as string]: 1 }}
-      className="ground-paper-hi pt-[var(--section-pad)]"
-    >
-      <div className="trim cols gap-y-6">
-        <div className="col-span-4 md:col-span-8">
-          <PrintReveal as="div">
-            <h2 className="t-h2">
-              {RASTR.heading.map((l) => (
-                <span key={l} className="block">
-                  {l}
-                </span>
-              ))}
-            </h2>
-          </PrintReveal>
-        </div>
-        <PrintReveal
-          as="p"
-          delay={0.034}
-          className="t-micro col-span-4 self-end leading-relaxed text-[var(--color-ink-62)] md:col-span-3 md:col-start-10"
-        >
-          {RASTR.note}
-        </PrintReveal>
-      </div>
+  const S = SECTIONS[3];
 
-      {/* ── Спуск: плитки делят общую волосяную линию, зазора между ними нет ── */}
-      <div className="relative mt-12 md:mt-16">
-        <TrimMarks className="z-10 text-[var(--color-ink-32)]" />
-        <div className="grid grid-cols-2 border-l border-t border-[var(--color-ink-32)] md:grid-cols-3">
+  return (
+    <Section id={S.id} ground="paper-hi" gain={1} className="py-[var(--section-pad)]">
+      <Sheet>
+        <Grid className="items-end gap-y-6">
+          <div className="col-span-4 md:col-span-6">
+            <PrintReveal as="div">
+              <h2 className="t-h2">
+                {RASTR.heading.map((l) => (
+                  <span key={l} className="block">
+                    {l}
+                  </span>
+                ))}
+              </h2>
+            </PrintReveal>
+          </div>
+          <PrintReveal
+            as="p"
+            delay={0.034}
+            className="t-micro fg-56 col-span-4 leading-relaxed md:col-span-4 md:col-start-9 md:text-right"
+          >
+            {RASTR.note}
+          </PrintReveal>
+        </Grid>
+      </Sheet>
+
+      {/* ── Спуск: край в край, плитки делят общую волосяную линию ────────── */}
+      <div className="relative mt-[clamp(40px,5vw,104px)]">
+        <TrimMarks className="z-10 text-[var(--rule)]" />
+        <div className="grid grid-cols-2 border-l border-t border-[var(--rule)] md:grid-cols-3 lg:grid-cols-4">
           {WORKS.map((work, i) => (
             <WorkTile key={work.id} work={work} index={i} />
           ))}
         </div>
       </div>
-
-      {/* ── Розетка: тот же кадр под лупой ─────────────────────────────────── */}
-      <div className="relative h-[78vh] w-full md:h-[92vh]">
-        <Rosette />
-        <div className="pointer-events-none absolute inset-0">
-          <div className="trim cols h-full items-start pt-[clamp(40px,7vh,96px)]">
-            <div className="col-span-4 md:col-span-8">
-              <PrintReveal as="div">
-                <h2 className="t-h2">
-                  {RASTR.rosetteHeading.map((l) => (
-                    <span key={l} className="block">
-                      {l}
-                    </span>
-                  ))}
-                </h2>
-              </PrintReveal>
-              <div className="mt-7 space-y-4">
-                {RASTR.rosetteBody.map((p, i) => (
-                  <PrintReveal
-                    key={i}
-                    as="p"
-                    delay={0.034 * (i + 1)}
-                    className="t-body text-[var(--color-ink-70)]"
-                  >
-                    {p}
-                  </PrintReveal>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    </Section>
   );
 }

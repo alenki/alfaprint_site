@@ -1,43 +1,46 @@
-'use client';
-
-import { PrintReveal } from '@/components/type/PrintReveal';
-import { Catalogue } from '@/components/ui/Catalogue';
-import { CATALOGUE_LEAD } from '@/content/catalogue';
+import { Formy } from '@/components/ui/Formy';
+import { Section } from '@/components/layout/Sheet';
+import { SECTIONS } from '@/content/site';
 
 /**
  * §03 · ДВЕ ФОРМЫ
  *
- * Смысловое ядро направления и коммерческое ядро страницы: каталог разложен
- * не по прайсу, а по природе изображения. Форма K — там, где изображение
- * делает краска. Форма R — там, где его делает сам материал.
+ * Смысловое ядро страницы: каталог разложен не по прайсу, а по природе
+ * изображения. Форма K это там, где изображение делает краска. Форма R это
+ * там, где его делает сам материал, и краски там нет вовсе.
+ *
+ * ПОЛОСА СТАЛА РАЗВОРОТОМ. Слева колонцифра, заголовок, лид и белый лист
+ * оттиска; справа ПЯТЬ строк, одна из которых раскрыта. Отдельного Sheet с
+ * заголовком над разворотом больше нет: заголовок принадлежит левой колонке,
+ * а не полосе целиком, и стоять над обеими ему незачем.
+ *
+ * НА МАШИНЕ СТОИТ ОДНА ФОРМА. Десять строк разом это не каталог, а список:
+ * десять целей под курсором глаз не держит. Полоса показывает одну форму,
+ * вторая приходит сменой формы, и переключатель это прежние две метки
+ * групп, ничего сверх них.
+ *
+ * РАСКРЫТИЕ ЕСТЬ ЗАДОКУМЕНТИРОВАННОЕ ИСКЛЮЧЕНИЕ из запрета гармошек, и оно
+ * куплено ценой: панель вынута из потока, её высота постоянна, место под неё
+ * держат сдвиг строк ниже и хвостовой спейсер. Сумма высот полосы одинакова
+ * во всех пяти состояниях обеих форм, поэтому НИЧЕГО НЕ ВЫТАЛКИВАЕТСЯ: ни
+ * при раскрытии, ни при смене формы, ни в документе, ни под курсором, ни для
+ * Lenis, ни для наблюдателя грунта. Запрет остаётся в силе для всего
+ * остального сайта.
+ *
+ * Что снято с полосы прежней редакции: десять волосяных линеек, десять
+ * квадратов «в наряд», полоса материалов, сноска и строка о цене. Наряд ушёл
+ * из §03 целиком и переезжает на отдельную полосу-конструктор; §07 «В печать»
+ * не тронут: его форма работает и с пустым списком позиций.
+ *
+ * overflow-hidden снят намеренно: overflow у предка молча выключает
+ * position: sticky, а лист оттиска липкий.
  */
 export function DveFormy() {
-  return (
-    <section
-      id="dve-formy"
-      data-section-ground="ink"
-      style={{ ['--gain' as string]: 1 }}
-      className="ground-ink ink-warmth relative overflow-hidden py-[var(--section-pad)]"
-    >
-      <div className="trim relative">
-        <div className="cols gap-y-8">
-          <div className="col-span-4 md:col-span-9">
-            <PrintReveal as="div">
-              <h2 className="t-h2 text-[var(--color-chalk)]">
-                <span className="block">Всё, что мы умеем,</span>
-                <span className="block">делится на две формы.</span>
-              </h2>
-            </PrintReveal>
-          </div>
-          <div className="col-span-4 self-end md:col-span-3">
-            <span className="sr-only">{CATALOGUE_LEAD}</span>
-          </div>
-        </div>
+  const S = SECTIONS[2];
 
-        <div className="mt-10 md:mt-14">
-          <Catalogue />
-        </div>
-      </div>
-    </section>
+  return (
+    <Section id={S.id} ground="ink" gain={1} className="dv ink-warmth py-[var(--section-pad)]">
+      <Formy />
+    </Section>
   );
 }

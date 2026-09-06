@@ -10,7 +10,7 @@ import { getShift, NEUTRAL_SHIFT, type Shift } from '@/lib/clock';
  * а не по часам посетителя: гость из Новосибирска не должен видеть
  * «закрыто» в три часа дня.
  *
- * На сервере выводится нейтральный вариант — гидратация не ломается.
+ * На сервере выводится нейтральный вариант, гидратация не ломается.
  */
 export function useShift() {
   const [shift, setShift] = useState<Shift>(NEUTRAL_SHIFT);

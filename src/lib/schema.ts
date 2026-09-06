@@ -7,7 +7,7 @@ import { HOURS_CONFIRMED } from '@/content/hours';
  *
  * В разметку попадает ТОЛЬКО то, что подтверждено: адрес, телефон, рейтинг
  * и каталог с сайта агентства. Часы уходят в разметку лишь после того, как
- * клиент их подтвердит (HOURS_CONFIRMED), реквизиты — когда пришлёт.
+ * клиент их подтвердит (HOURS_CONFIRMED), реквизиты уйдут, когда пришлёт.
  * Поисковику нельзя отдавать данные, которых мы не знаем.
  */
 export function localBusinessSchema(siteUrl: string) {
@@ -27,13 +27,13 @@ export function localBusinessSchema(siteUrl: string) {
     '@context': 'https://schema.org',
     '@type': ['LocalBusiness', 'PrintShop'],
     '@id': `${siteUrl}#organization`,
-    name: `${COMPANY.legalName} — ${COMPANY.name}`,
+    name: `${COMPANY.legalName}, ${COMPANY.name}`,
     alternateName: [COMPANY.name, 'ALFA PRINT'],
     url: siteUrl,
     telephone: '+79674257979',
     foundingDate: String(COMPANY.since),
     description:
-      'Типография и рекламное агентство в Нальчике: оперативная полиграфия, широкоформатная и УФ-печать, лазерная резка, гравировка, вышивка и сувениры. Тираж от одного экземпляра — часто в тот же день.',
+      'Типография и рекламное агентство в Нальчике: оперативная полиграфия, широкоформатная и УФ-печать, лазерная резка, гравировка, вышивка и сувениры. Тираж от одного экземпляра, часто в тот же день.',
     address: {
       '@type': 'PostalAddress',
       streetAddress: `ул. ${COMPANY.street}`,

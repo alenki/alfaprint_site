@@ -6,6 +6,7 @@ import { PlateProvider, type SectionMeta } from '@/components/chrome/PlateProvid
 import { TopBar } from '@/components/chrome/TopBar';
 import { ControlStrip } from '@/components/chrome/ControlStrip';
 import { MobileCta } from '@/components/chrome/MobileCta';
+import { CursorTrail } from '@/components/chrome/CursorTrail';
 import { Filters } from '@/components/print/Filters';
 import { NaryadProvider } from '@/state/NaryadContext';
 import { localBusinessSchema } from '@/lib/schema';
@@ -35,11 +36,11 @@ const SECTION_META: SectionMeta[] = SECTIONS.map((s) => ({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Альфа Принт — типография и рекламное агентство в Нальчике',
+    default: 'Альфа Принт · типография и рекламное агентство в Нальчике',
     template: '%s · Альфа Принт',
   },
   description:
-    'Оперативная полиграфия, широкоформатная и УФ-печать, лазерная резка, гравировка, вышивка и сувениры в Нальчике. Тираж от одного экземпляра — часто в тот же день. Тарчокова, 29.',
+    'Оперативная полиграфия, широкоформатная и УФ-печать, лазерная резка, гравировка, вышивка и сувениры в Нальчике. Тираж от одного экземпляра, часто в тот же день. Тарчокова, 29.',
   keywords: [
     'типография Нальчик',
     'полиграфия Нальчик',
@@ -56,9 +57,9 @@ export const metadata: Metadata = {
     locale: 'ru_RU',
     url: SITE_URL,
     siteName: 'Альфа Принт',
-    title: 'Альфа Принт — печатаем в Нальчике с 2014 года',
+    title: 'Альфа Принт · печатаем в Нальчике с 2014 года',
     description:
-      'Визитки, баннеры, наклейки, гравировка, лазерная резка, печать по акрилу, дереву, ткани и шоколаду. Срочный тираж — часто в тот же день.',
+      'Визитки, баннеры, наклейки, гравировка, лазерная резка, печать по акрилу, дереву, ткани и шоколаду. Срочный тираж часто в тот же день.',
   },
   robots: { index: true, follow: true },
   formatDetection: { telephone: false },
@@ -77,17 +78,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           К содержанию
         </a>
 
-        {/* Без JS ракель не проходит — значит, маску надо снять, иначе набор
-            останется под ней. Каталог при этом показывает обе формы стопкой. */}
+        {/* Без JS ракель не проходит, значит, маску надо снять, иначе набор
+            останется под ней. Оттиски §03 при этом ложатся стопкой: без JS
+            форму не переключить, а прочитать надо все десять. */}
         <noscript>
           <style
             dangerouslySetInnerHTML={{
               __html: `
                 [data-reveal]{clip-path:none!important;opacity:1!important}
-                .catalogue-panel{grid-column:1!important;grid-row:auto!important;position:static!important}
-                .catalogue-panel li{transform:none!important;opacity:1!important}
-                .catalogue-panel.is-idle{display:block!important}
-                .catalogue-panel.is-idle .t-h3,.catalogue-panel.is-idle span{color:inherit!important}
+                .dv-sheet{position:static!important;display:block!important;
+                  aspect-ratio:auto!important;max-height:none!important;overflow:visible!important}
+                .dv-print{grid-area:auto!important;visibility:visible!important;
+                  clip-path:none!important;opacity:1!important}
+                .dv-print + .dv-print{margin-top:1.25rem}
+                .dv-panel{position:static!important;height:auto!important;right:auto!important;
+                  visibility:visible!important;clip-path:none!important;opacity:1!important}
+                .dv-item{transform:none!important}
+                .dv-plate[hidden]{display:block!important}
+                .dv-mount::after{display:none!important}
+                .dv-tail,.dv-toggle{display:none!important}
               `,
             }}
           />
@@ -101,6 +110,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {children}
             <ControlStrip />
             <MobileCta />
+            {/* Последним ребёнком листа намеренно: холст фиксированный, и
+                внутри секции его заперло бы isolation, а внутри содержания
+                срезал бы clip-path. Здесь же он не разрывает порядок чтения. */}
+            <CursorTrail />
           </NaryadProvider>
         </MotionConfig>
 

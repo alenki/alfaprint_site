@@ -17,7 +17,7 @@ export function usePrefersReducedMotion() {
   return reduced;
 }
 
-/** true, когда указатель — настоящая мышь, а не палец. */
+/** true, когда указатель это настоящая мышь, а не палец. */
 export function useFinePointer() {
   const [fine, setFine] = useState(false);
 
@@ -47,7 +47,7 @@ export function useMediaQuery(query: string) {
   return matches;
 }
 
-/** Отдаёт true один раз — после монтирования на клиенте. */
+/** Отдаёт true один раз, после монтирования на клиенте. */
 export function useMounted() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);

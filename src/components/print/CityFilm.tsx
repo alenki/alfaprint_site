@@ -11,7 +11,7 @@ import { CONTACTS, IMPRINT } from '@/content/site';
  * в системе страницы.
  *
  * Никаких координат, никаких POI, никаких домов: адрес подтверждён,
- * а точка на местности — нет, и выдумывать её нельзя.
+ * а точка на местности не подтверждена, и выдумывать её нельзя.
  */
 
 const H = [
@@ -52,8 +52,8 @@ export function CityFilm() {
       className="group relative block"
       aria-label={`${IMPRINT.mapsLink}: Нальчик, Тарчокова, 29`}
     >
-      <svg viewBox="0 0 800 520" className="h-auto w-full" role="img" aria-hidden>
-        <g stroke="currentColor" fill="none" vectorEffect="non-scaling-stroke" opacity="0.45">
+      <svg viewBox="0 0 800 520" className="h-auto w-full min-h-[240px]" role="img" aria-hidden>
+        <g stroke="currentColor" fill="none" vectorEffect="non-scaling-stroke" opacity="0.62">
           {H.map((l, i) => (
             <motion.line key={`h${i}`} x1="0" y1={l.y} x2="800" y2={l.y} strokeWidth={l.w} {...draw(i)} />
           ))}
@@ -73,7 +73,7 @@ export function CityFilm() {
           fontFamily="var(--font-mono)"
           fontSize="11"
           letterSpacing="2.6"
-          opacity="0.7"
+          opacity="0.9"
         >
           ТАРЧОКОВА
         </text>
@@ -84,7 +84,7 @@ export function CityFilm() {
           fontFamily="var(--font-mono)"
           fontSize="11"
           letterSpacing="2.6"
-          opacity="0.45"
+          opacity="0.62"
           writingMode="tb"
         >
           НОГМОВА
@@ -106,7 +106,7 @@ export function CityFilm() {
           <path d="M396 185v-11M396 218v-11M385 196h-11M418 196h-11" />
         </motion.g>
 
-        {/* Кольцо и подпись — только под курсором */}
+        {/* Кольцо и подпись стоят только под курсором */}
         <circle
           cx="396"
           cy="196"
@@ -118,7 +118,7 @@ export function CityFilm() {
         />
 
         {/* Масштабная линейка */}
-        <g stroke="currentColor" strokeWidth="1" opacity="0.5">
+        <g stroke="currentColor" strokeWidth="1" opacity="0.7">
           <line x1="640" y1="484" x2="760" y2="484" />
           <line x1="640" y1="479" x2="640" y2="489" />
           <line x1="760" y1="479" x2="760" y2="489" />
@@ -131,9 +131,9 @@ export function CityFilm() {
           fontFamily="var(--font-mono)"
           fontSize="10"
           letterSpacing="1.6"
-          opacity="0.6"
+          opacity="0.8"
         >
-          0 — 100 М
+          0…100 М
         </text>
       </svg>
 

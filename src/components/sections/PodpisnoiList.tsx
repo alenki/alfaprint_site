@@ -2,25 +2,26 @@
 
 import { PrintReveal } from '@/components/type/PrintReveal';
 import { ProofSheet } from '@/components/print/ProofSheet';
+import { Section, Sheet, Grid } from '@/components/layout/Sheet';
 import { REVIEWS } from '@/content/reviews';
-import { PROOFS, CONTACTS } from '@/content/site';
+import { PROOFS, CONTACTS, SECTIONS } from '@/content/site';
 
 /**
  * §06 · ПОДПИСНОЙ ЛИСТ
  *
  * Никакой карусели: три листа стоят разом и все видны сразу. Ссылка на
- * карточку в Яндекс.Картах настоящая — проверяемость важнее любой анимации.
+ * карточку в Яндекс.Картах настоящая: проверяемость важнее любой анимации.
+ *
+ * Листы идут от реза до реза и делят общие линии: это один печатный лист,
+ * разрезанный на три, а не три карточки с зазором.
  */
 export function PodpisnoiList() {
+  const S = SECTIONS[5];
+
   return (
-    <section
-      id="podpisnoi-list"
-      data-section-ground="paper"
-      style={{ ['--gain' as string]: 1 }}
-      className="ground-paper py-[var(--section-pad)]"
-    >
-      <div className="trim">
-        <div className="cols items-end gap-y-6">
+    <Section id={S.id} ground="paper" gain={1} className="py-[var(--section-pad)]">
+      <Sheet>
+        <Grid className="items-end gap-y-6">
           <div className="col-span-4 md:col-span-8">
             <PrintReveal as="div">
               <h2 className="t-h2">
@@ -32,24 +33,24 @@ export function PodpisnoiList() {
               </h2>
             </PrintReveal>
           </div>
-          <div className="col-span-4 md:col-span-3 md:col-start-10">
+          <div className="col-span-4 md:col-span-3 md:col-start-10 md:text-right">
             <a
               href={CONTACTS.maps}
               target="_blank"
               rel="noreferrer"
-              className="t-micro link-rule inline-block text-[var(--color-ink-62)]"
+              className="t-micro link-rule fg-56 inline-block"
             >
               {PROOFS.link} →
             </a>
           </div>
-        </div>
+        </Grid>
+      </Sheet>
 
-        <div className="mt-12 grid grid-cols-1 gap-6 md:mt-16 md:grid-cols-3 md:gap-[var(--gutter)]">
-          {REVIEWS.map((review, i) => (
-            <ProofSheet key={i} review={review} index={i} />
-          ))}
-        </div>
+      <div className="rule-t rule-b rule-l mt-[clamp(40px,5vw,104px)] grid grid-cols-1 md:grid-cols-3">
+        {REVIEWS.map((review, i) => (
+          <ProofSheet key={i} review={review} index={i} />
+        ))}
       </div>
-    </section>
+    </Section>
   );
 }

@@ -7,7 +7,7 @@ import { useNaryad } from '@/state/NaryadContext';
 import { cn } from '@/lib/cn';
 
 /**
- * НАРЯД — лист поверх краски.
+ * НАРЯД: лист поверх краски.
  *
  * Ни одно поле не обязательно. Валидации нет вовсе: если контакт не заполнен,
  * WhatsApp всё равно откроется, просто без строки связи. Чекаут, который
@@ -15,13 +15,16 @@ import { cn } from '@/lib/cn';
  *
  * Полей в рамках нет: строки стоят на волосяных базовых линиях, как в
  * настоящем бланке наряда.
+ *
+ * Лист несёт свой грунт (ground-paper), а не наследует рубиновый: внутри
+ * бланка чёрное снова становится краской, и все смысловые цвета, линии,
+ * метки, подсказки, считаются от бумаги, а не от заливки под ним.
  */
 export function Naryad() {
   const n = useNaryad();
 
   return (
-    <div className="border border-[var(--color-ink)] bg-[var(--color-paper)] p-5 md:p-7">
-      {/* Что печатаем */}
+    <div className="ground-paper border border-[var(--color-ink)] p-[clamp(18px,1.8vw,40px)]">
       <Field label="Что печатаем">
         {n.items.length > 0 ? (
           <ul className="flex flex-wrap gap-2 py-1">
@@ -31,14 +34,14 @@ export function Naryad() {
                 initial={{ clipPath: 'inset(0 100% 0 0)' }}
                 animate={{ clipPath: 'inset(0 0% 0 0)' }}
                 transition={{ duration: 0.2, ease: [0.65, 0, 0.35, 1] }}
-                className="flex items-center gap-2 border border-[var(--color-ink-32)] px-2.5 py-1.5"
+                className="flex items-center gap-2 border border-[var(--rule)] px-2.5 py-1.5"
               >
                 <span className="text-[13px] font-medium">{item.title}</span>
                 <button
                   type="button"
                   onClick={() => n.remove(item.id)}
                   aria-label={`Убрать «${item.title}» из наряда`}
-                  className="text-[var(--color-ink-62)] transition-colors hover:text-[var(--color-rubine)]"
+                  className="fg-56 transition-colors hover:text-[var(--color-rubine)]"
                 >
                   ✕
                 </button>
@@ -51,12 +54,11 @@ export function Naryad() {
             value={n.freeText}
             onChange={(e) => n.setFreeText(e.target.value)}
             placeholder={ORDER.emptyChips}
-            className="w-full bg-transparent py-1.5 text-[15px] outline-none placeholder:text-[var(--color-ink-62)]"
+            className="fg w-full bg-transparent py-1.5 text-[15px] outline-none placeholder:text-[var(--fg-56)]"
           />
         )}
       </Field>
 
-      {/* Тираж */}
       <Field label="Тираж">
         <div className="flex items-center gap-4 py-1">
           <Stepper onClick={() => n.setQty(Math.max(1, n.qty - 50))} label="Меньше">
@@ -69,7 +71,7 @@ export function Naryad() {
             min={1}
             onChange={(e) => n.setQty(Math.max(1, Number(e.target.value) || 1))}
             aria-label="Тираж"
-            className="w-28 bg-transparent font-display text-[28px] font-semibold tabular-nums outline-none"
+            className="font-display fg w-28 bg-transparent text-[28px] font-semibold tabular-nums outline-none"
           />
           <Stepper onClick={() => n.setQty(n.qty + 50)} label="Больше">
             +
@@ -77,7 +79,6 @@ export function Naryad() {
         </div>
       </Field>
 
-      {/* Срок */}
       <Field label="Срок">
         <div className="flex py-1">
           {ORDER.deadlines.map((d) => (
@@ -87,10 +88,10 @@ export function Naryad() {
               onClick={() => n.setDeadline(n.deadline === d ? '' : d)}
               aria-pressed={n.deadline === d}
               className={cn(
-                't-micro flex min-h-[40px] flex-1 items-center justify-center border px-3 transition-colors duration-200',
+                't-micro flex min-h-[44px] flex-1 items-center justify-center border px-3 transition-colors duration-200',
                 n.deadline === d
                   ? 'border-[var(--color-ink)] bg-[var(--color-ink)] text-[var(--color-paper)]'
-                  : 'border-[var(--color-ink-32)] text-[var(--color-ink-70)]'
+                  : 'fg-70 border-[var(--rule)]'
               )}
             >
               {d}
@@ -99,7 +100,6 @@ export function Naryad() {
         </div>
       </Field>
 
-      {/* Связь */}
       <Field label="Как связаться" last>
         <input
           type="text"
@@ -107,7 +107,7 @@ export function Naryad() {
           onChange={(e) => n.setContact(e.target.value)}
           placeholder="+7 …  или  @telegram"
           autoComplete="tel"
-          className="w-full bg-transparent py-1.5 text-[15px] outline-none placeholder:text-[var(--color-ink-62)]"
+          className="fg w-full bg-transparent py-1.5 text-[15px] outline-none placeholder:text-[var(--fg-56)]"
         />
       </Field>
     </div>
@@ -124,8 +124,8 @@ function Field({
   last?: boolean;
 }) {
   return (
-    <div className={cn('py-3', !last && 'border-b border-[var(--color-ink-32)]')}>
-      <p className="t-micro mb-1.5 text-[var(--color-ink-62)]">{label}</p>
+    <div className={cn('py-3', !last && 'rule-b')}>
+      <p className="t-micro fg-56 mb-1.5">{label}</p>
       {children}
     </div>
   );
@@ -145,38 +145,50 @@ function Stepper({
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="flex h-10 w-10 items-center justify-center border border-[var(--color-ink-32)] text-xl leading-none transition-colors duration-200 hover:border-[var(--color-ink)]"
+      className="fg flex h-11 w-11 items-center justify-center border border-[var(--rule)] text-xl leading-none transition-colors duration-200 hover:border-[var(--color-ink)]"
     >
       {children}
     </button>
   );
 }
 
-/** «ЧТО ПРИСЛАТЬ» — пять квадратов, заливающихся со стагером. */
+/**
+ * «ЧТО ПРИСЛАТЬ»: пять квадратов во весь формат.
+ *
+ * Прежде чек-лист стоял узкой колонкой справа, а под ним оставалось полполосы
+ * пустой краски. Развёрнутый в строку, он закрывает низ секции и работает как
+ * линия отреза: дальше только кнопка.
+ *
+ * Весь мелкий набор на рубине печатается бумагой, 4,79:1. Чёрным здесь
+ * было бы 3,48:1, и это брак, а не стиль.
+ */
 export function Checklist() {
   return (
-    <div>
-      <p className="t-label text-[var(--color-paper)]">{ORDER.checklistTitle}</p>
-      <ul className="mt-5 space-y-3">
-        {ORDER.checklist.map((item, i) => (
-          <li key={item} className="flex items-start gap-3">
-            <motion.span
-              className="mt-[3px] block h-3 w-3 shrink-0 border border-[var(--color-paper)]"
-              initial={{ backgroundColor: 'rgba(242,241,236,0)' }}
-              whileInView={{ backgroundColor: 'rgba(242,241,236,1)' }}
-              viewport={{ once: true, margin: '-12% 0px' }}
-              transition={{ duration: 0.18, delay: i * 0.07, ease: [0.65, 0, 0.35, 1] }}
-            />
-            <span className="t-micro text-[var(--color-paper)]">{item}</span>
-          </li>
-        ))}
-      </ul>
-      <p className="t-micro mt-8 max-w-[38ch] leading-relaxed text-[var(--color-paper)]">
-        {ORDER.footnote}
-      </p>
+    <div className="rule-t pt-[clamp(28px,3vw,64px)]">
+      <div className="grid12 gap-y-6">
+        <p className="t-label fg-70 col-span-4 md:col-span-2">{ORDER.checklistTitle}</p>
+        <ul className="col-span-4 grid grid-cols-1 gap-x-[var(--gutter)] gap-y-4 sm:grid-cols-2 md:col-span-10 lg:grid-cols-5">
+          {ORDER.checklist.map((item, i) => (
+            <li key={item} className="flex items-start gap-3">
+              <motion.span
+                className="mt-[3px] block h-3 w-3 shrink-0 border border-[var(--color-ink)]"
+                initial={{ backgroundColor: 'rgba(18,17,16,0)' }}
+                whileInView={{ backgroundColor: 'rgba(18,17,16,1)' }}
+                viewport={{ once: true, margin: '-12% 0px' }}
+                transition={{ duration: 0.18, delay: i * 0.07, ease: [0.65, 0, 0.35, 1] }}
+              />
+              <span className="t-micro fg-70">{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="rule-t mt-[clamp(24px,2.4vw,48px)] pt-5">
+        <p className="t-micro fg-70 measure-wide md:ml-auto md:text-right">{ORDER.footnote}</p>
+      </div>
     </div>
   );
 }
 
-/** Галочка бренда выполняет свою настоящую функцию — утверждает наряд. */
+/** Галочка бренда выполняет свою настоящую функцию: утверждает наряд. */
 export { Tick };

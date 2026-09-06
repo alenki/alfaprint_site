@@ -13,7 +13,7 @@ export function mulberry32(seed: number) {
   };
 }
 
-/** Сид из строки — чтобы у каждого штампа был свой рваный край. */
+/** Сид из строки, чтобы у каждого штампа был свой рваный край. */
 export function seedFrom(str: string) {
   let h = 2166136261;
   for (let i = 0; i < str.length; i++) {

@@ -1,51 +1,45 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { Tick } from '@/components/chrome/Mark';
-import { PlateGhost } from '@/components/type/PlateGhost';
 import { useRevealProps } from '@/components/type/PrintReveal';
 import { DOPUSK, COMPANY } from '@/content/site';
 
-function useRegistryReveal() {
-  const base = useRevealProps(0);
-  return (i: number) => ({
-    ...base,
-    transition: { ...base.transition, delay: 'delay' in base.transition ? i * 0.034 : 0 },
-  });
-}
-
 /**
- * РЕЕСТР — четыре строки, разделённые волосяной линией.
- * Ни карточек, ни иконок, ни теней: только линии и числа.
+ * РЕЕСТР: четыре подтверждённых числа, набранные ОДНОЙ СТРОКОЙ во весь
+ * формат, под единственной линейкой полосы.
  *
- * У каждого числа в DOM лежит рубиновый двойник. При спокойном чтении его
- * не существует; при разгоне прокрутки из-под числа выезжает рубиновый след —
- * доказательство закона ровно в той секции, где он объявлен.
+ * Прежняя редакция ставила их столбцом: четыре волосяные линии, метка у
+ * одного края, число у другого, и между ними полполосы пустоты. Это читалось
+ * как таблица характеристик, а не как доказательство, и было самой шумной
+ * вещью в секции.
+ *
+ * Теперь это выходные данные тиража: числа стоят на одной базовой линии,
+ * подписи под ними, разделителей между колонками нет вовсе. Линейка ровно
+ * одна, и она отделяет доказательство от заявления.
+ *
+ * Числа набраны в одну краску и стоят неподвижно: рубиновый двойник под ними
+ * и галочка утверждения рядом с оценкой сняты: доказательству нечего играть.
  */
 export function Registry() {
-  const reveal = useRegistryReveal();
+  const base = useRevealProps(0);
   const years = new Date().getFullYear() - COMPANY.since;
 
   return (
-    <dl>
+    <dl className="rule-t grid12 gap-y-[clamp(30px,3vw,52px)] pt-[clamp(22px,2.3vw,46px)] md:gap-y-0">
       {DOPUSK.registry.map((row, i) => {
-        const value = row.kind === 'years' ? `${years} лет` : row.value ?? '';
+        const value = row.kind === 'years' ? `${years} лет` : (row.value ?? '');
         return (
           <motion.div
             key={row.label}
-            className="hairline-b flex items-baseline justify-between gap-6 py-7 md:min-h-[96px]"
-            {...reveal(i)}
+            className="col-span-2 md:col-span-3"
+            {...base}
+            transition={{
+              ...base.transition,
+              delay: 'delay' in base.transition ? i * 0.034 : 0,
+            }}
           >
-            <dt className="t-label text-[var(--color-ink-62)]">{row.label}</dt>
-            <dd className="relative flex items-baseline gap-3">
-              <span className="relative inline-block">
-                <PlateGhost>{value}</PlateGhost>
-                <span className="t-num relative">{value}</span>
-              </span>
-              {row.kind === 'tick' && (
-                <Tick className="h-4 w-5 shrink-0 text-[var(--color-rubine)]" strokeWidth={3} />
-              )}
-            </dd>
+            <dd className="t-num whitespace-nowrap">{value}</dd>
+            <dt className="t-micro fg-56 mt-[clamp(10px,0.85vw,18px)]">{row.label}</dt>
           </motion.div>
         );
       })}

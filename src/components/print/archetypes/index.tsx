@@ -6,9 +6,9 @@
  * примерно в масштабе 1:8.
  *
  * Каждый архетип разложен на две формы:
- *   plate-k — вся типографика, линии, штриховка, окна;
- *   plate-r — знак, одна акцентная линия, одно поле плашки.
- * Разведение форм при наведении — это transform на группе, а не перерисовка.
+ *   plate-k несёт всю типографику, линии, штриховку, окна;
+ *   plate-r несёт знак, одну акцентную линию, одно поле плашки.
+ * Разведение форм при наведении это transform на группе, а не перерисовка.
  */
 
 import type { Archetype } from '@/content/works';
@@ -33,7 +33,7 @@ function MiniMark({ x, y, s = 1 }: { x: number; y: number; s?: number }) {
   );
 }
 
-/** Набранная строка текста — прямоугольник, а не lorem. */
+/** Набранная строка текста это прямоугольник, а не lorem. */
 function Rule({
   x,
   y,
@@ -141,7 +141,7 @@ export function Flyer({ content }: Props) {
       <text className="plate-k" x="26" y="100" fill={K} fontSize="30" fontFamily="var(--font-display)" fontWeight="800">
         {content[1]}
       </text>
-      {/* окно под фото — диагональная штриховка 45° */}
+      {/* окно под фото: диагональная штриховка 45° */}
       <defs>
         <pattern id="hatch45" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
           <line x1="0" y1="0" x2="0" y2="8" stroke={K} strokeWidth="1" opacity="0.22" />
@@ -161,7 +161,7 @@ export function Sticker({ content }: Props) {
   return (
     <svg viewBox="0 0 300 300" className="h-full w-full" role="img" aria-label={content.join(' ')}>
       <rect width="300" height="300" fill="var(--color-proof)" />
-      {/* die-line — замкнутый пунктир */}
+      {/* die-line: замкнутый пунктир */}
       <circle
         className="plate-k"
         cx="150"
