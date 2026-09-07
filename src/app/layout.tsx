@@ -12,7 +12,13 @@ import { NaryadProvider } from '@/state/NaryadContext';
 import { localBusinessSchema } from '@/lib/schema';
 import { SECTIONS } from '@/content/site';
 
-const SITE_URL = 'https://alfaprint07.ru';
+/**
+ * АДРЕС ЛИСТА. Сайт стоит в подкаталоге: lumako.ru/alfaprint, см. `next.config.ts`.
+ * Отсюда его берут и канонический адрес, и Open Graph, и разметка организации:
+ * все три обязаны указывать ТУДА, ГДЕ ЛИСТ ЛЕЖИТ НА САМОМ ДЕЛЕ. Когда клиент
+ * заведёт собственный домен, правится эта строка и `basePath` в конфиге.
+ */
+const SITE_URL = 'https://lumako.ru/alfaprint';
 
 /** Грунт и усиление ухода приводки: у хвоста листа она держится хуже. */
 const GROUNDS: Record<string, { ground: string; gain: number }> = {
@@ -50,7 +56,7 @@ export const metadata: Metadata = {
     'рекламное агентство Нальчик',
     'УФ-печать КБР',
   ],
-  alternates: { canonical: '/' },
+  alternates: { canonical: SITE_URL },
   openGraph: {
     type: 'website',
     locale: 'ru_RU',
@@ -71,7 +77,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ru" className={fontVariables} data-ground="paper">
+    /* suppressHydrationWarning ровно из-за скрипта приладки ниже: он ставит
+       data-makeready ДО гидратации, поэтому на возврате в тот же сеанс атрибуты
+       <html> у клиента заведомо богаче серверных. Гасится только сам <html>,
+       вглубь эта отметка не идёт. */
+    <html lang="ru" className={fontVariables} data-ground="paper" suppressHydrationWarning>
       <body>
         {/* ПЕРВОЕ, ЧТО ВЫПОЛНЯЕТСЯ НА СТРАНИЦЕ, и единственное, что обязано
             выполниться до первой отрисовки. Умеет он ровно одно: помнит, что

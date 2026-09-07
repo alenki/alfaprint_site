@@ -1,4 +1,5 @@
 import { CLIENTS, CLIENT_MARKS } from '@/content/clients';
+import { asset } from '@/lib/base';
 
 /**
  * ЛЕНТА ЗНАКОВ: единственное место на сайте, где стоят чужие марки.
@@ -182,7 +183,7 @@ function Run({ marks, read }: { marks: typeof CLIENT_MARKS; read?: boolean }) {
           <span
             className="marks-mark"
             style={{
-              ['--mask' as string]: `url(/logos/${m.slug}.png)`,
+              ['--mask' as string]: `url(${asset(`/logos/${m.slug}.png`)})`,
               ['--ar' as string]: m.ar,
             }}
             aria-hidden
