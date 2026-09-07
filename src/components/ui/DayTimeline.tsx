@@ -152,9 +152,12 @@ function Node({
             strokeWidth="3"
             strokeLinecap="butt"
             strokeLinejoin="miter"
-            pathLength={1}
-            initial={{ pathLength: reduced ? 1 : 0 }}
-            whileInView={{ pathLength: 1 }}
+            /* Длина галки в единицах вьюбокса, а не pathLength: WebKit
+               не приводит stroke-dasharray к pathLength, и на iPhone галка
+               рассыпалась в пыль. См. тот же разбор в CityFilm. */
+            strokeDasharray={32.81}
+            initial={{ strokeDashoffset: reduced ? 0 : 32.81 }}
+            whileInView={{ strokeDashoffset: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.52, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           />

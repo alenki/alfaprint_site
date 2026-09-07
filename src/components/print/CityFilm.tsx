@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'motion/react';
 import { CONTACTS, IMPRINT } from '@/content/site';
 
 /**
@@ -12,6 +11,15 @@ import { CONTACTS, IMPRINT } from '@/content/site';
  *
  * Никаких координат, никаких POI, никаких домов: адрес подтверждён,
  * а точка на местности не подтверждена, и выдумывать её нельзя.
+ *
+ * ПЛЁНКА ПЕЧАТАЕТСЯ БЕЗ ЕДИНОЙ СТРОКИ JS, и это требование, а не вкус.
+ * Ход «прорисовки» стоял на whileInView, то есть в статике лист уходил с
+ * opacity="0" на каждой линии и проявлялся только если сработает
+ * IntersectionObserver. На iPhone он не срабатывал, и от карты оставались
+ * одни подписи: они-то не анимированы. Ни pathLength, ни stroke-dashoffset
+ * этого не лечат, потому что дело не в штрихе, а в том, что видимость
+ * карты вообще зависела от скрипта. Теперь не зависит: сетка нарисована
+ * сразу и целиком.
  */
 
 const H = [
@@ -27,23 +35,16 @@ const V = [
   { x: 540, w: 1 },
   { x: 676, w: 1 },
 ];
-const LINKS = [
-  'M110 76 L250 160',
-  'M396 160 L540 244',
-  'M250 244 L396 328',
-  'M540 76 L676 160',
-  'M110 244 L250 328',
-  'M396 76 L540 160',
+const LINKS: [number, number, number, number][] = [
+  [110, 76, 250, 160],
+  [396, 160, 540, 244],
+  [250, 244, 396, 328],
+  [540, 76, 676, 160],
+  [110, 244, 250, 328],
+  [396, 76, 540, 160],
 ];
 
 export function CityFilm() {
-  const draw = (i: number) => ({
-    initial: { pathLength: 0, opacity: 0 },
-    whileInView: { pathLength: 1, opacity: 1 },
-    viewport: { once: true, margin: '-10% 0px' },
-    transition: { duration: 0.7, delay: i * 0.04, ease: [0.65, 0, 0.35, 1] as const },
-  });
-
   return (
     <a
       href={CONTACTS.mapsRoute}
@@ -55,13 +56,13 @@ export function CityFilm() {
       <svg viewBox="0 0 800 420" className="h-auto w-full min-h-[190px]" role="img" aria-hidden>
         <g stroke="currentColor" fill="none" vectorEffect="non-scaling-stroke" opacity="0.62">
           {H.map((l, i) => (
-            <motion.line key={`h${i}`} x1="0" y1={l.y} x2="800" y2={l.y} strokeWidth={l.w} {...draw(i)} />
+            <path key={`h${i}`} d={`M0 ${l.y}H800`} strokeWidth={l.w} />
           ))}
           {V.map((l, i) => (
-            <motion.line key={`v${i}`} x1={l.x} y1="0" x2={l.x} y2="420" strokeWidth={l.w} {...draw(i + 4)} />
+            <path key={`v${i}`} d={`M${l.x} 0V420`} strokeWidth={l.w} />
           ))}
-          {LINKS.map((d, i) => (
-            <motion.path key={`l${i}`} d={d} strokeWidth="1" {...draw(i + 9)} />
+          {LINKS.map(([x1, y1, x2, y2], i) => (
+            <path key={`l${i}`} d={`M${x1} ${y1}L${x2} ${y2}`} strokeWidth="1" />
           ))}
         </g>
 
@@ -85,26 +86,17 @@ export function CityFilm() {
           fontSize="11"
           letterSpacing="2.6"
           opacity="0.62"
-          writingMode="tb"
+          style={{ writingMode: 'vertical-rl' }}
         >
           НОГМОВА
         </text>
 
         {/* Дом отмечен тем же приводочным крестом, что стоит в знаке */}
-        <motion.g
-          stroke="var(--color-rubine)"
-          fill="none"
-          strokeWidth="1.5"
-          initial={{ scale: 1 }}
-          whileInView={{ scale: [1, 1.12, 1] }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.9, ease: [0.65, 0, 0.35, 1] }}
-          style={{ transformOrigin: '396px 160px' }}
-        >
+        <g stroke="var(--color-rubine)" fill="none" strokeWidth="1.5">
           <circle cx="396" cy="160" r="4" />
           <circle cx="396" cy="160" r="9" />
           <path d="M396 149v-11M396 182v-11M385 160h-11M418 160h-11" />
-        </motion.g>
+        </g>
 
         {/* Кольцо и подпись стоят только под курсором */}
         <circle
