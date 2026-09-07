@@ -84,7 +84,7 @@ export function Vizitka({ content }: Props) {
         opacity="0.32"
       />
       <MiniMark x={34} y={38} s={1.25} />
-      <text className="plate-k" x={34} y={112} fill={K} fontSize="19" fontFamily="var(--font-display)" fontWeight="700">
+      <text className="plate-k" x={34} y={112} fill={K} fontSize="19" fontFamily="var(--font-display)" fontWeight="600">
         {content[0]}
       </text>
       <text className="plate-k" x={34} y={133} fill={K} fontSize="11" fontFamily="var(--font-text)" opacity="0.7">
@@ -112,7 +112,7 @@ export function Menu({ content }: Props) {
         fontSize="26"
         textAnchor="middle"
         fontFamily="var(--font-display)"
-        fontWeight="700"
+        fontWeight="600"
       >
         {content[0]}
       </text>
@@ -146,10 +146,10 @@ export function Flyer({ content }: Props) {
   return (
     <svg viewBox="0 0 260 368" className="h-full w-full" role="img" aria-label={content.join(' ')}>
       <rect width="260" height="368" fill="var(--color-proof)" />
-      <text className="plate-k" x="26" y="66" fill={K} fontSize="30" fontFamily="var(--font-display)" fontWeight="800">
+      <text className="plate-k" x="26" y="66" fill={K} fontSize="30" fontFamily="var(--font-display)" fontWeight="700">
         {content[0]}
       </text>
-      <text className="plate-k" x="26" y="100" fill={K} fontSize="30" fontFamily="var(--font-display)" fontWeight="800">
+      <text className="plate-k" x="26" y="100" fill={K} fontSize="30" fontFamily="var(--font-display)" fontWeight="700">
         {content[1]}
       </text>
       {/* окно под фото: диагональная штриховка 45° */}
@@ -216,7 +216,7 @@ export function Banner({ content }: Props) {
   return (
     <svg viewBox="0 0 460 156" className="h-full w-full" role="img" aria-label={content.join(' ')}>
       <rect width="460" height="156" fill="var(--color-ink)" />
-      <text className="plate-k" x="52" y="78" fill="var(--color-chalk)" fontSize="40" fontFamily="var(--font-display)" fontWeight="800">
+      <text className="plate-k" x="52" y="78" fill="var(--color-chalk)" fontSize="40" fontFamily="var(--font-display)" fontWeight="700">
         {content[0]}
       </text>
       <Rule x={52} y={94} w={150} h={3} o={0.45} fill="var(--color-chalk)" />

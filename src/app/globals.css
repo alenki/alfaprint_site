@@ -56,9 +56,27 @@
   --color-chalk-30: rgba(237, 235, 230, 0.3); /* только линии */
 
   /* ── ГАРНИТУРЫ ────────────────────────────────────────────────────────── */
-  --font-display: var(--font-nsd), Georgia, serif;
+  --font-display: var(--font-golos), 'Segoe UI', system-ui, sans-serif;
   --font-text: var(--font-golos), 'Segoe UI', system-ui, sans-serif;
   --font-mono: var(--font-martian), ui-monospace, monospace;
+  /* ДИСПЛЕЙ И КОРПУС ЭТО ОДНА ГАРНИТУРА, а ролей по-прежнему две. Здесь
+     стояла Noto Serif Display, жирная высококонтрастная антиква, и спорила
+     она не с корпусом, а СО ЗНАКОМ: имя фирмы печатается формами логотипа,
+     гротеском без единой засечки, и над каждой полосой висела книжная
+     антиква другой породы. Golos Text спор снимает. Голоса теперь делит не
+     рисунок буквы, а вес и кегль, и делит достаточно: 700 в заголовке
+     против 400 в тексте это две ступени, а не оттенок.
+
+     КЕГЛИ ОСТАЛИСЬ ПРЕЖНИМИ, и это не халатность: метрики сошлись почти
+     вплотную. На 1000 единиц кегля прописная 700 против 714, строчная 530
+     против 536, средняя ширина 484 против 476. Разошлась одна насыщенность.
+     У антиквы половина штрихов волосяные, у гротеска все одинаковые, и тот
+     же вес даёт заметно более чёрную полосу, поэтому каждое дисплейное
+     начертание сброшено на ступень: 800 → 700, 700 → 600. Серость полосы от
+     этого не изменилась, а заголовок перестал быть темнее знака.
+
+     Ось ширины 62.5…100 ушла вместе с антиквой; что стало с выключкой
+     подбором ширины литеры, сказано в `justify.ts`. */
   /* ГАРНИТУРЫ ИМЕНИ ФИРМЫ ЗДЕСЬ НЕТ, и её отсутствие намеренное. Имя стоит
      на листе дважды, в шапке §01 и на вылете §08, и оба раза оно ПЕЧАТАЕТСЯ
      формами логотипа, а не набирается: см. `ALPHABET` в `Mark.tsx`. Подставная
@@ -1162,7 +1180,7 @@
      ═════════════════════════════════════════════════════════════════════════ */
   .t-h1 {
     font-family: var(--font-display);
-    font-weight: 800;
+    font-weight: 700;
     font-size: var(--text-h1);
     line-height: 0.86;
     letter-spacing: -0.032em;
@@ -1170,7 +1188,7 @@
 
   .t-h2 {
     font-family: var(--font-display);
-    font-weight: 700;
+    font-weight: 600;
     font-size: var(--text-h2);
     line-height: 0.92;
     letter-spacing: -0.024em;
@@ -1182,7 +1200,7 @@
      выключенным заголовком, и второй такой на полосе был бы повтором. */
   .t-statement {
     font-family: var(--font-display);
-    font-weight: 700;
+    font-weight: 600;
     font-size: var(--text-statement);
     line-height: 1.02;
     letter-spacing: -0.026em;
@@ -1199,7 +1217,7 @@
 
   .t-num {
     font-family: var(--font-display);
-    font-weight: 700;
+    font-weight: 600;
     font-size: var(--text-num);
     line-height: 0.86;
     letter-spacing: -0.024em;
@@ -1717,7 +1735,7 @@
   .menu-row-word {
     display: block;
     font-family: var(--font-display);
-    font-weight: 700;
+    font-weight: 600;
     font-size: var(--text-menu);
     line-height: 0.94;
     letter-spacing: -0.03em;
@@ -1735,7 +1753,7 @@
   .menu-phone {
     display: inline-block;
     font-family: var(--font-display);
-    font-weight: 700;
+    font-weight: 600;
     font-size: clamp(1.375rem, 6.4vw, 1.75rem);
     line-height: 1;
     letter-spacing: -0.028em;
@@ -2259,7 +2277,7 @@
 .dv-word {
   display: block;
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 600;
   font-size: 1em;
   line-height: 0.94;
   letter-spacing: -0.026em;
@@ -2795,7 +2813,7 @@
      чёрное по рубину незаконно (3,66:1). См. ветку цвета ниже. */
   .kp-line {
     font-family: var(--font-display);
-    font-weight: 700;
+    font-weight: 600;
     font-size: var(--kp-line-size);
     line-height: 0.98;
     letter-spacing: -0.028em;
@@ -2829,12 +2847,12 @@
     /* ПОПРАВКА ПО ПРОПИСНОЙ. `align-items: center` ставит кольцо в середину
        СТРОЧНОГО БОКСА, а глаз меряет его по середине ПРОПИСНОЙ, и это разные
        высоты: строчный бокс симметричен относительно (A−D)/2, прописная
-       относительно C/2. Разница у Noto Serif Display выходит
-       ((1069−293)/2 − 718,75/2)/1000 = 0,0286 кегля, и кольцо надо опустить
-       ровно на неё. Считается от кегля СТРОКИ, поэтому он и вынесен в токен:
+       относительно C/2. У Golos Text разница выходит
+       ((980−220)/2 − 700/2)/1000 = 0,030 кегля, и кольцо надо опустить ровно
+       на неё. Считается от кегля СТРОКИ, поэтому он и вынесен в токен:
        кольцо и набор клампятся по-разному и жёсткое число разошлось бы с
        ними на первом же промежуточном формате. */
-    top: calc(var(--kp-line-size) * 0.0286);
+    top: calc(var(--kp-line-size) * 0.03);
   }
 
   .kp-rubine .kp-arrow {

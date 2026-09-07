@@ -104,7 +104,7 @@ export function drawScreen(
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, w, h);
 
-  const family = getComputedStyle(canvas).fontFamily || 'Georgia, serif';
+  const family = getComputedStyle(canvas).fontFamily || 'system-ui, sans-serif';
   const field = buildField(w, h, word, family, fit, anchorY);
   if (!field) return 0;
 
