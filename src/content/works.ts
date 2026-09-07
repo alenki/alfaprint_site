@@ -21,6 +21,13 @@ export type Work = {
   content: string[];
   /** Две строки подписной планки: что это и как напечатано. */
   caption: [string, string];
+  /**
+   * Та же подпись на узкую меру: имя изделия и тираж, без материала и
+   * отделки. Ставится не по ширине экрана, а по ширине самой плитки,
+   * см. `WorkTile`. Обе строки держатся короче семнадцати знаков: на
+   * телефоне плитке достаётся около 195 px, и переносить тут уже нечего.
+   */
+  short: [string, string];
   /** Ширина в колонках спуска: 1 или 2. */
   span: 1 | 2;
   /** CONFIRM WITH CLIENT: путь к реальной съёмке. */
@@ -33,6 +40,7 @@ export const WORKS: Work[] = [
     archetype: 'vizitka',
     content: ['Визитка', 'премиум-класса'],
     caption: ['Визитки премиум · 1 000 экз.', 'Мелованный 350 г/м² · 4+4 · ламинация soft-touch'],
+    short: ['Визитки премиум', '1 000 экз.'],
     span: 2,
     photo: null,
   },
@@ -41,6 +49,7 @@ export const WORKS: Work[] = [
     archetype: 'birka',
     content: ['Сатиновая', 'бирка'],
     caption: ['Сатиновые бирки 20×70 мм · от 1 000 шт.', 'Сатин · термоперенос · от 4 ₽ за штуку'],
+    short: ['Сатиновые бирки', 'от 1 000 шт.'],
     span: 1,
     photo: null,
   },
@@ -49,6 +58,7 @@ export const WORKS: Work[] = [
     archetype: 'menu',
     content: ['Меню'],
     caption: ['Меню для кафе · 60 разворотов', 'Матовая ламинация · пружина · тираж 40'],
+    short: ['Меню для кафе', '60 разворотов'],
     span: 1,
     photo: null,
   },
@@ -57,6 +67,7 @@ export const WORKS: Work[] = [
     archetype: 'sticker',
     content: ['Наклейка'],
     caption: ['Наклейки kiss-cut · 2 000 шт.', 'Самоклеящаяся плёнка · контурный рез · лист'],
+    short: ['Наклейки kiss-cut', '2 000 шт.'],
     span: 1,
     photo: null,
   },
@@ -65,6 +76,7 @@ export const WORKS: Work[] = [
     archetype: 'flyer',
     content: ['Открытие', 'нового зала'],
     caption: ['Листовки А5 · 5 000 экз.', 'Офсет 130 г/м² · 4+4 · срок 1 день'],
+    short: ['Листовки А5', '5 000 экз.'],
     span: 1,
     photo: null,
   },
@@ -73,6 +85,7 @@ export const WORKS: Work[] = [
     archetype: 'vizitka',
     content: ['Дисконтная', 'карта'],
     caption: ['Дисконтные карты · 500 экз.', 'Пластик 0,76 мм · УФ-печать · скругление'],
+    short: ['Дисконтные карты', '500 экз.'],
     span: 1,
     photo: null,
   },
@@ -81,6 +94,7 @@ export const WORKS: Work[] = [
     archetype: 'menu',
     content: ['Каталог'],
     caption: ['Каталог продукции · 32 полосы', 'Мелованный 150 г/м² · скоба · тираж 300'],
+    short: ['Каталог продукции', '32 полосы'],
     span: 1,
     photo: null,
   },
@@ -89,6 +103,7 @@ export const WORKS: Work[] = [
     archetype: 'sticker',
     content: ['Этикетка'],
     caption: ['Этикетка на банку · 3 000 шт.', 'Самоклейка глянец · рулон · контурный рез'],
+    short: ['Этикетка на банку', '3 000 шт.'],
     span: 1,
     photo: null,
   },
@@ -97,6 +112,7 @@ export const WORKS: Work[] = [
     archetype: 'banner',
     content: ['Баннер'],
     caption: ['Баннер 3×6 м · люверсы по периметру', 'Баннерная ткань 440 г/м² · 720 dpi · проклейка'],
+    short: ['Баннер 3×6 м', 'люверсы'],
     span: 2,
     photo: null,
   },

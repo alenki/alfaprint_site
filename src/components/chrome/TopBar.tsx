@@ -22,26 +22,25 @@ import { useNaryad } from '@/state/NaryadContext';
  *    его несёт нижняя панель `MobileCta`, на настольном §08 и содержание.
  * ── «В НАРЯДЕ N» с галочкой. Счётчик переехал внутрь действия: цифра, а не
  *    отдельный узел со своей иконкой.
- * ── Три иконки из прежних четырёх. Осталась одна, и это знак фирмы,
- *    см. `Wordmark`. Галочка на всей полосе теперь тоже одна: та, что
- *    стоит в самом знаке.
+ * ── Три иконки из прежних четырёх. Осталось две, и обе без обводки: знак
+ *    фирмы, см. `Wordmark`, и два прочерка, открывающие содержание.
+ *    Галочка на всей полосе по-прежнему одна: та, что стоит в самом знаке.
  * ── Набранное имя «АльфаПринт» рядом с маркой. Марка обведена с оригинала
- *    и сама говорит имя фирмы; набор повторял его вторым голосом и занимал
- *    под повтор треть плашки, см. `Wordmark`.
+ *    и сама говорит имя фирмы; набор рядом повторял его вторым голосом и
+ *    занимал под повтор треть плашки, см. `Wordmark`.
  * ── Моношрифт на разделах. Прописные с трекингом 0,14 em это машинный
  *    голос, и на пяти словах подряд он превращается в шум. Разделы говорят
  *    голосом покупателя и набраны корпусным гротеском.
  *
  * Полоса остаётся `sticky`: она занимает место в потоке, и §01 считает от
  * неё свою высоту. `fixed` подняла бы весь лист под неё.
-
  *
  * ВЫРУБЛЕННАЯ ПЛАШКА
- * Три зоны стоят теперь не прямо в полосе, а внутри `.bar-plate` — сплошной
+ * Три зоны стоят теперь не прямо в полосе, а внутри `.bar-plate`: сплошной
  * чёрной формы со скруглёнными торцами, отбитой от краёв на --edge. Это
  * единственное скругление на всём листе, и заведено оно сознательно: у формы,
  * которую вырубают в штамп, торец круглый, а у полосы, доведённой до реза,
- * прямой. Полоса под плашкой осталась ровно тем, чем была, — грунтом,
+ * прямой. Полоса под плашкой осталась ровно тем, чем была: грунтом,
  * который перекрашивается по секции. Поэтому поле вокруг плашки читается
  * как сам лист, а не как щель, сквозь которую видно уезжающий набор.
  *
@@ -52,10 +51,36 @@ import { useNaryad } from '@/state/NaryadContext';
  *
  * Действие потеряло вылет до правого реза: внутри плашки реза нет, и краску
  * некуда доводить. Оно встало соосно правому торцу, слово выключено
- * по центру плашки в обе стороны, и налилось рубином —
- * уступка §1, который рубиновую кнопку запрещает. Плашка чёрная, действие
- * обязано читаться на ней сразу, и единственная хрома листа делает это,
- * не заводя третьей краски.
+ * по центру плашки в обе стороны, и налилось рубином: уступка §1, который
+ * рубиновую кнопку запрещает. Плашка чёрная, действие обязано читаться на
+ * ней сразу, и единственная хрома листа делает это, не заводя третьей краски.
+ *
+ * ═══════════════════════════════════════════════════════════════════════════
+ * СОДЕРЖАНИЕ РАСТЁТ ИЗ ПЛАШКИ, А НЕ ЗАКРЫВАЕТ ЛИСТ
+ * ═══════════════════════════════════════════════════════════════════════════
+ * Прежде по знаку меню поднимался ОТДЕЛЬНЫЙ полноэкранный лист: чёрная
+ * полоса во весь формат, ракель снизу вверх, своя копия марки в первой
+ * строке и слово «Закрыть» на месте прочерков. Две беды сразу. Первая:
+ * марка печаталась дважды, и вторая её копия обязана была встать в ту же
+ * точку, что и первая, пиксель в пиксель, иначе при открытии знак дёргался.
+ * Вторая: полноэкранный лист отменял всё, что полоса про себя говорит.
+ * Плашка это ВЫРУБЛЕННАЯ ФОРМА, лежащая НАД листом; форма не превращается
+ * в лист, она растёт.
+ *
+ * Теперь растёт сама плашка. Марка, прочерки и действие остаются стоять там
+ * же, где стояли, а под ними раскрывается второй ряд той же вырубки:
+ * разделы, телефон, каналы. Копии узлов нет ни одной, дёргаться нечему.
+ *
+ * РОСТ СЧИТАЕТСЯ СОДЕРЖИМЫМ, А НЕ ЧИСЛОМ. Плашка это сетка в два ряда:
+ * вырубка --bar-h и второй ряд, который ходит с 0fr на 1fr. Заявленной
+ * высоты меню на странице нет ни одной, и разойтись с тем местом, которое
+ * набор занимает на самом деле, она не может: добавили раздел, плашка
+ * выросла ровно на строку.
+ *
+ * ПРОЧЕРКИ СТАНОВЯТСЯ КРЕСТОМ. Слово «Закрыть» снято: знак, открывший
+ * содержание, обязан его же и закрыть, иначе на плашке заводится второй
+ * орган управления на ту же работу. Две линии сходятся в крест поворотом,
+ * и это тот же жест, каким лист складывают обратно.
  */
 export function TopBar() {
   const naryad = useNaryad();
@@ -64,7 +89,7 @@ export function TopBar() {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState<string | null>(null);
 
-  const sheetRef = useRef<HTMLDivElement>(null);
+  const plateRef = useRef<HTMLDivElement>(null);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
 
   /* Указатель текущего раздела. Полоса не заводит своего слушателя прокрутки
@@ -84,14 +109,34 @@ export function TopBar() {
     return () => mo.disconnect();
   }, []);
 
-  /* Открытое содержание это модальный лист: прокрутка заперта, Tab ходит по
-     кругу внутри, Escape закрывает, фокус возвращается на слово «Меню».
+  /* Разделы переезжают в саму рейку на 1024 px, и второй ряд плашки там
+     не показывается. Если формат развернули с открытым содержанием, ряд
+     обязан закрыться сам: иначе плашка осталась бы стоять раскрытой без
+     единого видимого слова внутри. */
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const read = () => {
+      if (mq.matches) setOpen(false);
+    };
+    read();
+    mq.addEventListener('change', read);
+    return () => mq.removeEventListener('change', read);
+  }, []);
+
+  /* Раскрытая плашка это модальный узел: прокрутка заперта, Tab ходит по
+     кругу внутри ВСЕЙ плашки (марка, крест и разделы стоят теперь в одной
+     форме), Escape закрывает, фокус возвращается на знак меню.
      `scrollbar-gutter: stable` на html стоит с самого начала, поэтому замок
-     прокрутки не даёт скачка формата. */
+     прокрутки не даёт скачка формата.
+
+     Метка `data-menu` на :root нужна двум чужим узлам: полосе, которая на
+     время раскрытия перестаёт уходить под верхний рез, и нижней панели
+     `MobileCta`, которая под раскрытой плашкой повторяла бы её же каналы. */
   useEffect(() => {
     if (!open) return;
 
     const root = document.documentElement;
+    root.dataset.menu = 'open';
     const prevOverflow = root.style.overflow;
     root.style.overflow = 'hidden';
 
@@ -102,7 +147,7 @@ export function TopBar() {
         return;
       }
       if (e.key !== 'Tab') return;
-      const nodes = sheetRef.current?.querySelectorAll<HTMLElement>('a[href], button');
+      const nodes = plateRef.current?.querySelectorAll<HTMLElement>('a[href], button');
       if (!nodes?.length) return;
       const first = nodes[0];
       const last = nodes[nodes.length - 1];
@@ -117,11 +162,12 @@ export function TopBar() {
     document.addEventListener('keydown', onKey);
 
     const t = window.setTimeout(
-      () => sheetRef.current?.querySelector<HTMLElement>('a[href]')?.focus(),
+      () => plateRef.current?.querySelector<HTMLElement>('.bar-panel a[href]')?.focus(),
       60
     );
 
     return () => {
+      delete root.dataset.menu;
       root.style.overflow = prevOverflow;
       document.removeEventListener('keydown', onKey);
       window.clearTimeout(t);
@@ -132,113 +178,129 @@ export function TopBar() {
   return (
     <>
       <header className="topbar sticky top-0 z-60 h-[var(--topbar-h)] w-full">
-        <div className="sheet flex h-full items-center">
-          <div className="bar-plate gap-[clamp(16px,2vw,48px)]">
-            <Wordmark />
+        {/* Выключка по ВЕРХУ, а не по центру. Закрытая плашка стоит там же,
+            где стояла: поле над ней равно --bar-pad и в том, и в другом
+            случае. Но растёт она теперь только вниз; при центрировании
+            второй ряд разъезжал бы в обе стороны и увёл бы марку под рез. */}
+        <div className="sheet flex h-full items-start pt-[var(--bar-pad)]">
+          <div ref={plateRef} className="bar-plate" data-open={open ? 'true' : 'false'}>
+            <div className="bar-rail gap-[clamp(16px,2vw,48px)]">
+              <Wordmark onClick={() => setOpen(false)} />
 
-            <nav aria-label="Разделы сайта" className="hidden lg:block">
-              <ul className="bar-nav flex items-center gap-[clamp(20px,2.5vw,44px)]">
-                {NAV.map((item) => (
-                  <li key={item.href}>
-                    <a
-                      href={item.href}
-                      className="navlink"
-                      {...(active === item.href ? { 'aria-current': 'true' as const } : null)}
-                    >
-                      {item.label}
+              <nav aria-label="Разделы сайта" className="hidden lg:block">
+                <ul className="bar-nav flex items-center gap-[clamp(20px,2.5vw,44px)]">
+                  {NAV.map((item) => (
+                    <li key={item.href}>
+                      <a
+                        href={item.href}
+                        className="navlink"
+                        {...(active === item.href ? { 'aria-current': 'true' as const } : null)}
+                      >
+                        {item.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+
+              {/* Знак меню стоит перед действием: действие соосно правому
+                  торцу плашки и обязано быть последним. Имя у кнопки меняется
+                  вместе с рисунком: два прочерка это «Меню», крест «Закрыть».
+                  Слова на плашке по-прежнему нет ни одного. */}
+              <div className="flex items-center justify-end gap-[clamp(14px,1.6vw,26px)]">
+                <button
+                  ref={menuBtnRef}
+                  type="button"
+                  className="menu-burger lg:hidden"
+                  aria-label={open ? HEADER.close : HEADER.menu}
+                  aria-expanded={open}
+                  aria-controls="menu-panel"
+                  onClick={() => setOpen((v) => !v)}
+                />
+
+                {/* Наряд считается сигнатурой на плече слова, как сноска. */}
+                <a
+                  href={HEADER.ctaHref}
+                  className="bar-cta hidden md:inline-flex"
+                  aria-label={count > 0 ? `${HEADER.cta}, в наряде ${count}` : undefined}
+                >
+                  {HEADER.cta}
+                  {count > 0 && (
+                    <span className="bar-cta-n" aria-hidden>
+                      {count}
+                    </span>
+                  )}
+                </a>
+              </div>
+            </div>
+
+            {/* ВТОРОЙ РЯД ВЫРУБКИ. Пока он сложен, ряд имеет нулевую высоту и
+                вынут из порядка обхода целиком (`inert`): снаружи плашка
+                неотличима от прежней рейки. */}
+            <div
+              id="menu-panel"
+              className="bar-panel lg:hidden"
+              role="dialog"
+              aria-modal="true"
+              aria-label={HEADER.menuTitle}
+              {...(!open && { inert: true })}
+            >
+              <div className="bar-panel-in">
+                <nav>
+                  <ul>
+                    {NAV.map((item, i) => (
+                      <li key={item.href}>
+                        <a
+                          href={item.href}
+                          onClick={() => setOpen(false)}
+                          className="menu-row"
+                          style={{ ['--i' as string]: i }}
+                          {...(active === item.href
+                            ? { 'aria-current': 'true' as const }
+                            : null)}
+                        >
+                          <span className="menu-row-word">{item.label}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+
+                <div className="menu-foot">
+                  <a
+                    href={CONTACTS.phoneHref}
+                    className="menu-phone"
+                    onClick={() => setOpen(false)}
+                  >
+                    {CONTACTS.phone}
+                  </a>
+                  <div className="menu-channels">
+                    <a href={CONTACTS.whatsapp} target="_blank" rel="noreferrer">
+                      WhatsApp
                     </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-
-            {/* Слово «Меню» стоит перед действием: действие соосно правому
-                торцу плашки и обязано быть последним. */}
-            <div className="flex items-center justify-end gap-[clamp(14px,1.6vw,26px)]">
-              <button
-                ref={menuBtnRef}
-                type="button"
-                className="menu-btn lg:hidden"
-                aria-expanded={open}
-                aria-controls="menu-sheet"
-                onClick={() => setOpen(true)}
-              >
-                {HEADER.menu}
-              </button>
-
-              {/* Наряд считается сигнатурой на плече слова, как сноска. */}
-              <a
-                href={HEADER.ctaHref}
-                className="bar-cta hidden md:inline-flex"
-                aria-label={count > 0 ? `${HEADER.cta}, в наряде ${count}` : undefined}
-              >
-                {HEADER.cta}
-                {count > 0 && (
-                  <span className="bar-cta-n" aria-hidden>
-                    {count}
-                  </span>
-                )}
-              </a>
+                    <a href={CONTACTS.telegram} target="_blank" rel="noreferrer">
+                      Telegram
+                    </a>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </header>
 
-      {/* СОДЕРЖАНИЕ. Первая строка повторяет полосу знак в знак: при подъёме
-          листа знак остаётся стоять, а меняется под ним только грунт. */}
+      {/* ПОЛЕ ВОКРУГ РАСКРЫТОЙ ФОРМЫ. Краски не несёт: лист под плашкой обязан
+          остаться виден, иначе рост формы снова прочитается как полноэкранный
+          лист, только затемнённый. Работа у поля одна: касание мимо плашки
+          складывает её обратно. Клавиатуре поле не нужно, у неё есть Escape
+          и тот же крест в рейке. */}
       <div
-        id="menu-sheet"
-        ref={sheetRef}
-        role="dialog"
-        aria-modal="true"
-        aria-label={HEADER.menuTitle}
-        data-ground="ink"
+        className="menu-scrim lg:hidden"
         data-open={open ? 'true' : 'false'}
-        className="menu-sheet ground-ink lg:hidden"
-        {...(!open && { inert: true })}
-      >
-        <div className="flex h-[var(--topbar-h)] flex-none items-center justify-between pr-[var(--bar-inset)] pl-[var(--bar-lead)]">
-          <Wordmark onClick={() => setOpen(false)} />
-          <button type="button" className="menu-btn" onClick={() => setOpen(false)}>
-            {HEADER.close}
-          </button>
-        </div>
-
-        <nav aria-label="Разделы сайта" className="flex flex-1 items-center">
-          <ul className="w-full">
-            {NAV.map((item, i) => (
-              <li key={item.href}>
-                <a
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                  className="menu-row"
-                  style={{ ['--i' as string]: i }}
-                  {...(active === item.href ? { 'aria-current': 'true' as const } : null)}
-                >
-                  <span className="menu-row-n" aria-hidden>
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <span className="menu-row-word">{item.label}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <div className="flex flex-none flex-col gap-3 pb-[max(28px,env(safe-area-inset-bottom))]">
-          <a href={CONTACTS.phoneHref} className="menu-phone">
-            {CONTACTS.phone}
-          </a>
-          <div className="menu-channels">
-            <a href={CONTACTS.whatsapp} target="_blank" rel="noreferrer">
-              WhatsApp
-            </a>
-            <a href={CONTACTS.telegram} target="_blank" rel="noreferrer">
-              Telegram
-            </a>
-          </div>
-        </div>
-      </div>
+        role="presentation"
+        aria-hidden
+        onClick={() => setOpen(false)}
+      />
     </>
   );
 }
@@ -254,17 +316,20 @@ export function TopBar() {
  * была ошибка: марка УЖЕ говорит имя фирмы, и набор рядом повторял его
  * вторым голосом, занимая под повтор треть плашки. Марка, у которой есть
  * оригинал, в подписи не нуждается: подпись нужна рисунку, который сам себя
- * не называет. Имя фирмы лист всё равно произносит — вылетом в §01, титулом
+ * не называет. Имя фирмы лист всё равно произносит: вылетом в §01, титулом
  * вкладки и `aria-label` этой самой ссылки.
  *
  * МАРКА СТОИТ НАМЕРТВО. Закон ухода приводки на неё не заведён: в собственном
  * знаке сползшая форма читается не как дрожь машины, а как опечатка.
  *
- * МАРКА ВСТАВЛЕНА ВНУТРЬ ССЫЛКИ, А НЕ РЯДОМ С НЕЙ. `.bar-plate` это сетка с
+ * МАРКА ВСТАВЛЕНА ВНУТРЬ ССЫЛКИ, А НЕ РЯДОМ С НЕЙ. `.bar-rail` это сетка с
  * заданным числом колонок (две до 1024 px, три выше), и лишний прямой
- * потомок уехал бы во второй ряд плашки фиксированной высоты. Внутри ссылки
- * марка вдобавок достаётся обоим местам вывода сразу: и полосе, и первой
- * строке содержания.
+ * потомок уехал бы во второй ряд рейки фиксированной высоты.
+ *
+ * ВЫВОДИТСЯ ОДИН РАЗ НА ВЕСЬ ЛИСТ. Прежде вторая копия марки стояла в первой
+ * строке полноэкранного содержания и обязана была совпасть с первой пиксель
+ * в пиксель. Содержание растёт теперь из самой плашки, марка остаётся стоять
+ * на месте, и совпадать больше нечему с чем.
  *
  * ИМЯ У УЗЛА ОДНО. Ссылка названа `aria-label`, поэтому `Mark` идёт без
  * `title`: второе имя на том же узле скринридер прочитал бы дважды. Ссылка

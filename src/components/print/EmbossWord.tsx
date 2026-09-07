@@ -51,15 +51,18 @@ import {
 export function EmbossWord() {
   return (
     <div className="relative select-none overflow-hidden" aria-hidden>
-      <div className="relative mx-auto w-fit">
+      <div className="relative mx-auto w-full md:w-fit">
         {/* ФОРМА K. Рост слова взят от прежнего набора: прописная у него
             выходила в 0,675 от кегля `--text-emboss`, и полоса §08 держит
             ровно ту же высоту, что держала. Ширина считается сама, из
-            отношения сторон формы, и подгонять её нечем и незачем. */}
+            отношения сторон формы, и подгонять её нечем и незачем.
+
+            НА ТЕЛЕФОНЕ СЧЁТ ОБРАТНЫЙ: слово встаёт от реза до реза, во всю
+            ширину экрана, а высоту берёт из отношения сторон. Кегль там
+            больше ничего не решает. */}
         <svg
           viewBox={LOGOTYPE_VIEWBOX}
-          className="block w-auto"
-          style={{ height: 'calc(var(--text-emboss) * 0.675)' }}
+          className="block h-auto w-full md:h-[calc(var(--text-emboss)*0.675)] md:w-auto"
           fill="none"
         >
           <g fill="rgba(237, 235, 230, 0.08)">

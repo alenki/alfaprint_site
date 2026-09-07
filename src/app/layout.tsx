@@ -34,7 +34,7 @@ const SECTION_META: SectionMeta[] = SECTIONS.map((s) => ({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Альфа Принт · типография и рекламное агентство в Нальчике',
+    default: 'Альфа Принт',
     template: '%s · Альфа Принт',
   },
   description:

@@ -205,14 +205,6 @@ export function Sticker({ content }: Props) {
 
 /* ── БАННЕР 3:1 ───────────────────────────────────────────────────────── */
 export function Banner({ content }: Props) {
-  const eyelets = [
-    [22, 22],
-    [438, 22],
-    [22, 134],
-    [438, 134],
-    [230, 22],
-    [230, 134],
-  ];
   return (
     <svg viewBox="0 0 460 156" className="h-full w-full" role="img" aria-label={content.join(' ')}>
       <rect width="460" height="156" fill="var(--color-ink)" />
@@ -221,12 +213,6 @@ export function Banner({ content }: Props) {
       </text>
       <Rule x={52} y={94} w={150} h={3} o={0.45} fill="var(--color-chalk)" />
       <rect className="plate-r" x="336" y="52" width="76" height="52" fill={R} />
-      {eyelets.map(([cx, cy], i) => (
-        <g key={i}>
-          <circle className="plate-k" cx={cx} cy={cy} r="6" fill="none" stroke="var(--color-chalk)" strokeWidth="1.5" opacity="0.8" />
-          <circle className="plate-k" cx={cx} cy={cy} r="2.5" fill="var(--color-chalk)" opacity="0.5" />
-        </g>
-      ))}
       {/* размерная линия */}
       <g className="plate-k" stroke="var(--color-chalk)" strokeWidth="1" opacity="0.45">
         <line x1="22" y1="148" x2="438" y2="148" />

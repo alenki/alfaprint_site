@@ -52,7 +52,7 @@ export function WorkTile({ work, index }: { work: Work; index: number }) {
   return (
     <motion.figure
       className={cn(
-        'group relative flex flex-col border-b border-r border-[var(--rule)]',
+        'group @container relative flex flex-col border-b border-r border-[var(--rule)]',
         imposition(index)
       )}
       {...reveal}
@@ -60,7 +60,7 @@ export function WorkTile({ work, index }: { work: Work; index: number }) {
     >
       {/* min-h-0 обязателен: без него flex-элемент растёт под содержимое
           и ломает заданную пропорцию плитки. */}
-      <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-[var(--color-paper-lo)] p-[7%]">
+      <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-[var(--color-paper-lo)] p-[7%] @max-[220px]:p-[5%]">
         {work.photo ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -78,13 +78,37 @@ export function WorkTile({ work, index }: { work: Work; index: number }) {
 
       {/* Подписная планка несёт спецификацию, и её нельзя обрезать многоточием:
           «САТИН · ТЕРМОПЕРЕНОС · ОТ 4 ₽» и есть содержание плитки. Поэтому
-          здесь трекинг уже общего моношрифтового, а строка переносится. */}
+          здесь трекинг уже общего моношрифтового, а строка переносится.
+
+          НА УЗКОЙ МЕРЕ НАБИРАЕТСЯ ДРУГАЯ ПОДПИСЬ, А НЕ ОБРЕЗАННАЯ ЭТА.
+          В два столбца на телефоне плитке достаётся около 195 px, и полная
+          спецификация ложится в них восемью строками. Планка стоит ВНУТРИ
+          заданной пропорции, растёт она за счёт оттиска, и восемь строк
+          оставляют изделию полсотни пикселей. Поэтому там встаёт `short`:
+          имя и тираж, ровно две строки, и высота ряда снова известна заранее.
+
+          Меряет это ПЛИТКА, а не экран (@container). Мера плитки меняется
+          пять раз на трёх изломах сетки, и медиазапрос не отличает одинарную
+          плитку в четыре колонки от двойной. Порог 220 px выбран так, что
+          переключается один только двухколонный телефон: у md одинарная
+          256 px, у lg 256 px и шире, а нулевая плитка и на телефоне идёт во
+          всю меру и спецификацию несёт наравне с настольной. */}
       <figcaption className="rule-t flex items-end justify-between gap-3 bg-[var(--color-paper-hi)] px-[clamp(8px,0.8vw,16px)] py-2.5">
         <div className="min-w-0 font-[family-name:var(--font-mono)] text-[10px] uppercase leading-[1.35] tracking-[0.05em] tabular-nums">
-          <p className="fg">{work.caption[0]}</p>
-          <p className="fg-56">{work.caption[1]}</p>
+          <div className="@max-[220px]:hidden">
+            <p className="fg">{work.caption[0]}</p>
+            <p className="fg-56">{work.caption[1]}</p>
+          </div>
+          <div className="hidden @max-[220px]:block">
+            <p className="fg">{work.short[0]}</p>
+            <p className="fg-56">{work.short[1]}</p>
+          </div>
         </div>
-        <span className="t-micro fg-56 shrink-0 translate-x-1 self-end opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
+
+        {/* Указатель наведения, и снят он там, где наводить нечем: `opacity-0`
+            гасит краску, но КОРОБКУ оставляет, а коробка эта около 87 px, и на
+            телефоне она отнимала у подписи половину меры. */}
+        <span className="t-micro fg-56 shrink-0 translate-x-1 self-end opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 [@media(hover:none)]:hidden">
           Смотреть →
         </span>
       </figcaption>

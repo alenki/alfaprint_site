@@ -79,7 +79,7 @@ export function Dopusk() {
               {DOPUSK.body}
             </PrintReveal>
 
-            <PrintReveal as="div" delay={0.34} className="mt-[clamp(26px,2.4vw,44px)]">
+            <PrintReveal as="div" delay={0.34} className="mt-[clamp(26px,2.4vw,44px)] hidden md:block">
               <a
                 href={DOPUSK.link.href}
                 className="link-rule inline-block py-2 text-[clamp(15px,1.05vw,18px)] font-medium"
@@ -92,7 +92,7 @@ export function Dopusk() {
           <PrintReveal
             as="p"
             delay={0.24}
-            className="t-small fg-56 measure-tight col-span-4 leading-relaxed md:col-span-4 md:col-start-1 md:row-start-1"
+            className="t-small fg-56 measure-tight col-span-4 hidden leading-relaxed md:col-span-4 md:col-start-1 md:row-start-1 md:block"
           >
             {DOPUSK.note}
           </PrintReveal>

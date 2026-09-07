@@ -42,8 +42,8 @@ export function ProofSheet({
   return (
     <motion.figure
       className={cn(
-        // Ростовая высота только на листе: в стопке колонка меряется набором.
-        'relative flex flex-col py-[clamp(26px,2.2vw,48px)] md:min-h-[clamp(260px,20vw,400px)]',
+        // Ростовая высота: в стопке ниже, на листе выше, но задана всегда.
+        'relative flex flex-col py-[clamp(26px,2.2vw,48px)] min-h-[clamp(160px,28vw,200px)] md:min-h-[clamp(260px,20vw,400px)]',
         // Разрез: на телефоне колонки идут стопкой, и линия ложится поперёк.
         !first && 'max-md:rule-t md:rule-l',
         // Поля только у внутренних краёв: наружные держат поля полосы.

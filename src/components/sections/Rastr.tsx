@@ -2,7 +2,6 @@
 
 import { PrintReveal } from '@/components/type/PrintReveal';
 import { WorkTile } from '@/components/print/WorkTile';
-import { TrimMarks } from '@/components/chrome/TrimMarks';
 import { Section, Sheet, Grid } from '@/components/layout/Sheet';
 import { WORKS } from '@/content/works';
 import { RASTR, SECTIONS } from '@/content/site';
@@ -41,8 +40,7 @@ export function Rastr() {
 
       {/* ── Спуск: край в край, плитки делят общую волосяную линию ────────── */}
       <div className="relative mt-[clamp(40px,5vw,104px)]">
-        <TrimMarks className="z-10 text-[var(--rule)]" />
-        <div className="grid grid-cols-2 border-l border-t border-[var(--rule)] md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {WORKS.map((work, i) => (
             <WorkTile key={work.id} work={work} index={i} />
           ))}
