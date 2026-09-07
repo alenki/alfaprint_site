@@ -154,20 +154,37 @@ export function Tick({
 
 /**
  * Приводочный крест это цель, по которой совмещают краски.
- * Стоит ровно в двух местах на сайте: в знаке и на плане города.
+ * Стоит ровно в трёх местах на сайте: в знаке, на плане города и на листе
+ * приладки, который лежит на машине до первого прогона (`Makeready`).
+ *
+ * ВОЛОСЯНАЯ ЛИНИЯ ЭТО НЕ РАЗМЕР, А СВОЙСТВО. На двадцати двух пикселях
+ * обводка в одну единицу поля даёт чуть меньше пикселя и читается волосяной
+ * сама. На листе приладки тот же крест стоит ростом со сто шестьдесят восемь,
+ * и та же единица выросла бы в семь пикселей: прибор превратился бы в
+ * рисунок прибора. `hairline` снимает масштабирование обводки, и линия
+ * остаётся ровно в один пиксель на любом росте, как ей и положено на
+ * контрольном поле оттиска.
  */
 export function RegistrationMark({
   className,
   size = 22,
+  hairline = false,
 }: {
   className?: string;
   size?: number;
+  hairline?: boolean;
 }) {
+  const stroke = hairline ? ('non-scaling-stroke' as const) : undefined;
   return (
     <svg viewBox="0 0 24 24" width={size} height={size} className={className} fill="none" aria-hidden>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1" />
-      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1" />
-      <path d="M12 0v6.5M12 17.5V24M0 12h6.5M17.5 12H24" stroke="currentColor" strokeWidth="1" />
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1" vectorEffect={stroke} />
+      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1" vectorEffect={stroke} />
+      <path
+        d="M12 0v6.5M12 17.5V24M0 12h6.5M17.5 12H24"
+        stroke="currentColor"
+        strokeWidth="1"
+        vectorEffect={stroke}
+      />
     </svg>
   );
 }

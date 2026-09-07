@@ -93,7 +93,7 @@ export function WorkTile({ work, index }: { work: Work; index: number }) {
           переключается один только двухколонный телефон: у md одинарная
           256 px, у lg 256 px и шире, а нулевая плитка и на телефоне идёт во
           всю меру и спецификацию несёт наравне с настольной. */}
-      <figcaption className="rule-t flex items-end justify-between gap-3 bg-[var(--color-paper-hi)] px-[clamp(8px,0.8vw,16px)] py-2.5">
+      <figcaption className="rule-t bg-[var(--color-paper-hi)] px-[clamp(8px,0.8vw,16px)] py-2.5">
         <div className="min-w-0 font-[family-name:var(--font-mono)] text-[10px] uppercase leading-[1.35] tracking-[0.05em] tabular-nums">
           <div className="@max-[220px]:hidden">
             <p className="fg">{work.caption[0]}</p>
@@ -104,13 +104,6 @@ export function WorkTile({ work, index }: { work: Work; index: number }) {
             <p className="fg-56">{work.short[1]}</p>
           </div>
         </div>
-
-        {/* Указатель наведения, и снят он там, где наводить нечем: `opacity-0`
-            гасит краску, но КОРОБКУ оставляет, а коробка эта около 87 px, и на
-            телефоне она отнимала у подписи половину меры. */}
-        <span className="t-micro fg-56 shrink-0 translate-x-1 self-end opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 [@media(hover:none)]:hidden">
-          Смотреть →
-        </span>
       </figcaption>
     </motion.figure>
   );

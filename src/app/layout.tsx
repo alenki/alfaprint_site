@@ -7,6 +7,7 @@ import { TopBar } from '@/components/chrome/TopBar';
 import { ControlStrip } from '@/components/chrome/ControlStrip';
 import { MobileCta } from '@/components/chrome/MobileCta';
 import { CursorTrail } from '@/components/chrome/CursorTrail';
+import { Makeready } from '@/components/chrome/Makeready';
 import { NaryadProvider } from '@/state/NaryadContext';
 import { localBusinessSchema } from '@/lib/schema';
 import { SECTIONS } from '@/content/site';
@@ -72,6 +73,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ru" className={fontVariables} data-ground="paper">
       <body>
+        {/* ПЕРВОЕ, ЧТО ВЫПОЛНЯЕТСЯ НА СТРАНИЦЕ, и единственное, что обязано
+            выполниться до первой отрисовки. Умеет он ровно одно: помнит, что
+            приладку в этом сеансе уже смотрели. Метка ставится ДО того, как
+            браузер что-нибудь нарисует, поэтому на возврате и на перезагрузке
+            лист приладки не мелькает ни кадром; сам лист при этом печатается
+            без единой строки JS и без этого скрипта уйдёт точно так же, см.
+            `Makeready`. Всё, что скрипт умеет сломать, это лишний показ. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              'try{var d=document.documentElement,k="alfa:makeready";' +
+              'if(sessionStorage.getItem(k))d.dataset.makeready="seen";' +
+              'else sessionStorage.setItem(k,"1")}catch(e){}',
+          }}
+        />
+
         <a href="#main" className="skip-link t-label">
           К содержанию
         </a>
@@ -99,6 +116,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }}
           />
         </noscript>
+
+        {/* Лист приладки. Стоит ВНЕ MotionConfig намеренно: движения в нём
+            нет ни одного кадра на motion/react, весь ход задан анимацией CSS,
+            и жить он обязан раньше, чем оживёт React. */}
+        <Makeready />
 
         <MotionConfig reducedMotion="user">
           <NaryadProvider>

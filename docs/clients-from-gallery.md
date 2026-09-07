@@ -9,7 +9,7 @@
 отсеяны и в список не попали.
 
 Зачем это лежит в репозитории. Лента `ClientMarks` под первым экраном
-показывает семнадцать знаков, те, чей логотип удалось взять из ОФИЦИАЛЬНОГО
+показывает двадцать три знака, те, чей логотип удалось взять из ОФИЦИАЛЬНОГО
 источника: с сайта самой компании, из её пресс-кита, с подтверждённой
 карточки на Яндекс.Картах или из её собственного сообщества. Всё остальное
 в этой таблице это заказчики, у которых логотипа в открытом доступе нет вовсе:
@@ -28,7 +28,7 @@
 
 ## В ленте сейчас
 
-Строк ниже девятнадцать, а марок в ленте семнадцать: «Квартал» и «Динамо»
+Строк ниже двадцать пять, а марок в ленте двадцать три: «Квартал» и «Динамо»
 попали в разбор дважды, кириллицей и латиницей, так они и напечатаны на
 разных изделиях.
 
@@ -53,6 +53,12 @@
 | **ИСТОКИ** | restaurant menu sheets: alcohol package list («Алколавка») and wine list / винная карта;  | p282, v016 |
 | **«ДИНАМО»** | fabric pennants / вымпелы with cord and tassel | p197 |
 | **ВОЛОНТЕРСКАЯ РОТА** | roll-up banner / pull-up stand | p222 |
+| **РОССИЙСКИЙ ЭКСПОРТНЫЙ ЦЕНТР** | branded power bank (промо-сувенир) | p268, v018 |
+| **РОССЕЛЬХОЗБАНК** | notebook cover, partner/sponsor logo row | p227 |
+| **Brunch** | laser-cut wooden table caddy; wooden menu-holder stand with cut-out lettering | p236, v079 |
+| **«Синдика»** | printed sheet / programme in poly bag | p155 |
+| **АО «Курорт Нальчик»** | roll-up banner / pull-up stand | v073 |
+| **МЯСО & СЫР** | bar menu / drinks price list card (kraft-toned printed menu) | p281 |
 
 ## Все заказчики, найденные в галерее
 
@@ -82,7 +88,7 @@
 | 20 | Albina Hodova | 2 | p128, p132 | business card; business card + branded chocolate bar wrapper (шоколадка) |
 | 21 | ARABIKA | 2 | p350, p351 | printed menu sheet / seasonal promo menu (single-sheet menu card); restaurant menu card (summer promo menu) |
 | 22 | Bakery RESTO·BAR | 2 | v071, v072 | chocolate bar wrapper, Ramadan greeting card and contact card; restaurant menu folder / menu cover |
-| 23 | Brunch | 2 | p236, v079 | laser-cut wooden table caddy / organiser box; wooden menu-holder stand with cut-out lettering |
+| 23 | Brunch ✱ | 2 | p236, v079 | laser-cut wooden table caddy / organiser box; wooden menu-holder stand with cut-out lettering |
 | 24 | De Laris | 2 | p283, v017 | engraved metal clothing/product label tag; engraved metal garment labels / clothing tags (лазерная гравировка  |
 | 25 | FAZENDA 07 FAMILY MARKET ✱ | 2 | p254, v035 | food packaging label / wrapper; printed label sheet / packaging labels (sunflower oil) |
 | 26 | GJJ | 2 | p210, v024 | acrylic award / trophy on engraved wooden base; acrylic-and-wood award plaques (UV print on acrylic, laser eng |
@@ -116,7 +122,7 @@
 | 54 | НАСТАВНИК ПЕРВЫХ | 2 | p319, v109 | metal ballpoint pens; promotional metal ballpoint pens (branded pen batch) |
 | 55 | ПЕРЕВОЗКИ | 2 | p304, p308 | die-cut shaped business card; die-cut shaped business cards |
 | 56 | РЕСПУБЛИКАНСКАЯ ОЛИМПИАДА | 2 | p321, p343 | souvenir ballpoint pens; white plastic ballpoint pens |
-| 57 | РОССИЙСКИЙ ЭКСПОРТНЫЙ ЦЕНТР | 2 | p268, v018 | branded power bank; power bank (branded gift) |
+| 57 | РОССИЙСКИЙ ЭКСПОРТНЫЙ ЦЕНТР ✱ | 2 | p268, v018 | branded power bank; power bank (branded gift) |
 | 58 | РОСЭКСИМБАНК | 2 | p268, v018 | branded power bank; power bank (branded gift) |
 | 59 | Русские Чтения | 2 | p344, v108 | promotional ballpoint pen (printed barrel); souvenir ballpoint pens (large batch on the printing jig behind) |
 | 60 | Управление Федеральной антимонопольной службы по Кабардино-Балкарской Республике | 2 | p156, v037 | paper gift bag / packaging; paper gift bags / packaging |
@@ -238,9 +244,9 @@
 | 176 | «МОЙ ГАЗ» | 1 | v028 | wide-format printed banner / poster |
 | 177 | «ПАТРИОТ ПАРК» ЖИЛОЙ КОМПЛЕКС | 1 | p355 | advertising flyer / leaflet (листовка, double-sided) |
 | 178 | «Семь дней с Первыми» | 1 | p279 | acrylic certificate plaque |
-| 179 | «Синдика» | 1 | p155 | printed sheet / programme in poly bag |
+| 179 | «Синдика» ✱ | 1 | p155 | printed sheet / programme in poly bag |
 | 180 | АЛЬТАИР медицинский центр | 1 | p141 | facade signboard / light box (two panels on the building) |
-| 181 | АО «Курорт Нальчик» | 1 | v073 | roll-up banner / pull-up stand |
+| 181 | АО «Курорт Нальчик» ✱ | 1 | v073 | roll-up banner / pull-up stand |
 | 182 | АССАМБЛЕЯ НАРОДОВ РОССИИ | 1 | p344 | souvenir ballpoint pens (batch on the print jig) |
 | 183 | АФАШОКОВ Б.И. | 1 | p170 | engraved metal pen |
 | 184 | АФАШОКОВ Байда Исмаилович | 1 | p170 | embossed fabric notebook with elastic band |
@@ -303,7 +309,7 @@
 | 241 | МОНОЛИТ 07 | 1 | p252 | presentation folder / brochure cover |
 | 242 | МУДРАНОВ Б.З. | 1 | p192 | engraved metal ballpoint pen |
 | 243 | МУДРАНОВ Беслан Заудинович | 1 | p192 | fabric-covered notebook / notepad with elastic band |
-| 244 | МЯСО & СЫР | 1 | p281 | bar menu / drinks price list card (kraft-toned printed menu, several copies) |
+| 244 | МЯСО & СЫР ✱ | 1 | p281 | bar menu / drinks price list card (kraft-toned printed menu, several copies) |
 | 245 | НМК | 1 | v089 | metal gift tin / engraved box |
 | 246 | Образовательный кластер «Правоохранительная сфера и управление» | 1 | v100 | hardcover presentation folder / agreement cover |
 | 247 | ОГОРОД | 1 | p255 | branded clear glass drink can / lemonade jar (silk-screen print) |
@@ -321,7 +327,7 @@
 | 259 | Региональное отделение Движения Первых Кабардино-Балкарской Республики | 1 | p279 | acrylic certificate plaque |
 | 260 | РЕСТОРАН ОГОРОД | 1 | p255 | branded clear glass drink can / lemonade jar (silk-screen print) |
 | 261 | РОСАВТОДОР | 1 | p143 | embroidered white polo shirt (corporate uniform) |
-| 262 | РОССЕЛЬХОЗБАНК | 1 | p227 | Notebook cover, partner/sponsor logo row |
+| 262 | РОССЕЛЬХОЗБАНК ✱ | 1 | p227 | Notebook cover, partner/sponsor logo row |
 | 263 | Румская Любовь | 1 | p131 | double-sided business cards in a kraft gift box with branded chocolates |
 | 264 | САМОЗАНЯТ.PRO | 1 | p145 | printed banner / roll-up |
 | 265 | Северо-Кавказский БИЗНЕС FORUM | 1 | v061 | event badge / lanyard card, flyer, promotional pens |

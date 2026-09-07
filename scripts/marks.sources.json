@@ -63,7 +63,7 @@
   ],
   "origin": "https://t.me/kvartal_nalchik, аватар канала (cdn4.telesco.pe)",
   "from": "https://t.me/kvartal_nalchik/13",
-  "note": "Своего сайта у комплекса нет; знак взят с аватара его собственного канала. Белая линейная графика по чёрному, отсюда `invert`.",
+  "note": "Своего сайта у комплекса нет; знак взят с аватара его собственного канала. Белая линейная графика по чёрному, отсюда `invert`. Постоянного адреса у файла нет: аватар телеграма отдаётся по временной ссылке, поэтому при пересчёте набора исходник восстанавливается из уже набранной маски (белая графика по чёрному), и `invert` остаётся правдой. Это единственный знак из двадцати трёх, который нельзя скачать заново.",
   "invert": true
  },
  {
@@ -81,16 +81,16 @@
   "note": "Брендовый словесный знак из пресс-кита fadm.gov.ru (не геральдическая эмблема ведомства: на форумной сувенирке стоит именно бренд). Кислотно-жёлтый #DAEF14: по яркости почти бумага, поэтому маска считается по тёмному каналу."
  },
  {
-  "slug": "dinamo",
-  "name": "Общество «Динамо»",
-  "raster": "dinamo.png",
-  "seen": "вымпелы всероссийских соревнований по дзюдо",
+  "slug": "myaso-syr",
+  "name": "Мясо & Сыр",
+  "raster": "myaso-syr.png",
+  "seen": "барная карта",
   "gallery": [
-   "p197"
+   "p281"
   ],
-  "origin": "https://www.dynamo.su/local/templates/dynamo/assets/images/symbols/dynamo-new.svg",
-  "from": "https://www.dynamo.su/",
-  "note": "Знак с сайта самого Общества «Динамо»."
+  "origin": "https://avatars.mds.yandex.net/get-altay/15352901/2a00000195dc5a71d1656eb369029090c7d9/orig",
+  "from": "https://yandex.com/maps/org/myaso_syr/76393419731/",
+  "note": "Логотип с подтверждённой карточки заведения на Яндекс.Картах. Головка сыра, из которой выбрана монограмма, и словесный знак под ней."
  },
  {
   "slug": "fazenda07",
@@ -179,6 +179,30 @@
   "note": "Отель в Терсколе, Приэльбрусье. Знак отрисован светлым по прозрачному, силуэтом взят альфа-канал исходника."
  },
  {
+  "slug": "rshb",
+  "name": "Россельхозбанк",
+  "raster": "rshb.png",
+  "seen": "обложка ежедневника, партнёрский ряд",
+  "gallery": [
+   "p227"
+  ],
+  "origin": "https://www.rshb.ru/wcms-resources/LOGO_RSHB.svg",
+  "from": "https://www.rshb.ru/",
+  "note": "Знак из шапки собственного сайта банка. Действующий локап: три полосы и «РСХБ». В партнёрском ряду на обложке ежедневника p227 стоит он же."
+ },
+ {
+  "slug": "kurort-nalchik",
+  "name": "Курорт «Нальчик»",
+  "raster": "kurort-nalchik.png",
+  "seen": "ролл-ап баннер",
+  "gallery": [
+   "v073"
+  ],
+  "origin": "https://www.kurortnalchik.ru/media/img/template/logo.png",
+  "from": "https://www.kurortnalchik.ru/",
+  "note": "Знак из шапки собственного сайта курорта федерального значения. Не путать с санаторием «Горный родник», который стоит на том же ролл-апе v073 отдельной строкой."
+ },
+ {
   "slug": "natsproekty",
   "name": "Национальные проекты России",
   "raster": "natsproekty.png",
@@ -191,6 +215,19 @@
   "origin": "https://logo-teka.com/wp-content/uploads/2025/09/national-projects-of-russia-logo.png",
   "from": "https://logo-teka.com/nacionalnye-proekty-rossii/",
   "note": "Бренд образца 2019…2024, тот самый, что стоит на ролл-апе p145. НЕ старая эмблема «Приоритетные национальные проекты» 2006 года и НЕ нынешний знак «По решению Президента», обе были отвергнуты при сверке. Марка сама является плашкой с вывороткой, `invert` не ставится."
+ },
+ {
+  "slug": "rec",
+  "name": "Российский экспортный центр",
+  "raster": "rec.png",
+  "seen": "пауэрбанк из подарочного набора",
+  "gallery": [
+   "p268",
+   "v018"
+  ],
+  "origin": "https://www.exportcenter.ru/upload/iblock/92a/3ptxp8u0ob7i10k0d20uy3i2lky54m95.png",
+  "from": "https://www.exportcenter.ru/press_center/mass_media_materials/",
+  "note": "Официальный файл из раздела «Материалы для СМИ». В исходнике стоит локап ВСЕЙ ГРУППЫ: под чертой к знаку РЭЦ приписаны ЭКСАР и РОСЭКСИМБАНК. Обе приписки срезаны при растрировании (кроп по 440 px из 827): на пауэрбанке они стоят самостоятельными марками, а в ленте стоит головной знак, как и у «Первых»."
  },
  {
   "slug": "foster",
@@ -206,6 +243,18 @@
   "from": "https://yandex.ru/maps/org/foster/206180719769/",
   "note": "Спортивный магазин. Монограмма FR светлым по чёрной плашке, отсюда `invert`.",
   "invert": true
+ },
+ {
+  "slug": "dinamo",
+  "name": "Общество «Динамо»",
+  "raster": "dinamo.png",
+  "seen": "вымпелы всероссийских соревнований по дзюдо",
+  "gallery": [
+   "p197"
+  ],
+  "origin": "https://www.dynamo.su/local/templates/dynamo/assets/images/symbols/dynamo-new.svg",
+  "from": "https://www.dynamo.su/",
+  "note": "Знак с сайта самого Общества «Динамо»."
  },
  {
   "slug": "daimond",
@@ -233,6 +282,32 @@
   "origin": "https://volrota.ru/wp-content/uploads/2020/07/rota_logo-2.png",
   "from": "https://volrota.ru/",
   "note": "Знак отрисован белым по прозрачному: на белой бумаге он бы исчез, поэтому силуэтом взят альфа-канал исходника."
+ },
+ {
+  "slug": "brunch",
+  "name": "Brunch restaurant & bar",
+  "raster": "brunch.png",
+  "seen": "деревянная подставка под меню",
+  "gallery": [
+   "p236",
+   "v079"
+  ],
+  "origin": "https://avatars.mds.yandex.net/get-altay/9717139/2a000001896d7c4d4742ddcd1df141b644f6/orig",
+  "from": "https://yandex.com/maps/org/brunch/24694095820/",
+  "note": "Логотип с подтверждённой карточки заведения на Яндекс.Картах. Рукописный знак белым по бирюзовой плашке, отсюда `invert`.",
+  "invert": true
+ },
+ {
+  "slug": "sindika",
+  "name": "Холдинг «Синдика»",
+  "raster": "sindika.png",
+  "seen": "программа мероприятия",
+  "gallery": [
+   "p155"
+  ],
+  "origin": "https://static.tildacdn.com/tild3235-3264-4633-b737-303432306436/logo1.svg",
+  "from": "https://sindika.ru/",
+  "note": "Вектор из шапки собственного сайта холдинга. Знак отрисован белым по прозрачному: на белой бумаге он бы исчез, поэтому силуэтом взят альфа-канал исходника."
  },
  {
   "slug": "avenue-hotel",
