@@ -6,6 +6,14 @@ import { cn } from '@/lib/cn';
 import { usePrefersReducedMotion } from '@/lib/hooks';
 
 /**
+ * ХОД РАКЕЛЯ ОДНИМ ЧИСЛОМ. Один проход по одной строке, и он же общий срок
+ * появления текста на сайте. Отдельной полосе разрешено пройти КОРОЧЕ (см.
+ * §03, где имён пять и они идут внахлёст), но не иначе: глагол остаётся тем
+ * же, меняется одна лишь скорость руки.
+ */
+export const PASS = 0.42;
+
+/**
  * ЕДИНСТВЕННЫЙ ГЛАГОЛ ПОЯВЛЕНИЯ ТЕКСТА НА САЙТЕ.
  *
  * Текст не выезжает сбоку и не проявляется через opacity, он ПЕЧАТАЕТСЯ:
@@ -61,7 +69,7 @@ export function PrintReveal({
       initial={{ clipPath: 'inset(102% 0 0 0)' }}
       whileInView={{ clipPath: 'inset(0% 0 0 0)' }}
       viewport={{ once: true, margin: '-12% 0px' }}
-      transition={{ duration: 0.42, delay, ease: [0.65, 0, 0.35, 1] }}
+      transition={{ duration: PASS, delay, ease: [0.65, 0, 0.35, 1] }}
     >
       {children}
     </Tag>
@@ -71,8 +79,20 @@ export function PrintReveal({
 /**
  * Тот же глагол появления для компонентов, которым нужны свои задержки.
  * Возвращает готовый набор пропсов Motion, уже с учётом reduced-motion.
+ *
+ * Второй довод это ХОД РАКЕЛЯ, и по умолчанию он общий. Укорачивать его
+ * позволено там, где строк много и они идут очередью: пять имён §03 полным
+ * ходом читались ожиданием конца, а не печатью. Ветки reduced-motion это не
+ * касается: там движения нет вовсе, и укорачивать нечего.
+ *
+ * ПОД МАСКОЙ НЕ ДОЛЖНО БЫТЬ НИЧЕГО ШИРЕ ОБЁРТКИ: clip-path режет потомков по
+ * своему боксу, и содержимое, вышедшее вбок, будет срезано обратно. Уводить
+ * саму обёртку за обрез тоже нельзя: у body стоит overflow-x: clip, и элемент
+ * с отрицательным левым краем IntersectionObserver считает невидимым НАВСЕГДА
+ * (замерено на 1440: при x = 0 обёртка наблюдается, при x = −0,2 уже нет), а
+ * значит whileInView не наступит и под маской останется пусто.
  */
-export function useRevealProps(delay = 0) {
+export function useRevealProps(delay = 0, duration = PASS) {
   const reduced = usePrefersReducedMotion();
 
   if (reduced) {
@@ -90,6 +110,6 @@ export function useRevealProps(delay = 0) {
     initial: { clipPath: 'inset(102% 0 0 0)' },
     whileInView: { clipPath: 'inset(0% 0 0 0)' },
     viewport: { once: true, margin: '-12% 0px' } as const,
-    transition: { duration: 0.42, delay, ease: [0.65, 0, 0.35, 1] as const },
+    transition: { duration, delay, ease: [0.65, 0, 0.35, 1] as const },
   };
 }

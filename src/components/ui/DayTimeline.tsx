@@ -33,9 +33,7 @@ export function DayTimeline() {
   const nodes = DAY.nodes;
 
   return (
-    <div ref={ref} className="relative mt-[clamp(48px,5.4vw,120px)]">
-      <p className="t-micro fg-56 px-[var(--edge)] pb-[clamp(28px,3vw,64px)]">{DAY.label}</p>
-
+    <div ref={ref} className="relative mt-[clamp(72px,7vw,160px)]">
       {/* ── Десктоп: линия во весь лист ──────────────────────────────────── */}
       <div className="relative hidden md:block" style={{ paddingBlock: 'clamp(64px,6vw,116px)' }}>
         {/* Линейка уходит за обрез: смена не начинается и не кончается на поле. */}

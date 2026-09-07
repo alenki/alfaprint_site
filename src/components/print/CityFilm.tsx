@@ -15,10 +15,10 @@ import { CONTACTS, IMPRINT } from '@/content/site';
  */
 
 const H = [
-  { y: 92, w: 1 },
-  { y: 196, w: 2 },
-  { y: 300, w: 1 },
-  { y: 404, w: 1 },
+  { y: 76, w: 1 },
+  { y: 160, w: 2 },
+  { y: 244, w: 1 },
+  { y: 328, w: 1 },
 ];
 const V = [
   { x: 110, w: 1 },
@@ -28,12 +28,12 @@ const V = [
   { x: 676, w: 1 },
 ];
 const LINKS = [
-  'M110 92 L250 196',
-  'M396 196 L540 300',
-  'M250 300 L396 404',
-  'M540 92 L676 196',
-  'M110 300 L250 404',
-  'M396 92 L540 196',
+  'M110 76 L250 160',
+  'M396 160 L540 244',
+  'M250 244 L396 328',
+  'M540 76 L676 160',
+  'M110 244 L250 328',
+  'M396 76 L540 160',
 ];
 
 export function CityFilm() {
@@ -52,13 +52,13 @@ export function CityFilm() {
       className="group relative block"
       aria-label={`${IMPRINT.mapsLink}: Нальчик, Тарчокова, 29`}
     >
-      <svg viewBox="0 0 800 520" className="h-auto w-full min-h-[240px]" role="img" aria-hidden>
+      <svg viewBox="0 0 800 420" className="h-auto w-full min-h-[190px]" role="img" aria-hidden>
         <g stroke="currentColor" fill="none" vectorEffect="non-scaling-stroke" opacity="0.62">
           {H.map((l, i) => (
             <motion.line key={`h${i}`} x1="0" y1={l.y} x2="800" y2={l.y} strokeWidth={l.w} {...draw(i)} />
           ))}
           {V.map((l, i) => (
-            <motion.line key={`v${i}`} x1={l.x} y1="0" x2={l.x} y2="520" strokeWidth={l.w} {...draw(i + 4)} />
+            <motion.line key={`v${i}`} x1={l.x} y1="0" x2={l.x} y2="420" strokeWidth={l.w} {...draw(i + 4)} />
           ))}
           {LINKS.map((d, i) => (
             <motion.path key={`l${i}`} d={d} strokeWidth="1" {...draw(i + 9)} />
@@ -68,7 +68,7 @@ export function CityFilm() {
         {/* Подписи улиц вдоль линий */}
         <text
           x="20"
-          y="190"
+          y="154"
           fill="currentColor"
           fontFamily="var(--font-mono)"
           fontSize="11"
@@ -79,7 +79,7 @@ export function CityFilm() {
         </text>
         <text
           x="404"
-          y="60"
+          y="40"
           fill="currentColor"
           fontFamily="var(--font-mono)"
           fontSize="11"
@@ -99,17 +99,17 @@ export function CityFilm() {
           whileInView={{ scale: [1, 1.12, 1] }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, delay: 0.9, ease: [0.65, 0, 0.35, 1] }}
-          style={{ transformOrigin: '396px 196px' }}
+          style={{ transformOrigin: '396px 160px' }}
         >
-          <circle cx="396" cy="196" r="4" />
-          <circle cx="396" cy="196" r="9" />
-          <path d="M396 185v-11M396 218v-11M385 196h-11M418 196h-11" />
+          <circle cx="396" cy="160" r="4" />
+          <circle cx="396" cy="160" r="9" />
+          <path d="M396 149v-11M396 182v-11M385 160h-11M418 160h-11" />
         </motion.g>
 
         {/* Кольцо и подпись стоят только под курсором */}
         <circle
           cx="396"
-          cy="196"
+          cy="160"
           r="34"
           fill="none"
           stroke="currentColor"
@@ -119,13 +119,13 @@ export function CityFilm() {
 
         {/* Масштабная линейка */}
         <g stroke="currentColor" strokeWidth="1" opacity="0.7">
-          <line x1="640" y1="484" x2="760" y2="484" />
-          <line x1="640" y1="479" x2="640" y2="489" />
-          <line x1="760" y1="479" x2="760" y2="489" />
+          <line x1="640" y1="392" x2="760" y2="392" />
+          <line x1="640" y1="387" x2="640" y2="397" />
+          <line x1="760" y1="387" x2="760" y2="397" />
         </g>
         <text
           x="700"
-          y="475"
+          y="383"
           fill="currentColor"
           textAnchor="middle"
           fontFamily="var(--font-mono)"
@@ -137,7 +137,7 @@ export function CityFilm() {
         </text>
       </svg>
 
-      <span className="t-micro mt-3 inline-block opacity-0 transition-opacity duration-300 group-hover:opacity-80 group-focus-visible:opacity-80">
+      <span className="t-micro absolute left-0 top-full mt-3 opacity-0 transition-opacity duration-300 group-hover:opacity-80 group-focus-visible:opacity-80">
         Построить маршрут →
       </span>
     </a>

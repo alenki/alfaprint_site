@@ -11,35 +11,23 @@ import { waHref } from '@/lib/whatsapp';
  *
  * Трафик «Альфы» это сорок тысяч подписчиков, которые открывают ссылку из шапки
  * инстаграма с телефона. Поэтому кнопка появляется на 8 % прокрутки и больше
- * не исчезает, кроме секции «В печать», где она дублировала бы саму себя.
+ * не исчезает нигде: полоса «В печать», единственное место, где она
+ * дублировала бы саму себя, с листа снята.
  */
 export function MobileCta() {
   const naryad = useNaryad();
-  const [shown, setShown] = useState(false);
-  const [inOrder, setInOrder] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const onScroll = () => {
       const max = document.body.scrollHeight - window.innerHeight;
-      setShown(max > 0 && window.scrollY / max > 0.08);
+      setVisible(max > 0 && window.scrollY / max > 0.08);
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
-
-    const order = document.getElementById('v-pechat');
-    let io: IntersectionObserver | undefined;
-    if (order) {
-      io = new IntersectionObserver(([e]) => setInOrder(e.isIntersecting), { threshold: 0.12 });
-      io.observe(order);
-    }
-
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      io?.disconnect();
-    };
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const visible = shown && !inOrder;
   const count = naryad.items.length;
 
   return (

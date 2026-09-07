@@ -2,35 +2,39 @@
 
 import { PrintReveal } from '@/components/type/PrintReveal';
 import { CityFilm } from '@/components/print/CityFilm';
+import { ContactPanels } from '@/components/print/ContactPanels';
 import { EmbossWord } from '@/components/print/EmbossWord';
-import { Tick } from '@/components/chrome/Mark';
 import { useShift } from '@/components/ui/ShiftStatus';
 import { Section, Sheet, Grid } from '@/components/layout/Sheet';
 import { HOURS_DISPLAY } from '@/content/hours';
-import { COMPANY, CONTACTS, IMPRINT, SECTIONS } from '@/content/site';
+import { CLOSING, IMPRINT, NAV, SECTIONS } from '@/content/site';
 
 /**
  * §08 · ВЫХОДНЫЕ ДАННЫЕ
  *
- * Не строка копирайта, а колофон, техническая правда о самой странице.
- * Ровно та выходная полоса, которую несёт каждая напечатанная книга, и
- * единственная форма подвала, допустимая для типографии.
+ * ПОЛОСА КОНЧАЛАСЬ СПРАВОЧНИКОМ. Адрес, часы, четыре канала и план города
+ * стояли в две колонки: на вопрос «где вы» лист отвечал, а заказа не просил
+ * ни разу, и кончался не концом, а обрывом. Теперь порядок обратный, и он
+ * тот же, что у самого разговора в цеху: сначала говорят дело, потом дают
+ * руку, и только потом диктуют адрес.
  *
- * Колофон набран во весь формат: ключ на левом резе, значение на правом,
- * линия между ними идёт от края до края. Прежняя редакция жала его в две
- * узкие колонки посреди листа, а это ровно та таблица, которой формат
- * во весь лист идёт на пользу больше всего.
+ * ЧЕТЫРЕ ПОЛОСЫ СВЕРХУ ВНИЗ:
+ *   1 · заявление и один абзац под ним;
+ *   2 · две плашки заказа во весь формат, бумага и рубин;
+ *   3 · колонки справочника: цех, разделы, связь, и план города у реза;
+ *   4 · слепое тиснение имени во весь вылет.
  *
- * Реквизиты выводятся только если клиент их прислал: ИНН и ОГРНИП это
- * юридически значимые данные, выдумывать их нельзя.
+ * ВОЛОСЯНЫХ ЗДЕСЬ НЕТ НИ ОДНОЙ. Полосы отбиты грунтом, краской и воздухом.
+ * Колофон снят вместе со своей линией: строка выходных данных и «Наверх»
+ * договаривали то, что уже сказано выше, а линия резала лист на карточки
+ * ровно там, где он обязан просто кончиться.
+ *
+ * ЖИВОЙ СТРОКИ «СМЕНА ИДЁТ» ЗДЕСЬ ПО-ПРЕЖНЕМУ НЕТ. Часы цеха выходят наружу
+ * ровно одним способом, подсветкой сегодняшней строки, см. `useShift`.
  */
 export function VykhodnyeDannye() {
   const shift = useShift();
-  const year = new Date().getFullYear();
-  const S = SECTIONS[7];
-
-  const half = Math.ceil(IMPRINT.colophon.length / 2);
-  const columns = [IMPRINT.colophon.slice(0, half), IMPRINT.colophon.slice(half)];
+  const S = SECTIONS[6];
 
   return (
     <Section
@@ -40,111 +44,125 @@ export function VykhodnyeDannye() {
       gain={0.5}
       className="overflow-hidden pt-[var(--section-pad)]"
     >
+      {/* ── 1 · Заявление ─────────────────────────────────────────────────── */}
       <Sheet>
-        {/* ── Цех ──────────────────────────────────────────────────────── */}
-        <Grid className="gap-y-14">
-          <div className="col-span-4 md:col-span-4">
+        <Grid>
+          <div className="col-span-4 md:col-span-9">
             <PrintReveal as="div">
-              <p className="font-display fg text-[clamp(1.875rem,3.4vw,4.25rem)] font-bold leading-[1.02] tracking-[-0.024em]">
+              <h2 className="t-h2 fg">
+                {CLOSING.statement.map((l) => (
+                  <span key={l} className="block">
+                    {l}
+                  </span>
+                ))}
+              </h2>
+            </PrintReveal>
+
+            <PrintReveal
+              as="p"
+              delay={0.034}
+              className="t-lead fg-70 measure mt-[clamp(24px,2.4vw,44px)]"
+            >
+              {CLOSING.lead}
+            </PrintReveal>
+          </div>
+        </Grid>
+      </Sheet>
+
+      {/* ── 2 · Плашки заказа во весь формат ──────────────────────────────── */}
+      <div className="mt-[clamp(44px,5.4vw,116px)]">
+        <ContactPanels />
+      </div>
+
+      {/* ── 3 · Справочник ────────────────────────────────────────────────── */}
+      <Sheet className="pt-[clamp(56px,6.4vw,150px)]">
+        <Grid className="gap-y-[clamp(40px,4vw,76px)]">
+          {/* Цех */}
+          <div className="col-span-4 md:col-span-3">
+            <PrintReveal as="div">
+              <span className="t-micro fg-56 kp-col-label">{CLOSING.columns.shop}</span>
+              <p className="t-lead fg">
                 {IMPRINT.addressLines.map((l) => (
                   <span key={l} className="block">
                     {l}
                   </span>
                 ))}
               </p>
+
+              <ul className="mt-[clamp(18px,1.7vw,28px)] space-y-1.5">
+                {HOURS_DISPLAY.map((h) => {
+                  const today =
+                    shift.day >= 0 && (h.match as readonly number[]).includes(shift.day);
+                  return (
+                    <li
+                      key={h.days}
+                      className="t-mono"
+                      style={{ color: today ? 'var(--fg)' : 'var(--fg-70)' }}
+                    >
+                      {h.days} {h.time}
+                    </li>
+                  );
+                })}
+              </ul>
             </PrintReveal>
-
-            <ul className="mt-8 space-y-1.5">
-              {HOURS_DISPLAY.map((h) => {
-                const today = shift.day >= 0 && (h.match as readonly number[]).includes(shift.day);
-                return (
-                  <li
-                    key={h.days}
-                    className="t-mono flex items-center gap-2.5"
-                    style={{ color: today ? 'var(--fg)' : 'var(--fg-70)' }}
-                  >
-                    <span
-                      className="inline-block h-[5px] w-[5px] shrink-0 rounded-full"
-                      style={{ background: today ? 'var(--color-rubine)' : 'transparent' }}
-                      aria-hidden
-                    />
-                    {h.days} {h.time}
-                  </li>
-                );
-              })}
-            </ul>
-
-            <p className="t-micro fg-56 mt-6 leading-relaxed">{IMPRINT.terms}</p>
-
-            <a
-              href={CONTACTS.phoneHref}
-              className="link-rule fg mt-8 inline-block text-[22px] font-medium"
-            >
-              {CONTACTS.phone}
-            </a>
-
-            {/* Каналы словами. Никаких иконок соцсетей. */}
-            <ul className="mt-6 space-y-2.5">
-              {IMPRINT.channels.map((c) => (
-                <li key={c.label}>
-                  <a
-                    href={c.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="link-rule fg inline-flex items-center gap-2.5"
-                  >
-                    <Tick
-                      className="h-2.5 w-3 shrink-0 text-[var(--color-rubine)]"
-                      strokeWidth={3}
-                    />
-                    {c.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
           </div>
 
-          <div className="col-span-4 md:col-span-7 md:col-start-6">
-            <CityFilm />
+          {/* Разделы */}
+          <div className="col-span-2 md:col-span-2 md:col-start-5">
+            <PrintReveal as="div" delay={0.05}>
+              <span className="t-micro fg-56 kp-col-label">{CLOSING.columns.nav}</span>
+              <ul className="kp-col-list">
+                {NAV.map((n) => (
+                  <li key={n.href}>
+                    <a href={n.href} className="link-rule fg-70">
+                      {n.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </PrintReveal>
+          </div>
+
+          {/* Связь. Каналы словами: иконок соцсетей на этом листе нет. */}
+          <div className="col-span-2 md:col-span-2 md:col-start-7">
+            <PrintReveal as="div" delay={0.1}>
+              <span className="t-micro fg-56 kp-col-label">{CLOSING.columns.channels}</span>
+              <ul className="kp-col-list">
+                {IMPRINT.channels.map((c) => (
+                  <li key={c.label}>
+                    <a
+                      href={c.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="link-rule fg-70"
+                    >
+                      {c.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </PrintReveal>
+          </div>
+
+          {/* План города у правого реза.
+              Плёнка ВЫСОКАЯ, но полосы она не задаёт: с md она вынута из
+              потока и прижата к низу своей клетки, а растёт вверх, в отбивку
+              справочника, где всё равно пусто. Раньше было наоборот, и лишние
+              полтораста пунктов пустого грунта висели под колонками. */}
+          <div className="col-span-4 md:col-span-4 md:col-start-9 md:relative">
+            <div className="md:absolute md:inset-x-0 md:bottom-[calc(clamp(24px,3.6vw,76px)*-1)]">
+              <CityFilm />
+            </div>
           </div>
         </Grid>
-
-        {/* ── Колофон ──────────────────────────────────────────────────── */}
-        <p className="rule-t fg-70 mt-[clamp(56px,6vw,128px)] pt-8 text-[13px] font-medium">
-          {COMPANY.legalName} · {COMPANY.name}
-          {COMPANY.legal ? ` · ${COMPANY.legal}` : ''}
-        </p>
-
-        <div className="mt-8 grid grid-cols-1 gap-x-[clamp(24px,4vw,96px)] lg:grid-cols-2">
-          {columns.map((col, ci) => (
-            <dl key={ci}>
-              {col.map(([k, v]) => (
-                <div
-                  key={k}
-                  className="rule-soft-b flex items-baseline justify-between gap-6 py-2.5"
-                >
-                  <dt className="t-micro fg-56 shrink-0">{k}</dt>
-                  <dd className="t-micro fg-70 text-right">{v}</dd>
-                </div>
-              ))}
-            </dl>
-          ))}
-        </div>
       </Sheet>
 
-      {/* ── Слепое тиснение во весь вылет ────────────────────────────────── */}
-      <div className="mt-[clamp(48px,6vw,140px)]">
+      {/* ── 4 · Слепое тиснение во весь вылет ─────────────────────────────
+          Отбивка снизу равна высоте липкой полосы: под ней тиснению нечего
+          делать, а других полос за ним больше нет. */}
+      <div className="mt-[clamp(92px,9.4vw,208px)] pb-[calc(var(--mobilecta-h)+clamp(20px,3vw,44px))] md:pb-[calc(var(--strip-h)+clamp(20px,3vw,44px))]">
         <EmbossWord />
       </div>
-
-      <Sheet className="flex items-center justify-between gap-6 pb-[calc(var(--strip-h)+16px)] pt-8">
-        <p className="t-micro fg-56">
-          © {COMPANY.since}…{year} · {COMPANY.legalName} · {COMPANY.city}
-        </p>
-        <a href="#pervyi-progon" className="t-micro link-rule fg-56">
-          Наверх ↑
-        </a>
-      </Sheet>
     </Section>
   );
 }

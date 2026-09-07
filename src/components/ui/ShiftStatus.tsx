@@ -4,11 +4,12 @@ import { useEffect, useState } from 'react';
 import { getShift, NEUTRAL_SHIFT, type Shift } from '@/lib/clock';
 
 /**
- * ЖИВАЯ СТРОКА СМЕНЫ.
+ * ЧАСЫ ЦЕХА.
  *
  * Единственный источник времени на сайте, и считает он по Europe/Moscow,
  * а не по часам посетителя: гость из Новосибирска не должен видеть
- * «закрыто» в три часа дня.
+ * «закрыто» в три часа дня. Наружу идёт только подсветка сегодняшней
+ * строки в §08: обещаний живой строкой сайт больше не печатает.
  *
  * На сервере выводится нейтральный вариант, гидратация не ломается.
  */
@@ -23,19 +24,4 @@ export function useShift() {
   }, []);
 
   return shift;
-}
-
-export function ShiftPromise({ className }: { className?: string }) {
-  const shift = useShift();
-  return <p className={className}>{shift.promise}</p>;
-}
-
-export function ShiftCountdown({ className }: { className?: string }) {
-  const shift = useShift();
-  if (!shift.countdown) return null;
-  return (
-    <p className={className} aria-live="off">
-      {shift.countdown}
-    </p>
-  );
 }

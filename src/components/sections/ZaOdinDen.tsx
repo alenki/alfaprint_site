@@ -2,19 +2,15 @@
 
 import { PrintReveal } from '@/components/type/PrintReveal';
 import { DayTimeline } from '@/components/ui/DayTimeline';
-import { ShiftPromise, ShiftCountdown } from '@/components/ui/ShiftStatus';
 import { Section, Sheet, Grid } from '@/components/layout/Sheet';
 import { DAY, SECTIONS } from '@/content/site';
 
 /**
  * §05 · ЗА ОДИН ДЕНЬ
  *
- * Срочность это расписание, а не наценка. Часы здесь настоящие и считают
- * по московскому времени; «типовой день» снимает вопрос, откуда цифры.
- *
- * Секция закрывается строкой условий на линии во весь формат: прежняя
- * редакция обрывала её в пустоту, и под сменным заданием оставалось метров
- * триста чёрного ни о чём.
+ * Срочность это расписание, а не наценка. Полосу держат заголовок, лид и
+ * само сменное задание: живая строка смены и строка условий сняты, они
+ * повторяли часы из §08 и обещание из лида.
  */
 export function ZaOdinDen() {
   const S = SECTIONS[4];
@@ -27,7 +23,7 @@ export function ZaOdinDen() {
       className="ink-warmth overflow-hidden py-[var(--section-pad)]"
     >
       <Sheet>
-        <Grid className="items-end gap-y-10">
+        <Grid>
           <div className="col-span-4 md:col-span-7">
             <PrintReveal as="div">
               <h2 className="t-h2 fg">
@@ -46,19 +42,10 @@ export function ZaOdinDen() {
               {DAY.lead}
             </PrintReveal>
           </div>
-
-          <div className="col-span-4 md:col-span-3 md:col-start-10 md:text-right">
-            <ShiftPromise className="t-micro fg" />
-            <ShiftCountdown className="t-micro fg-56 mt-2" />
-          </div>
         </Grid>
       </Sheet>
 
       <DayTimeline />
-
-      <Sheet>
-        <p className="t-micro fg-56 rule-t pt-6">{DAY.terms}</p>
-      </Sheet>
     </Section>
   );
 }

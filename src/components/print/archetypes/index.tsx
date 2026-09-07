@@ -12,23 +12,34 @@
  */
 
 import type { Archetype } from '@/content/works';
+import { MARK_K, MARK_R } from '@/components/chrome/Mark';
 
 const K = 'var(--color-ink)';
 const R = 'var(--color-rubine)';
 
 type Props = { content: string[] };
 
-/** Знак «А» с галочкой в масштабе изделия. */
+/**
+ * Приведение знака к масштабу изделия. Знак нарисован в поле шириной 120
+ * единиц (см. `Mark`), а на макетах он стоял в поле шириной 22: `s = 1` обязан
+ * оставить прежний кегль, иначе разъедутся все пять посадочных мест ниже.
+ * 22 / 109.78 это отношение ширины БУКВЫ к ширине буквы в поле знака.
+ */
+const MARK_UNIT = 0.2;
+
+/**
+ * Знак «А» с галочкой в масштабе изделия. Пути общие с шапкой и иконкой
+ * вкладки: своей копии у макетов больше нет, и разойтись им теперь не с чем.
+ *
+ * Знак стал ниже прежнего при той же ширине: у настоящей марки буква шире
+ * относительно роста, чем у рисованной, которая стояла тут раньше. Посадочные
+ * места считаны по левому краю буквы, поэтому правки координат не потребовали.
+ */
 function MiniMark({ x, y, s = 1 }: { x: number; y: number; s?: number }) {
   return (
-    <g transform={`translate(${x} ${y}) scale(${s})`}>
-      <path
-        className="plate-k"
-        fill={K}
-        fillRule="evenodd"
-        d="M12 0 L23 20 L1 20 Z M12 8 L15 14 L9 14 Z M7.5 17 L16.5 17 L18 20 L6 20 Z"
-      />
-      <path className="plate-r" d="M6 12.5 L12.5 19 L27.5 1" stroke={R} strokeWidth="3.6" fill="none" />
+    <g transform={`translate(${x} ${y}) scale(${(s * MARK_UNIT).toFixed(4)})`}>
+      <path className="plate-k" fill={K} fillRule="evenodd" d={MARK_K} />
+      <path className="plate-r" fill={R} d={MARK_R} />
     </g>
   );
 }

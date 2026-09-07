@@ -10,9 +10,9 @@ import { RASTR, SECTIONS } from '@/content/site';
 /**
  * §04 · РАСТР
  *
- * Общий план и макро на одной непрерывной поверхности. Съёмки нет, и это
- * сказано вслух: заявленный плейсхолдер перестаёт быть дырой и становится
- * позицией.
+ * Общий план и макро на одной непрерывной поверхности. Оговорки про съёмку
+ * над спуском больше нет: работы либо показаны, либо нет, и объяснять это
+ * покупателю мелким кеглем незачем.
  *
  * Спуск: двойная плитка занимала весь экран целиком, визитка 90×50 мм
  * показывалась в полтора метра. Колонок теперь четыре на широком листе,
@@ -24,7 +24,7 @@ export function Rastr() {
   return (
     <Section id={S.id} ground="paper-hi" gain={1} className="py-[var(--section-pad)]">
       <Sheet>
-        <Grid className="items-end gap-y-6">
+        <Grid>
           <div className="col-span-4 md:col-span-6">
             <PrintReveal as="div">
               <h2 className="t-h2">
@@ -36,13 +36,6 @@ export function Rastr() {
               </h2>
             </PrintReveal>
           </div>
-          <PrintReveal
-            as="p"
-            delay={0.034}
-            className="t-micro fg-56 col-span-4 leading-relaxed md:col-span-4 md:col-start-9 md:text-right"
-          >
-            {RASTR.note}
-          </PrintReveal>
         </Grid>
       </Sheet>
 

@@ -7,7 +7,6 @@ import { TopBar } from '@/components/chrome/TopBar';
 import { ControlStrip } from '@/components/chrome/ControlStrip';
 import { MobileCta } from '@/components/chrome/MobileCta';
 import { CursorTrail } from '@/components/chrome/CursorTrail';
-import { Filters } from '@/components/print/Filters';
 import { NaryadProvider } from '@/state/NaryadContext';
 import { localBusinessSchema } from '@/lib/schema';
 import { SECTIONS } from '@/content/site';
@@ -22,7 +21,6 @@ const GROUNDS: Record<string, { ground: string; gain: number }> = {
   '04': { ground: 'paper-hi', gain: 1.0 },
   '05': { ground: 'ink', gain: 1.25 },
   '06': { ground: 'paper', gain: 1.0 },
-  '07': { ground: 'rubine', gain: 1.4 },
   '08': { ground: 'ink', gain: 0.5 },
 };
 
@@ -105,7 +103,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <MotionConfig reducedMotion="user">
           <NaryadProvider>
             <PlateProvider sections={SECTION_META} />
-            <Filters />
             <TopBar />
             {children}
             <ControlStrip />
