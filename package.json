@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check:raschet": "node scripts/check-raschet.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",
