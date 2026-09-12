@@ -44,6 +44,7 @@ const path = new URL('../src/content/raschet.ts', import.meta.url);
 const src = fs.readFileSync(path, 'utf8');
 const a = src.indexOf(BEGIN);
 const b = src.indexOf(END);
-if (a < 0 || b < 0) throw new Error('маркеры перенесённой таблицы не найдены');
+if (a < 0 || b < 0 || b <= a) throw new Error('маркеры перенесённой таблицы не найдены или расположены неверно');
+if (src.indexOf(BEGIN, a + 1) >= 0 || src.indexOf(END, b + 1) >= 0) throw new Error('маркеры перенесённой таблицы встречаются дважды');
 fs.writeFileSync(path, src.slice(0, a) + generated + src.slice(b + END.length), 'utf8');
 console.log(`переписано: ${o.order.length} продуктов`);

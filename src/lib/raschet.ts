@@ -64,11 +64,17 @@ export function runTotal(p: Product, c: Choice, sh: Shared): number {
   return run * p.materials[c.material].value * p.formats[c.format].value * sh.speed[c.speed].value;
 }
 
-/** То, что платится один раз. Всегда целое число рублей. */
-export function setupTotal(p: Product, c: Choice, sh: Shared): number {
-  let n = p.finishes[c.finish].value + sh.design[c.design].value + sh.delivery[c.delivery].value;
+/** Слагаемые приладки, накопленные начиная с `from`, в порядке исходника:
+ *  отделка, макет, получение, затем дополнительные работы по очереди. */
+function tailTotal(from: number, p: Product, c: Choice, sh: Shared): number {
+  let n = from + p.finishes[c.finish].value + sh.design[c.design].value + sh.delivery[c.delivery].value;
   for (const e of sh.extras) if (c.extras.includes(e.id)) n += e.value;
   return n;
+}
+
+/** То, что платится один раз. Всегда целое число рублей. */
+export function setupTotal(p: Product, c: Choice, sh: Shared): number {
+  return tailTotal(0, p, c, sh);
 }
 
 /**
@@ -87,10 +93,7 @@ export function setupTotal(p: Product, c: Choice, sh: Shared): number {
  * тираж и под приладку — и сами по себе верны.
  */
 export function grandTotal(p: Product, c: Choice, sh: Shared): number {
-  let price = runTotal(p, c, sh);
-  price = price + p.finishes[c.finish].value + sh.design[c.design].value + sh.delivery[c.delivery].value;
-  for (const e of sh.extras) if (c.extras.includes(e.id)) price += e.value;
-  return Math.max(PRICE_FLOOR, price);
+  return Math.max(PRICE_FLOOR, tailTotal(runTotal(p, c, sh), p, c, sh));
 }
 
 export type TermKey = 'rush' | 'slow' | 'normal';

@@ -12,8 +12,8 @@
  */
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
-import { PRODUCTS, SHARED, SLOW_PRODUCTS } from '../src/content/raschet.ts';
-import { runTotal, setupTotal, grandTotal, termKey } from '../src/lib/raschet.ts';
+import { PRODUCTS, SHARED, SLOW_PRODUCTS, TERMS } from '../src/content/raschet.ts';
+import { runTotal, setupTotal, grandTotal, termKey, formatRub } from '../src/lib/raschet.ts';
 
 const oracle = JSON.parse(fs.readFileSync(new URL('./raschet-oracle.json', import.meta.url), 'utf8'));
 
@@ -31,7 +31,6 @@ function oracleTerm(product, speed) {
         ? '2–7 рабочих дней'
         : '1–3 рабочих дня');
 }
-const TERM_OF_KEY = { rush: 'срочно, уточнить', slow: '2–7 рабочих дней', normal: '1–3 рабочих дня' };
 
 /* ── 1. ДАННЫЕ ──────────────────────────────────────────────────────────── */
 let optionCount = 0;
@@ -95,7 +94,7 @@ for (const p of PRODUCTS) {
     );
     assert.equal(mine, theirs, `цена разошлась: ${p.id} qty=${qty} m=${mi} f=${fi} n=${ni} d=${di} s=${si} l=${li} [${extras}]`);
 
-    assert.equal(TERM_OF_KEY[termKey(p, c, SHARED, SLOW_PRODUCTS)], oracleTerm(p.id, SHARED.speed[si].value), `срок разошёлся: ${p.id} s=${si}`);
+    assert.equal(TERMS[termKey(p, c, SHARED, SLOW_PRODUCTS)], oracleTerm(p.id, SHARED.speed[si].value), `срок разошёлся: ${p.id} s=${si}`);
 
     /* Две подсуммы обязаны сходиться с итогом: приладка всегда целая, поэтому
        округление тиража не может увести сумму. Если это утверждение когда-то
@@ -115,6 +114,9 @@ const worked = { productId: 'cards', qty: 100, material: 3, format: 2, finish: 4
 assert.equal(Math.round(grandTotal(cards, worked, SHARED)), 4990, 'контрольный пример 4 990 ₽');
 assert.equal(Math.round(runTotal(cards, worked, SHARED)), 3290, 'контрольный пример, за тираж');
 assert.equal(setupTotal(cards, worked, SHARED), 1700, 'контрольный пример, за приладку');
+
+assert.equal(formatRub(1234567), '1 234 567 ₽', 'разряды отбиты неразрывным пробелом');
+assert.equal(formatRub(4990.34), '4 990 ₽', 'рубль округляется до целого');
 
 const def = { productId: 'cards', qty: 100, material: 0, format: 0, finish: 0, design: 0, speed: 0, delivery: 0, extras: [] };
 assert.equal(Math.round(grandTotal(cards, def, SHARED)), 1200, 'состояние по умолчанию 1 200 ₽');
