@@ -3741,10 +3741,12 @@
 /* Строки НИЖЕ раскрытой едут вниз ровно на высоту панели.
    Ход линейный: --ease-land сажает 80 % пути в первые 23 % времени, и на
    движении, за которым следят глазом, это читается рывком. */
-.rs-field {
+.rs-field,
+.rs-subtotal {
   transition: transform 240ms linear;
 }
-.rs-field[data-shift='true'] {
+.rs-field[data-shift='true'],
+.rs-subtotal[data-shift='true'] {
   transform: translate3d(0, var(--rs-panel-h), 0);
 }
 
@@ -3808,7 +3810,8 @@
   font-weight: 600;
 }
 .rs-opt[aria-checked='true'] .rs-opt-mark,
-.rs-opt[aria-pressed='true'] .rs-opt-mark {
+.rs-opt[aria-pressed='true'] .rs-opt-mark,
+.rs-product[aria-checked='true'] .rs-opt-mark {
   background: var(--color-rubine);
 }
 .rs-opt-p {
@@ -3875,7 +3878,7 @@
 }
 .rs-total-in {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.7fr) minmax(0, 1.05fr);
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr) minmax(0, 1fr);
   gap: clamp(18px, 3vw, 56px);
   align-items: end;
   padding-block: clamp(19px, 2vw, 32px);
@@ -3883,12 +3886,20 @@
 .rs-total-n {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: var(--text-h1);
+  /* КЕГЛЬ ЗДЕСЬ НЕ ГЕРОЙСКИЙ, И ЭТО ЗАМЕР, А НЕ ВКУС. --text-h1 даёт на
+     1440 сто сорок пять пунктов, а ячейка итога шириной 580: строка не
+     переносится (ей нельзя), поэтому она молча наезжала на соседнюю
+     ячейку «Срок». Взято наибольшее, при котором в ячейку встаёт даже
+     восьмизначная сумма: тираж 10 000 баннеров даёт 68 млн. */
+  font-size: clamp(2.25rem, 4.6vw, 4.75rem);
   line-height: 0.86;
   letter-spacing: -0.038em;
   color: var(--color-rubine);
   font-variant-numeric: tabular-nums;
   margin-top: 5px;
+  /* Знак приблизительности не отрывается от числа: тонкая шпация
+     переносится, и «≈» уходило на свою строку над суммой. */
+  white-space: nowrap;
 }
 .rs-cta {
   display: flex;

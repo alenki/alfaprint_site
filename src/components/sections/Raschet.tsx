@@ -149,6 +149,12 @@ export function Raschet() {
   const shifted = (fields: readonly string[], me: string) =>
     open !== null && fields.includes(open) && fields.indexOf(open) < fields.indexOf(me);
 
+  /* Подытог стоит последним и едет вместе со строками: раскрытая панель всегда
+     выше него. Хвост лежит ПОД ним и на ту же величину укорачивается, поэтому
+     высота колонки не меняется, а в покое резерв оказывается замыкающим
+     воздухом, а не дырой посреди столбца. */
+  const shiftedTail = (fields: readonly string[]) => open !== null && fields.includes(open);
+
   const money = (n: number) => (n === 0 ? undefined : formatRub(n));
 
   return (
@@ -245,11 +251,11 @@ export function Raschet() {
               onPick={(i) => dispatch({ t: 'pick', field: 'speed', i })}
             />
 
-            <div className="rs-tail" aria-hidden />
-            <p className="rs-subtotal">
+            <p className="rs-subtotal" data-shift={shiftedTail(RUN_FIELDS) ? 'true' : 'false'}>
               <span className="t-label fg-56">{RASCHET.run.total}</span>
               <span className="rs-subtotal-n">{formatRub(run)}</span>
             </p>
+            <div className="rs-tail" aria-hidden />
           </div>
 
           {/* ── ПРИЛАДКА: всё, что платится один раз ─────────────────────── */}
@@ -317,11 +323,11 @@ export function Raschet() {
               onPick={(i) => dispatch({ t: 'extra', id: SHARED.extras[i].id })}
             />
 
-            <div className="rs-tail" aria-hidden />
-            <p className="rs-subtotal">
+            <p className="rs-subtotal" data-shift={shiftedTail(SETUP_FIELDS) ? 'true' : 'false'}>
               <span className="t-label fg-56">{RASCHET.setup.total}</span>
               <span className="rs-subtotal-n">{formatRub(setup)}</span>
             </p>
+            <div className="rs-tail" aria-hidden />
           </div>
         </div>
 
