@@ -136,3 +136,6 @@ dist
 .pnp.*
 .refs/
 .playwright-mcp/
+
+# Визуальный компаньон brainstorming
+.superpowers/
