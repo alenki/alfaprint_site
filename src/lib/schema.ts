@@ -33,7 +33,7 @@ export function localBusinessSchema(siteUrl: string) {
     telephone: '+79674257979',
     foundingDate: String(COMPANY.since),
     description:
-      'Типография и рекламное агентство в Нальчике: оперативная полиграфия, широкоформатная и УФ-печать, лазерная резка, гравировка, вышивка и сувениры. Тираж от одного экземпляра, часто в тот же день.',
+      'Рекламное агентство полного цикла и типография в Нальчике: визитки, наклейки, бирки, одежда с принтом, кружки, сувениры и упаковка. Оперативная полиграфия, широкоформатная и УФ-печать, лазерная резка, гравировка и вышивка. Тираж от одного экземпляра, часто в тот же день.',
     address: {
       '@type': 'PostalAddress',
       streetAddress: `ул. ${COMPANY.street}`,
@@ -47,7 +47,17 @@ export function localBusinessSchema(siteUrl: string) {
       reviewCount: COMPANY.reviewCount,
       bestRating: 5,
     },
-    sameAs: [CONTACTS.instagram, CONTACTS.vk, CONTACTS.telegram, CONTACTS.maps],
+    sameAs: [CONTACTS.telegram, CONTACTS.max, CONTACTS.maps],
+    /**
+     * СНИМКИ МЕСТА, А НЕ КАРТИНКИ ФИРМЫ. Оба сняты с прежнего сайта и оба
+     * показывают, как выглядит адрес на местности: крыльцо с вывеской и
+     * ориентир на улице. Ни логотипа, ни работ здесь быть не должно, это
+     * поле карточки организации, а не витрины.
+     *
+     * Адрес абсолютный: siteUrl уже несёт подкаталог площадки, см.
+     * `basePath` в `next.config.ts`.
+     */
+    image: [`${siteUrl}/route/05.webp`, `${siteUrl}/route/01.webp`],
     ...(hours ? { openingHoursSpecification: hours } : {}),
     hasOfferCatalog: {
       '@type': 'OfferCatalog',

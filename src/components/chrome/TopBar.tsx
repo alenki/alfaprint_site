@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { NAV, CONTACTS, HEADER, SECTIONS } from '@/content/site';
+import { NAV, CONTACTS, HEADER, SECTIONS, IMPRINT } from '@/content/site';
+import { asset } from '@/lib/base';
 import { Mark } from '@/components/chrome/Mark';
 import { useNaryad } from '@/state/NaryadContext';
 
@@ -89,6 +90,26 @@ export function TopBar() {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState<string | null>(null);
 
+  /* НА ЧУЖОМ ЛИСТЕ ГОЛЫЙ ЯКОРЬ НЕ ВЕДЁТ НИКУДА. Раздела с таким именем здесь
+     нет, `PlateProvider` его не находит и молча отдаёт нажатие браузеру, а тот
+     остаётся на месте: пункт меню просто не работает. Увести он обязан на
+     главную, где раздел и стоит.
+
+     НА САМОЙ ГЛАВНОЙ АДРЕСА ОСТАЮТСЯ ГОЛЫМИ, и это условие, а не мелочь:
+     обработчик плавной прокрутки ловит ровно `a[href^="#"]`, и переписанный
+     адрес ушёл бы у него из-под рук в нативный прыжок, то есть главная
+     потеряла бы Lenis на всех пяти пунктах разом.
+
+     Считается после монтирования, потому что путь известен только браузеру;
+     до первого кадра адреса голые, как и на сервере, и разметка сходится. */
+  const [offHome, setOffHome] = useState(false);
+  useEffect(() => {
+    const trim = (s: string) => s.replace(/\/+$/, '');
+    setOffHome(trim(location.pathname) !== trim(asset('/')));
+  }, []);
+  const navHref = (href: string) =>
+    offHome && href.startsWith('#') ? `${asset('/')}${href}` : href;
+
   const plateRef = useRef<HTMLDivElement>(null);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
 
@@ -97,6 +118,17 @@ export function TopBar() {
      `data-section`, которую цикл и так пишет на :root ради грунтов. Один
      MutationObserver на один атрибут срабатывает восемь раз за весь лист. */
   useEffect(() => {
+    /* НА ОТДЕЛЬНОМ ЛИСТЕ ТЕКУЩИЙ РАЗДЕЛ РЕШАЕТ АДРЕС, А НЕ ПРОКРУТКА.
+       Реестр `SECTIONS` принадлежит главной полосе, и её номера на чужом
+       листе не значат ничего; зато пункт меню, чей адрес совпал с адресом
+       страницы, и есть текущий раздел, причём на всей её высоте. Слушать
+       тут нечего, и наблюдателя эта ветка не заводит. */
+    const page = NAV.find((n) => !n.href.startsWith('#') && location.pathname.startsWith(n.href));
+    if (page) {
+      setActive(page.href);
+      return;
+    }
+
     const root = document.documentElement;
     const read = () => {
       const n = root.dataset.section;
@@ -192,7 +224,7 @@ export function TopBar() {
                   {NAV.map((item) => (
                     <li key={item.href}>
                       <a
-                        href={item.href}
+                        href={navHref(item.href)}
                         className="navlink"
                         {...(active === item.href ? { 'aria-current': 'true' as const } : null)}
                       >
@@ -251,7 +283,7 @@ export function TopBar() {
                     {NAV.map((item, i) => (
                       <li key={item.href}>
                         <a
-                          href={item.href}
+                          href={navHref(item.href)}
                           onClick={() => setOpen(false)}
                           className="menu-row"
                           style={{ ['--i' as string]: i }}
@@ -274,13 +306,18 @@ export function TopBar() {
                   >
                     {CONTACTS.phone}
                   </a>
+                  {/* Каналы берутся из справочника, а не набираются здесь
+                      вторично. Пока их было два и они не менялись, разница не
+                      стоила внимания; стоило справочнику смениться, как рейка
+                      осталась со старым набором, и посетитель телефона видел
+                      меньше способов написать, чем посетитель настольного
+                      листа. Один источник — одно перечисление. */}
                   <div className="menu-channels">
-                    <a href={CONTACTS.whatsapp} target="_blank" rel="noreferrer">
-                      WhatsApp
-                    </a>
-                    <a href={CONTACTS.telegram} target="_blank" rel="noreferrer">
-                      Telegram
-                    </a>
+                    {IMPRINT.channels.map((c) => (
+                      <a key={c.label} href={c.href} target="_blank" rel="noreferrer">
+                        {c.label}
+                      </a>
+                    ))}
                   </div>
                 </div>
               </div>

@@ -19,10 +19,12 @@ import {
   grandTotal,
   termKey,
   formatRub,
+  formatFrom,
   raschetMessage,
   type Choice,
 } from '@/lib/raschet';
 import { WA } from '@/lib/whatsapp';
+import { Soglasie } from '@/components/ui/Soglasie';
 
 /**
  * ПРЕДВАРИТЕЛЬНЫЙ РАСЧЁТ.
@@ -36,8 +38,9 @@ import { WA } from '@/lib/whatsapp';
  * строк на экране это не честность, это захламление.
  *
  * РАСКРЫТА ВСЕГДА НЕ БОЛЬШЕ ОДНОЙ СТРОКИ НА ВСЮ СТРАНИЦУ. Отсюда одно
- * состояние `open`, а не по одному на колонку: две открытые панели развели бы
- * высоты колонок, и хвост перестал бы держать лист.
+ * состояние `open`, а не по одному на колонку: две открытые панели в одной
+ * колонке потребовали бы двойного резерва, то есть вдвое больше воздуха на
+ * листе в покое, ради состояния, которого никто не просил.
  *
  * СМЕНА ПРОДУКТА СБРАСЫВАЕТ материал, формат и отделку на первый вариант, и
  * это не удобство, а верность: прежний сайт пересобирал эти три списка
@@ -124,9 +127,9 @@ export function Raschet() {
 
   const toggle = (id: string) => setOpen((v) => (v === id ? null : id));
 
-  /* Сколько строк в раскрытой панели. Из этого числа globals.css считает и
-     сдвиг соседей, и высоту хвоста; сумма «строки + панель + хвост»
-     постоянна, поэтому высота листа не меняется никогда. */
+  /* Сколько строк в раскрытой панели. Из этого числа `raschet.css` считает
+     сдвиг соседних строк; резерв колонки объявлен по самой длинной панели и
+     не зависит от раскрытого, поэтому высота листа не меняется никогда. */
   const panelRows: Record<string, number> = {
     material: p.materials.length,
     format: p.formats.length,
@@ -149,18 +152,21 @@ export function Raschet() {
   const shifted = (fields: readonly string[], me: string) =>
     open !== null && fields.includes(open) && fields.indexOf(open) < fields.indexOf(me);
 
-  /* Подытог стоит последним и едет вместе со строками: раскрытая панель всегда
-     выше него. Хвост лежит ПОД ним и на ту же величину укорачивается, поэтому
-     высота колонки не меняется, а в покое резерв оказывается замыкающим
-     воздухом, а не дырой посреди столбца. */
-  const shiftedTail = (fields: readonly string[]) => open !== null && fields.includes(open);
-
-  const money = (n: number) => (n === 0 ? undefined : formatRub(n));
+  /* Слагаемое у правого поля строки. Ноль не печатается вовсе: строка «без
+     отделки» ничего к приладке не прибавляет, и «0 ₽» в покое было бы шумом
+     (в панели, где ноль это ВЫБОР среди платных вариантов, он печатается). */
+  const money = (n: number) => (n === 0 ? undefined : formatFrom(n));
 
   return (
     <Section id="raschet" ground="paper" gain={0.8}>
       <Sheet className="rs-head">
-        <p className="t-label fg-56">{RASCHET.kicker}</p>
+        {/* МЕТКИ «ПРЕДВАРИТЕЛЬНЫЙ РАСЧЁТ» НАД ИМЕНЕМ БОЛЬШЕ НЕТ (решение
+            заказчика 12.09.2026). Страница называет себя тремя другими
+            способами: пунктом «Расчёт» в шапке сайта, заголовком окна и
+            меткой плашки итога. Четвёртый раз над именем продукта был
+            подписью к подписи. `RASCHET.kicker` при этом остаётся в копии:
+            им подписана радиогруппа продуктов для скринридера, где имя
+            «Визитки» само по себе ничего не объясняет. */}
         <button
           type="button"
           className="rs-name"
@@ -168,11 +174,15 @@ export function Raschet() {
           aria-controls="rs-products"
           onClick={() => toggle('product')}
         >
-          {p.title}
+          {/* Имя перенабирается краской, и ключ стоит на ВНУТРЕННЕМ узле, а
+              не на кнопке: пересобранная кнопка потеряла бы фокус и свой
+              `aria-expanded` на глазах у скринридера. Разбор закона при
+              `@keyframes rs-reink` в `raschet.css`. */}
+          <span key={p.id} className="rs-reink">
+            {p.title}
+          </span>
         </button>
-        <p className="t-label" style={{ color: 'var(--color-rubine)' }}>
-          {RASCHET.switchProduct}
-        </p>
+        <p className="rs-switch t-label">{RASCHET.switchProduct}</p>
         <p className="rs-lead">{RASCHET.lead}</p>
       </Sheet>
 
@@ -188,13 +198,7 @@ export function Raschet() {
             <div className="rs-field" data-shift="false">
               <div className="rs-row">
                 <span className="t-label fg-56">{RASCHET.fields.qty}</span>
-                <span className="flex items-baseline gap-[13px]">
-                  <Stepper
-                    label={RASCHET.qtyLess}
-                    onClick={() => dispatch({ t: 'qty', n: Math.max(1, s.qty - 50) })}
-                  >
-                    −
-                  </Stepper>
+                <span className="rs-qty">
                   <input
                     type="number"
                     inputMode="numeric"
@@ -204,14 +208,26 @@ export function Raschet() {
                     onChange={(e) =>
                       dispatch({ t: 'qty', n: Math.max(1, Number(e.target.value) || 1) })
                     }
-                    className="font-display w-24 bg-transparent text-[clamp(22px,2.1vw,34px)] font-bold tracking-[-0.03em] tabular-nums outline-none"
+                    className="rs-qty-n"
+                    /* Поле ровно по числу знаков. Цифры табличные, поэтому `ch`
+                       это в точности ширина цифры: за числом не остаётся
+                       пустоты, а шаг стоит к нему вплотную. */
+                    style={{ width: `${String(s.qty).length + 0.4}ch` }}
                   />
-                  <Stepper
-                    label={RASCHET.qtyMore}
-                    onClick={() => dispatch({ t: 'qty', n: s.qty + 50 })}
-                  >
-                    +
-                  </Stepper>
+                  <span className="rs-qty-step">
+                    <Stepper
+                      label={RASCHET.qtyLess}
+                      onClick={() => dispatch({ t: 'qty', n: Math.max(1, s.qty - 50) })}
+                    >
+                      −
+                    </Stepper>
+                    <Stepper
+                      label={RASCHET.qtyMore}
+                      onClick={() => dispatch({ t: 'qty', n: s.qty + 50 })}
+                    >
+                      +
+                    </Stepper>
+                  </span>
                 </span>
                 <span className="rs-row-p">{RASCHET.qtyUnit}</span>
               </div>
@@ -251,11 +267,19 @@ export function Raschet() {
               onPick={(i) => dispatch({ t: 'pick', field: 'speed', i })}
             />
 
-            <p className="rs-subtotal" data-shift={shiftedTail(RUN_FIELDS) ? 'true' : 'false'}>
-              <span className="t-label fg-56">{RASCHET.run.total}</span>
-              <span className="rs-subtotal-n">{formatRub(run)}</span>
-            </p>
+            {/* РЕЗЕРВ ПАНЕЛИ СТОИТ ЗДЕСЬ, МЕЖДУ ПОСЛЕДНЕЙ СТРОКОЙ И ПОДЫТОГОМ,
+                и порядок этих двух узлов несёт всю раскладку. Резерв это то
+                место, куда едут строки под раскрытой панелью; подытог за ним
+                прибит к подошве колонки и не едет вообще никогда. В покое
+                резерв читается воздухом перед итогом, то есть тем, чем
+                кончается печатный бланк. Поменять их местами значит вернуть
+                двести пунктов пустоты ПОСЛЕ суммы, ради которой лист и
+                заведён. */}
             <div className="rs-tail" aria-hidden />
+            <p className="rs-subtotal">
+              <span className="t-label fg-56">{RASCHET.run.total}</span>
+              <span className="rs-subtotal-n">{formatFrom(run)}</span>
+            </p>
           </div>
 
           {/* ── ПРИЛАДКА: всё, что платится один раз ─────────────────────── */}
@@ -318,16 +342,32 @@ export function Raschet() {
               selected={SHARED.extras.flatMap((e, i) => (s.extras.includes(e.id) ? [i] : []))}
               money
               open={open === 'extras'}
-              shift={false}
+              /* ПОСЛЕДНЯЯ СТРОКА ЕДЕТ ТАК ЖЕ, КАК ВСЕ. Здесь стояло `false`,
+                 как будто «ниже неё ничего нет, значит и ехать некуда», и
+                 довод перевёрнут: ехать некуда ВЫШЕ, а ниже раскрытой панели
+                 стоит именно она. Любая панель в этой колонке («отделка»,
+                 «макет», «получение») уводила соседей вниз, а «дополнительно»
+                 оставалась на месте, и строки печатались одна поверх другой.
+                 В колонке тиража на том же месте стоит «срок», и он с самого
+                 начала считался правильно. */
+              shift={shifted(SETUP_FIELDS, 'extras')}
               onToggle={() => toggle('extras')}
               onPick={(i) => dispatch({ t: 'extra', id: SHARED.extras[i].id })}
             />
 
-            <p className="rs-subtotal" data-shift={shiftedTail(SETUP_FIELDS) ? 'true' : 'false'}>
-              <span className="t-label fg-56">{RASCHET.setup.total}</span>
-              <span className="rs-subtotal-n">{formatRub(setup)}</span>
-            </p>
+            {/* РЕЗЕРВ ПАНЕЛИ СТОИТ ЗДЕСЬ, МЕЖДУ ПОСЛЕДНЕЙ СТРОКОЙ И ПОДЫТОГОМ,
+                и порядок этих двух узлов несёт всю раскладку. Резерв это то
+                место, куда едут строки под раскрытой панелью; подытог за ним
+                прибит к подошве колонки и не едет вообще никогда. В покое
+                резерв читается воздухом перед итогом, то есть тем, чем
+                кончается печатный бланк. Поменять их местами значит вернуть
+                двести пунктов пустоты ПОСЛЕ суммы, ради которой лист и
+                заведён. */}
             <div className="rs-tail" aria-hidden />
+            <p className="rs-subtotal">
+              <span className="t-label fg-56">{RASCHET.setup.total}</span>
+              <span className="rs-subtotal-n">{formatFrom(setup)}</span>
+            </p>
           </div>
         </div>
 
@@ -339,7 +379,8 @@ export function Raschet() {
         <div
           id="rs-products"
           className="rs-products"
-          hidden={open !== 'product'}
+          /* Не `hidden`: разбор капкана стоит в `RaschetField.tsx`. */
+          data-open={open === 'product' ? 'true' : 'false'}
           role="radiogroup"
           aria-label={RASCHET.kicker}
         >
@@ -371,23 +412,40 @@ export function Raschet() {
           <div className="rs-total-in" aria-live="polite">
             <p>
               <span className="t-label fg-56">{RASCHET.totalLabel}</span>
-              <span className="rs-total-n block">≈&thinsp;{formatRub(total)}</span>
+              <span className="rs-total-n">
+                {/* Частица неразрывным пробелом ВНУТРИ узла, а не полем: поле
+                    рисует отбивку, но в текст её не кладёт, и «от1 200 ₽»
+                    уходило бы в буфер обмена и в синтезатор речи. */}
+                <span className="rs-from">{'от\u00A0'}</span>
+                {formatRub(total)}
+              </span>
             </p>
             <p>
               <span className="t-label fg-56">{RASCHET.termLabel}</span>
-              <span className="block font-semibold">{term}</span>
+              <span key={term} className="rs-total-term rs-reink block font-semibold">
+                {term}
+              </span>
             </p>
             <p>
               <span className="t-label fg-56">{RASCHET.recLabel}</span>
-              <span className="fg-56 block">{p.rec}</span>
+              <span key={p.id} className="rs-total-rec rs-reink fg-56 block">
+                {p.rec}
+              </span>
             </p>
           </div>
         </Sheet>
 
         {/* Ничего никуда не отправляется, открывается WhatsApp: врать в
             подтверждении нечем. Но наряд уходит туда целиком, а не пустым
-            чатом, как на прежнем сайте. */}
+            чатом, как на прежнем сайте.
+
+            ПОРЯДОК ТОТ ЖЕ, ЧТО У §08 НИЖЕ НА ЭТОЙ ЖЕ СТРАНИЦЕ: телефон, за
+            ним WhatsApp в рубине. Стояло наоборот, и два разговора об одном и
+            том же на одном листе шли в разные стороны. */}
         <div className="rs-cta">
+          <a href={CONTACTS.phoneHref}>
+            {RASCHET.callCta} · {CONTACTS.phone}
+          </a>
           <a
             data-wa="true"
             href={`${WA}?text=${encodeURIComponent(raschetMessage(p, s, SHARED, RASCHET))}`}
@@ -396,21 +454,45 @@ export function Raschet() {
           >
             {RASCHET.waCta}
           </a>
-          <a href={CONTACTS.phoneHref}>
-            {RASCHET.callCta} · {CONTACTS.phone}
-          </a>
         </div>
+
+        {/* СОГЛАСИЕ ПОД ПАРОЙ ДЕЙСТВИЙ, И ТА ЖЕ СТРОКА, ЧТО ПОД БЛАНКОМ:
+            компонент один на оба листа, см. `ui/Soglasie.tsx`.
+
+            ЗДЕСЬ ОНА СТОИТ НЕ ПОТОМУ, ЧТО ЛИСТ ЧТО-ТО СОБИРАЕТ. Набранного
+            человеком на этом листе нет ни знака: он выбирает варианты, и в
+            переписку уходит наряд, а не он сам. Строка стоит потому, что
+            нажатие ведёт в тот же разговор, что и бланк, и узнать об условии
+            в одном месте сайта и не узнать в другом читатель не должен. */}
+        <Soglasie className="rs-soglasie" />
       </div>
 
+      {/* ОГОВОРКА ЭТО ПОСЛЕДНЕЕ ЗАЯВЛЕНИЕ ЛИСТА, А НЕ ЕГО СНОСКА. Стояли два
+          абзаца одним серым корпусом восьмым кеглем, и лист, у которого
+          каждая сумма подписана «от», кончался самым тихим местом на всей
+          полосе. Метка взята в рубин — единственную хрому сайта, ту же, что
+          помечает раскрытую строку и итог, — а первое предложение набрано
+          тем же весом и кеглем, что значения расчёта: читатель видит его в
+          один вес с тем, что выбрал. Разбор под ним остался разбором.
+          Ни одной новой краски, ни одной новой линейки. */}
       <Sheet className="rs-note">
-        <p className="t-label fg-56">{RASCHET.noteTitle}</p>
-        <p>{RASCHET.note}</p>
+        <p className="t-label rs-note-mark">{RASCHET.noteTitle}</p>
+        <div>
+          <p className="rs-note-lead">{RASCHET.noteLead}</p>
+          <p className="rs-note-body">{RASCHET.note}</p>
+        </div>
       </Sheet>
     </Section>
   );
 }
 
-/** Шаг тиража. Пятьдесят экземпляров это ход, которым думают о тираже. */
+/**
+ * Шаг тиража. Пятьдесят экземпляров это ход, которым думают о тираже.
+ *
+ * Плашка без единого класса раскладки: «−» и «+» это ОДИН орган управления,
+ * общий волосок и размеры им задаёт `.rs-qty-step` в `raschet.css`. Здесь
+ * остаётся только имя для скринридера: на листе кнопка подписана знаком.
+ */
 function Stepper({
   label,
   onClick,
@@ -421,12 +503,7 @@ function Stepper({
   children: string;
 }) {
   return (
-    <button
-      type="button"
-      aria-label={label}
-      onClick={onClick}
-      className="fg-70 grid h-[26px] w-[26px] place-items-center border border-[var(--rule)] text-[14px]"
-    >
+    <button type="button" aria-label={label} onClick={onClick}>
       {children}
     </button>
   );

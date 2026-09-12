@@ -27,8 +27,11 @@ export function ControlStrip() {
             <Step key={i} i={i} />
           ))}
         </div>
+        {/* strip-fill это адрес, а не оформление: живую долю прогона цикл
+            кладёт инлайном на этот самый узел, а не в :root, где она стоила бы
+            пересчёта стиля всего листа на каждый кадр прокрутки. */}
         <div
-          className="absolute inset-0 flex origin-left"
+          className="strip-fill absolute inset-0 flex origin-left"
           style={{ transform: 'scaleX(var(--progress, 0))' }}
         >
           {Array.from({ length: STEPS }, (_, i) => (

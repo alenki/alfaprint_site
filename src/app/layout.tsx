@@ -10,6 +10,7 @@ import { CursorTrail } from '@/components/chrome/CursorTrail';
 import { NaryadProvider } from '@/state/NaryadContext';
 import { localBusinessSchema } from '@/lib/schema';
 import { SECTIONS } from '@/content/site';
+import { K_SECTIONS } from '@/content/kontakty';
 
 /**
  * АДРЕС ЛИСТА. Сайт стоит в подкаталоге: lumako.ru/alfaprint, см. `next.config.ts`.
@@ -17,42 +18,51 @@ import { SECTIONS } from '@/content/site';
  * все три обязаны указывать ТУДА, ГДЕ ЛИСТ ЛЕЖИТ НА САМОМ ДЕЛЕ. Когда клиент
  * заведёт собственный домен, правится эта строка и `basePath` в конфиге.
  */
-const SITE_URL = 'https://lumako.ru/alfaprint';
+export const SITE_URL = 'https://lumako.ru/alfaprint';
 
-/** Грунт и усиление ухода приводки: у хвоста листа она держится хуже. */
-const GROUNDS: Record<string, { ground: string; gain: number }> = {
-  '01': { ground: 'paper', gain: 0.6 },
-  '02': { ground: 'paper', gain: 0.8 },
-  '03': { ground: 'ink', gain: 1.0 },
-  '04': { ground: 'paper-hi', gain: 1.0 },
-  '05': { ground: 'ink', gain: 1.25 },
-  '06': { ground: 'paper', gain: 1.0 },
-  '08': { ground: 'ink', gain: 0.5 },
-};
-
-const SECTION_META: SectionMeta[] = SECTIONS.map((s) => ({
-  id: s.id,
-  n: s.n,
-  title: s.title,
-  ...GROUNDS[s.n],
-}));
+/**
+ * РЕЕСТР НОМЕРОВ, И БОЛЬШЕ НИЧЕГО.
+ *
+ * Здесь стояла ещё и таблица грунтов: ground и gain на каждый номер главной.
+ * Это была ВТОРАЯ запись тех же сведений. Первая стоит там, где полоса и
+ * набрана: `Section` пишет грунт и усиление на сам узел, и `PlateProvider`
+ * читает теперь только их. Второй записи хватило ровно на два листа из
+ * четырёх: «Расчёт» и «Согласие» свои первые полосы сюда не отдали, и хрома
+ * на них застревала вывернутой по краске до перезагрузки.
+ *
+ * Реестр остался ровно тем, чего в разметке нет: НОМЕРОМ полосы. Нужен он
+ * одному указателю разделов в верхней полосе; номера принадлежат главной, и
+ * на листе, которого здесь нет, текущего раздела просто нет.
+ *
+ * Номера листов не пересекаются по построению: у главной «01»…«08», у
+ * контактов «K1»…«K4», см. `content/kontakty.ts`.
+ */
+const SECTION_META: SectionMeta[] = [
+  ...SECTIONS.map((s) => ({ id: s.id, n: s.n })),
+  ...K_SECTIONS.map((s) => ({ id: s.id, n: s.n })),
+];
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: 'Альфа Принт',
-    template: '%s · Альфа Принт',
+    template: '%s | Альфа Принт',
   },
   description:
-    'Оперативная полиграфия, широкоформатная и УФ-печать, лазерная резка, гравировка, вышивка и сувениры в Нальчике. Тираж от одного экземпляра, часто в тот же день. Тарчокова, 29.',
+    'Рекламное агентство полного цикла в Нальчике: визитки, наклейки, бирки, одежда с принтом, кружки, сувениры, упаковка, гравировка и лазерная резка. Часто в тот же день. Тарчокова, 29.',
   keywords: [
+    'рекламное агентство Нальчик',
     'типография Нальчик',
     'полиграфия Нальчик',
     'печать визиток Нальчик',
+    'наклейки на заказ Нальчик',
+    'бирки для одежды Нальчик',
+    'печать на футболках Нальчик',
+    'кружки с логотипом Нальчик',
+    'сувениры с логотипом Нальчик',
     'баннеры Нальчик',
     'лазерная резка Нальчик',
     'гравировка Нальчик',
-    'рекламное агентство Нальчик',
     'УФ-печать КБР',
   ],
   alternates: { canonical: SITE_URL },
@@ -61,9 +71,9 @@ export const metadata: Metadata = {
     locale: 'ru_RU',
     url: SITE_URL,
     siteName: 'Альфа Принт',
-    title: 'Альфа Принт · печатаем в Нальчике с 2014 года',
+    title: 'Альфа Принт · рекламное агентство в Нальчике с 2014 года',
     description:
-      'Визитки, баннеры, наклейки, гравировка, лазерная резка, печать по акрилу, дереву, ткани и шоколаду. Срочный тираж часто в тот же день.',
+      'Визитки, наклейки, бирки, одежда с принтом, кружки, сувениры и упаковка. Баннеры, гравировка, лазерная резка, печать по акрилу, дереву, ткани и шоколаду. Срочный тираж часто в тот же день.',
   },
   robots: { index: true, follow: true },
   formatDetection: { telephone: false },
@@ -75,8 +85,23 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  /* ГРУНТОВ НА КОРНЕ ТРИ, И ЭТО РАЗНЫЕ СВЕДЕНИЯ. `data-ground` это раздел,
+     который ЧИТАЮТ: его считает черта по середине окна, и с него живут
+     указатель разделов и усиление ухода приводки. Два других это лист ПОД
+     хромой: `data-bar-ground` под верхней полосой у верхнего реза,
+     `data-strip-ground` под контрольной шкалой у нижнего, и обе стоят на
+     полэкрана в стороне от середины, см. `PlateProvider`.
+
+     Написаны бумажными потому, что до первой прокрутки под чертой полосы нет
+     ни одного раздела: первый начинается ровно под нею. */
   return (
-    <html lang="ru" className={fontVariables} data-ground="paper">
+    <html
+      lang="ru"
+      className={fontVariables}
+      data-ground="paper"
+      data-bar-ground="paper"
+      data-strip-ground="paper"
+    >
       <body>
         <a href="#main" className="skip-link t-label">
           К содержанию

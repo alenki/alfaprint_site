@@ -112,6 +112,28 @@ export function formatRub(n: number): string {
   return Math.round(n).toLocaleString('ru-RU').replace(/\u202F/g, '\u00A0') + '\u00A0₽';
 }
 
+/**
+ * СУММА С ЧАСТИЦЕЙ «ОТ». Ни одно число на этом листе не окончательное: ставки
+ * перенесены с прежнего сайта, а итог зависит ещё и от материала в наличии,
+ * сложности макета и объёма работ. Поэтому всякая положительная сумма названа
+ * нижней границей, и названа ОДНИМ правилом на весь лист: слагаемое в панели,
+ * слагаемое в строке, подытог колонки и итог печатаются отсюда.
+ *
+ * «ОТ» СТАВИТСЯ ТОЛЬКО ПЕРЕД ПОЛОЖИТЕЛЬНОЙ СУММОЙ, и это не осторожность.
+ * Ноль назван точно («Без отделки», «Самовывоз»): расти ему неоткуда, и
+ * «от 0 ₽» было бы уловкой. Скидка за повтор заказа тоже точна, и «от −300 ₽»
+ * обещало бы, что скидка бывает и больше. Минус здесь типографский (U+2212),
+ * а не дефис: он стоит вплотную к цифрам того же кегля.
+ *
+ * ЧАСТИЦА ПРИБИТА К СУММЕ неразрывным пробелом, тем же, что отбивает разряды:
+ * «от» на своей строке над числом это не цена, а обрывок.
+ */
+export function formatFrom(n: number): string {
+  if (n > 0) return `от\u00A0${formatRub(n)}`;
+  if (n < 0) return `\u2212${formatRub(Math.abs(n))}`;
+  return formatRub(0);
+}
+
 /** Ровно те подписи, которые нужны сообщению. Структурный тип: импорта нет. */
 export type MessageCopy = {
   readonly waOpen: string;
@@ -145,7 +167,7 @@ export function raschetMessage(p: Product, c: Choice, sh: Shared, copy: MessageC
   ];
   const picked = sh.extras.filter((e) => c.extras.includes(e.id));
   if (picked.length) lines.push(`${f.extras}: ${picked.map((e) => e.label).join(', ')}`);
-  lines.push(`${copy.waTotal}: ${formatRub(grandTotal(p, c, sh))}`);
+  lines.push(`${copy.waTotal}: ${formatFrom(grandTotal(p, c, sh))}`);
   lines.push(copy.waTail);
   return lines.join('\n');
 }

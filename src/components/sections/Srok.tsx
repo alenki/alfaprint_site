@@ -1,18 +1,22 @@
 'use client';
 
 import { PrintReveal } from '@/components/type/PrintReveal';
-import { DayTimeline } from '@/components/ui/DayTimeline';
+import { OrderPath } from '@/components/ui/OrderPath';
 import { Section, Sheet, Grid } from '@/components/layout/Sheet';
-import { DAY, SECTIONS } from '@/content/site';
+import { SROK, SECTIONS } from '@/content/site';
 
 /**
- * §05 · ЗА ОДИН ДЕНЬ
+ * §05 · СРОК
  *
- * Срочность это расписание, а не наценка. Полосу держат заголовок, лид и
- * само сменное задание: живая строка смены и строка условий сняты, они
- * повторяли часы из §08 и обещание из лида.
+ * Полоса называет единственное подтверждённое число срока и показывает путь,
+ * который за ним стоит. Прежде она называлась «За один день» и печатала
+ * типовой день срочного заказа по часам; чем это обещание расходится с
+ * калькулятором прежнего сайта, разобрано у `SROK` в `content/site.ts`.
+ *
+ * Полосу держат заголовок, лид и сам путь заказа: живая строка смены и
+ * строка условий сняты, они повторяли часы из §08 и обещание из лида.
  */
-export function ZaOdinDen() {
+export function Srok() {
   const S = SECTIONS[4];
 
   return (
@@ -27,7 +31,7 @@ export function ZaOdinDen() {
           <div className="col-span-4 md:col-span-7">
             <PrintReveal as="div">
               <h2 className="t-h2 fg">
-                {DAY.heading.map((l) => (
+                {SROK.heading.map((l) => (
                   <span key={l} className="block">
                     {l}
                   </span>
@@ -39,13 +43,13 @@ export function ZaOdinDen() {
               delay={0.034}
               className="t-lead fg-70 measure mt-[clamp(24px,2.4vw,44px)]"
             >
-              {DAY.lead}
+              {SROK.lead}
             </PrintReveal>
           </div>
         </Grid>
       </Sheet>
 
-      <DayTimeline />
+      <OrderPath />
     </Section>
   );
 }

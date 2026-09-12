@@ -7,7 +7,7 @@ import { EmbossWord } from '@/components/print/EmbossWord';
 import { useShift } from '@/components/ui/ShiftStatus';
 import { Section, Sheet, Grid } from '@/components/layout/Sheet';
 import { HOURS_DISPLAY } from '@/content/hours';
-import { CLOSING, IMPRINT, NAV, SECTIONS } from '@/content/site';
+import { CLOSING, IMPRINT, PAGES, SECTIONS } from '@/content/site';
 
 /**
  * §08 · ВЫХОДНЫЕ ДАННЫЕ
@@ -34,7 +34,7 @@ import { CLOSING, IMPRINT, NAV, SECTIONS } from '@/content/site';
  */
 export function VykhodnyeDannye() {
   const shift = useShift();
-  const S = SECTIONS[6];
+  const S = SECTIONS[7];
 
   return (
     <Section
@@ -89,6 +89,12 @@ export function VykhodnyeDannye() {
                 ))}
               </p>
 
+              {/* ОРИЕНТИР ИДЁТ ПОСЛЕ АДРЕСА И МЕЛЬЧЕ ЕГО. Диктуют «Тарчокова,
+                  29», а ищут «напротив History»: это два разных сведения, и
+                  набирать их одним кеглем значит заявить, что имя чужого
+                  заведения равно нашему адресу. */}
+              <p className="t-small fg-56 mt-[clamp(7px,0.7vw,12px)]">{IMPRINT.landmark}</p>
+
               <ul className="mt-[clamp(18px,1.7vw,28px)] space-y-1.5">
                 {HOURS_DISPLAY.map((h) => {
                   const today =
@@ -104,15 +110,28 @@ export function VykhodnyeDannye() {
                   );
                 })}
               </ul>
+
+              {/* ПОЛУЧЕНИЕ ИДЁТ ПОД ГРАФИКОМ, ТЕМ ЖЕ ГОЛОСОМ И БЕЗ СВОЕГО
+                  ЗАГОЛОВКА. Часы отвечают «когда», эти две строки «как», и
+                  подписывать вторую пару значило бы разбить одну колонку на
+                  две. Приглушены на разряд против текущего дня: график живой,
+                  а способ получения не меняется от дня недели. */}
+              <ul className="mt-[clamp(12px,1.1vw,20px)] space-y-1.5">
+                {CLOSING.logistics.map((l) => (
+                  <li key={l} className="t-mono fg-56">
+                    {l}
+                  </li>
+                ))}
+              </ul>
             </PrintReveal>
           </div>
 
-          {/* Разделы */}
+          {/* Страницы */}
           <div className="col-span-2 md:col-span-2 md:col-start-5">
             <PrintReveal as="div" delay={0.05}>
               <span className="t-micro fg-56 kp-col-label">{CLOSING.columns.nav}</span>
               <ul className="kp-col-list">
-                {NAV.map((n) => (
+                {PAGES.map((n) => (
                   <li key={n.href}>
                     <a href={n.href} className="link-rule fg-70">
                       {n.label}

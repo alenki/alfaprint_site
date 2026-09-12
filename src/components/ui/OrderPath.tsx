@@ -2,16 +2,21 @@
 
 import { useRef } from 'react';
 import { motion, useScroll, useTransform, type MotionValue } from 'motion/react';
-import { DAY } from '@/content/site';
+import { SROK } from '@/content/site';
 import { usePrefersReducedMotion } from '@/lib/hooks';
 
 /**
- * СМЕННОЕ ЗАДАНИЕ.
+ * ПУТЬ ЗАКАЗА.
  *
  * Линия идёт от реза до реза: первый узел стоит на левом поле, последний
- * на правом, а сама линейка уходит за обрез в оба края. Смена это весь
- * рабочий день целиком, и на формате во весь лист она обязана занимать весь
- * лист; в колонке по центру она читалась как виджет.
+ * на правом, а сама линейка уходит за обрез в оба края. Путь заказа это
+ * весь лист целиком, и на формате во весь лист он обязан занимать весь
+ * лист; в колонке по центру он читался как виджет.
+ *
+ * НАД УЗЛАМИ СТОЯТ НОМЕРА, А НЕ ЧАСЫ. Прежде это было сменное задание с
+ * расписанием от 09:00 до 17:00; часов у срочного заказа фирма не называет
+ * нигде, и выдуманное расписание обещало за неё. Номер говорит ровно то,
+ * что здесь и надо сказать: порядок. Разбор источника у `SROK`.
  *
  * Рубиновая линия растёт строго линейно по прогрессу секции: скрабленная
  * анимация никогда не имеет кривой: иначе она врёт про положение.
@@ -20,7 +25,7 @@ import { usePrefersReducedMotion } from '@/lib/hooks';
  * слушателя на узлах. У последнего узла дорисовывается галочка: знак бренда
  * появляется ровно в точке сдачи заказа.
  */
-export function DayTimeline() {
+export function OrderPath() {
   const ref = useRef<HTMLDivElement>(null);
   const reduced = usePrefersReducedMotion();
 
@@ -30,13 +35,13 @@ export function DayTimeline() {
   });
 
   const scale = useTransform(scrollYProgress, [0, 1], [0, 1]);
-  const nodes = DAY.nodes;
+  const nodes = SROK.nodes;
 
   return (
     <div ref={ref} className="relative mt-[clamp(72px,7vw,160px)]">
       {/* ── Десктоп: линия во весь лист ──────────────────────────────────── */}
       <div className="relative hidden md:block" style={{ paddingBlock: 'clamp(64px,6vw,116px)' }}>
-        {/* Линейка уходит за обрез: смена не начинается и не кончается на поле. */}
+        {/* Линейка уходит за обрез: путь не начинается и не кончается на поле. */}
         <div className="absolute inset-x-0 top-1/2 h-px bg-[var(--rule)]" />
         <motion.div
           className="absolute inset-x-0 top-1/2 h-px origin-left bg-[var(--color-rubine)]"
@@ -46,7 +51,7 @@ export function DayTimeline() {
         <ul className="relative flex justify-between px-[var(--edge)]">
           {nodes.map((node, i) => (
             <Node
-              key={node.time}
+              key={node.step}
               node={node}
               i={i}
               threshold={i / (nodes.length - 1)}
@@ -67,9 +72,9 @@ export function DayTimeline() {
         />
         <ul className="flex flex-col gap-9">
           {nodes.map((node) => (
-            <li key={node.time} className="relative flex items-baseline gap-5 pl-6">
+            <li key={node.step} className="relative flex items-baseline gap-5 pl-6">
               <span className="absolute left-0 top-2 h-[11px] w-[11px] rounded-full border border-[var(--rule)] bg-[var(--color-ink)]" />
-              <span className="t-micro fg-56 w-12 shrink-0">{node.time}</span>
+              <span className="t-micro fg-56 w-7 shrink-0">{node.step}</span>
               <span className="font-display fg text-2xl font-semibold">{node.title}</span>
             </li>
           ))}
@@ -87,7 +92,7 @@ function Node({
   reduced,
   edge,
 }: {
-  node: { time: string; title: string };
+  node: { step: string; title: string };
   i: number;
   threshold: number;
   progress: MotionValue<number>;
@@ -96,8 +101,8 @@ function Node({
 }) {
   const lit = useTransform(progress, [threshold - 0.02, threshold + 0.06], [0, 1]);
   /* Узел, до которого линия ещё не дошла, ПРИГЛУШЁН, а не спрятан:
-     расписание надо читать целиком с первого взгляда, иначе половина
-     дня выглядит как сбой вёрстки. */
+     путь надо читать целиком с первого взгляда, иначе половина заказа
+     выглядит как сбой вёрстки. */
   const litText = useTransform(lit, [0, 1], [0.42, 1]);
   const litDot = useTransform(lit, [0, 1], [0.22, 1]);
   const above = i % 2 === 0;
@@ -116,7 +121,7 @@ function Node({
         className={`absolute whitespace-nowrap ${place}`}
         style={above ? { bottom: '20px' } : { top: '20px' }}
       >
-        <p className="t-micro fg-56">{node.time}</p>
+        <p className="t-micro fg-56">{node.step}</p>
         <motion.p
           className="font-display fg mt-1.5 text-[clamp(1.25rem,1.9vw,2.25rem)] font-semibold leading-none"
           style={{ opacity: reduced ? 1 : litText }}

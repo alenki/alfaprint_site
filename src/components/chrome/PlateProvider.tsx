@@ -7,15 +7,24 @@ import { trailAway, trailFrame, trailPointer } from '@/lib/trail';
 /**
  * ЕДИНСТВЕННЫЙ rAF-ЦИКЛ НА ВЕСЬ САЙТ.
  *
- * Пишет три переменные: --miss и --progress в :root, --run-p на саму ленту
- * знаков, --reg-x/--reg-y на сам приводочный шильд, и больше не делает
- * ничего. Ноль слушателей прокрутки на элементах, ноль React-ререндеров при
- * прокрутке: весь уход приводки живёт в CSS.
+ * Пишет четыре переменные, и каждую НА ТОТ УЗЕЛ, КОТОРЫЙ ЕЁ ЧИТАЕТ: --miss на
+ * формы R и призраков, --progress на звезду подачи и контрольную шкалу, --run-p
+ * на дорожки ленты знаков, --reg-x/--reg-y на приводочный шильд. В :root не
+ * уходит НИЧЕГО, и больше цикл не делает ничего. Ноль слушателей прокрутки на
+ * элементах, ноль React-ререндеров при прокрутке: весь уход приводки живёт в
+ * CSS.
  *
- * ПИШЕТ ТУДА, ГДЕ ЧИТАЮТ, И ТОЛЬКО НА ИЗМЕНЕНИЕ. Переменные наследуемые, и
- * запись в :root это недействительный стиль ВСЕГО документа. В :root остаётся
- * то, у чего читатели разбросаны по листу (--miss правит всеми формами R
- * сразу); у чего читатель один, тому переменная кладётся на его же узел.
+ * ПИШЕТ ТУДА, ГДЕ ЧИТАЮТ, И ТОЛЬКО НА ИЗМЕНЕНИЕ. Все четыре объявлены
+ * НЕнаследуемыми (@property, inherits: false), и потому запись ложится ровно
+ * на тот узел, которому написана. Обратное стоило дорого: наследуемое число в
+ * :root это недействительный стиль ВСЕГО документа, полторы тысячи узлов
+ * заново выводят значение ради двух десятков, которые его читают. «Разбросаны
+ * по листу» не оправдание для :root: разбросаны они по двум десяткам узлов
+ * (--miss) и по двум (--progress), и цикл находит их сам.
+ *
+ * Цена ненаследуемости одна: КАЖДЫЙ читающий узел обязан получить число сам,
+ * и новый читатель обязан попасть в MISS_READERS или PROGRESS_READERS ниже.
+ * Не попал — встанет в приводке (initial-value: 0), а не сломается.
  * И ни одна строка не уходит в стиль дважды подряд: см. put ниже.
  *
  * И ВЕСЬ КАДР РАЗДЕЛЁН НАДВОЕ: сначала чтение вёрстки, потом запись стиля.
@@ -44,7 +53,27 @@ import { trailAway, trailFrame, trailPointer } from '@/lib/trail';
  * При prefers-reduced-motion не запускается ничего: ни цикл, ни Lenis.
  */
 
-export type SectionMeta = { id: string; n: string; title: string; ground: string; gain: number };
+/**
+ * НОМЕР ПОЛОСЫ, И БОЛЬШЕ НИЧЕГО.
+ *
+ * Грунта и усиления здесь нет намеренно: они объявлены там же, где полоса
+ * набрана, и цикл читает их с самого узла, см. ниже. Номер в разметке не
+ * стоит, и только за ним цикл и ходит в реестр.
+ */
+export type SectionMeta = { id: string; n: string };
+
+/* ЧИТАТЕЛИ ЖИВЫХ ПЕРЕМЕННЫХ, перечисленные ровно теми селекторами, которыми
+   они объявлены в globals.css. Список здесь, а не в цикле: держать его рядом
+   с правилом, которое его задаёт, дешевле, чем искать по файлу.
+
+   --miss читают закон ухода (.plate-r), его инверсия на рубиновом грунте
+   ([data-invert='true'] .plate-k) и непрозрачность призраков (.plate-ghost).
+   Шильд под селектор подпадает и живого числа не получает во вред: у него
+   свой transform по --reg-x/--reg-y, и --miss там не читается вовсе.
+
+   --progress читают звезда подачи и заполненная часть контрольной шкалы. */
+const MISS_READERS = '.plate-r, .plate-ghost, [data-invert="true"] .plate-k';
+const PROGRESS_READERS = '.star-plate, .strip-fill';
 
 export function PlateProvider({ sections }: { sections: SectionMeta[] }) {
   useEffect(() => {
@@ -58,37 +87,158 @@ export function PlateProvider({ sections }: { sections: SectionMeta[] }) {
        не уезжает. */
     root.dataset.bar = 'open';
 
-    /* ── Грунт и усиление ухода: один IntersectionObserver на секции ──────── */
-    const els = sections
-      .map((s) => document.getElementById(s.id))
-      .filter((el): el is HTMLElement => Boolean(el));
+    /* ── ПОЛОСЫ ИЩУТСЯ В ДОКУМЕНТЕ, А НЕ В РЕЕСТРЕ ──────────────────────────
+       Грунт и усиление ухода объявлены там, где полоса набрана: `Section`
+       пишет их на сам узел (data-section-ground и --gain), и другого источника
+       у этих двух чисел нет. Цикл поэтому спрашивает документ.
+
+       Прежде он спрашивал реестр из раскладки, а тот держал ВТОРУЮ запись тех
+       же грунтов. Хватило её на два листа из четырёх: «Расчёт» и «Согласие»
+       свои первые полосы в реестр не отдали, наблюдатель их не видел, и хрома,
+       доехав до выходных данных, оставалась вывернутой по краске до
+       перезагрузки. Теперь в реестр ходят за одним НОМЕРОМ полосы: его в
+       разметке нет, и он один.
+
+       Список собирается однажды: полосы это разметка листа, а не его
+       содержимое, и приходить с рендером они не умеют. */
+    const els = Array.from(document.querySelectorAll<HTMLElement>('[data-section-ground]'));
+    const groundOf = (el: HTMLElement) => el.dataset.sectionGround || 'paper';
+
+    /* Грунт ГОЛОГО ЛИСТА, вне всякой полосы. Полосы стоят встык и доходят до
+       нижнего края документа, поэтому голым лист бывает ровно в одном месте:
+       в самом верху, над первой полосой, где в потоке стоит верхняя полоса.
+       Красит его body, и красит бумагой, см. globals.css. */
+    const BARE_GROUND = 'paper';
 
     let currentGain = 1;
 
+    /* ЧЕРТА ПО СЕРЕДИНЕ ОКНА ОТВЕЧАЕТ НА ВОПРОС «ЧТО ЧИТАЮТ», и с неё живут
+       ровно двое: указатель разделов и усиление ухода приводки. Хрома, которая
+       лежит на листе, спрашивает не это, а что у неё под собой, см. ниже. */
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
           if (!e.isIntersecting) continue;
-          const meta = sections.find((s) => s.id === e.target.id);
-          if (!meta) continue;
-          root.dataset.ground = meta.ground;
-          root.dataset.section = meta.n;
-          root.style.setProperty('--gain', String(meta.gain));
-          currentGain = meta.gain;
+          const el = e.target as HTMLElement;
+          root.dataset.ground = groundOf(el);
+          /* Номера у полосы может не быть вовсе: номера принадлежат главной,
+             и на чужом листе текущего раздела нет. Тогда метка снимается, а не
+             пишется пустой: пустую указатель принял бы за раздел. */
+          const meta = sections.find((s) => s.id === el.id);
+          if (meta) root.dataset.section = meta.n;
+          else delete root.dataset.section;
+          currentGain = parseFloat(el.style.getPropertyValue('--gain')) || 1;
+          root.style.setProperty('--gain', String(currentGain));
         }
       },
       { rootMargin: '-50% 0px -50% 0px', threshold: 0 }
     );
     els.forEach((el) => io.observe(el));
 
+    /* ── ГРУНТ ПОД ХРОМОЙ: У КАЖДОЙ ПОЛОСЫ СВОЯ ЧЕРТА ───────────────────────
+       Выворот хромы решает не тот раздел, который ЧИТАЮТ, а тот лист, на
+       котором она ЛЕЖИТ, и почти всю прокрутку это разные разделы.
+
+       Черта выше проведена по середине окна, и проведена верно: она отвечает
+       на вопрос «что читают». Но верхняя полоса стоит у ВЕРХНЕГО реза, на
+       полвысоты окна выше этой черты, а контрольная шкала у НИЖНЕГО, на
+       столько же ниже. Пока грунт обеим давала середина, каждая красилась по
+       разделу, до которого читатель ещё не доехал (полоса) или который уже
+       проехал (шкала): белая форма на белой бумаге, бумажная шкала на краске,
+       и та и другая по полэкрана ходу.
+
+       У полосы это видно только на ходу ВВЕРХ: вниз она убрана под рез, и
+       ошибка идёт за кадром. У шкалы видно в обе стороны, она не уезжает.
+
+       Поэтому черта у каждой своя, и проведена она по середине её собственной
+       высоты: пока форма стоит над разделом больше чем наполовину, она его
+       грунтом и красится. Высота снимается с узла (offsetHeight), а не с
+       токена: --topbar-h объявлен через calc, и getComputedStyle отдаёт его
+       невычисленным. Прямоугольник не годится тем более: верхняя полоса на
+       ходу вниз уезжает под рез трансформом, и rect уехал бы вместе с ней.
+
+       Черта считается от высоты окна, поэтому на смене формата наблюдатели
+       пересобираются. Пересборка заодно и сверяет грунт: новый наблюдатель
+       докладывает сразу обо всех целях, и та единственная, что стоит под
+       чертой, пишет себя снова.
+
+       ПЕРВОГО ЭКРАНА ЧЕРТА ПОЛОСЫ НЕ ЗАСТАЁТ. Полоса стоит в потоке, первый
+       раздел начинается ровно под ней, и у самого верха листа под чертой нет
+       ни одного раздела вовсе. До скриптов грунт на этот случай написан в
+       разметке (`layout`), а на ходу его пишет сам наблюдатель, см. разбор
+       пустой пачки ниже. И тот и другой бумажный: голый лист красит body. */
+    const CHROME = [
+      { sel: '.topbar', mark: 'barGround', at: 'head' },
+      { sel: '.controlstrip', mark: 'stripGround', at: 'foot' },
+    ] as const;
+
+    const chrome = CHROME.map((c) => ({
+      ...c,
+      io: null as IntersectionObserver | null,
+      margin: '',
+    }));
+
+    const armChrome = () => {
+      const vh = window.innerHeight;
+      for (const c of chrome) {
+        const h = document.querySelector<HTMLElement>(c.sel)?.offsetHeight || 0;
+        const line = Math.round(c.at === 'foot' ? vh - h / 2 : h / 2);
+        const rootMargin = `-${line}px 0px -${Math.max(vh - line, 0)}px 0px`;
+        if (c.margin === rootMargin) continue;
+        c.margin = rootMargin;
+        c.io?.disconnect();
+        const next = new IntersectionObserver(
+          (entries) => {
+            /* ПОД ЧЕРТОЙ МОЖЕТ НЕ ОКАЗАТЬСЯ НИ ОДНОЙ ПОЛОСЫ, и это не сбой, а
+               верх листа: полоса стоит в потоке НАД первым разделом, и под её
+               чертой там голая бумага. Пока это не считалось, метка держала
+               последний грунт, и прыжок в начало листа (клавиша Home, якорь
+               при отказе от движения) оставлял вывернутую плашку стоять на
+               бумаге: доклада-то ни одного, черта ушла выше всех.
+
+               Геометрия в условии не для порядка. Ушедшая полоса, которая
+               осталась ВЫШЕ черты, значит, что под черту встала следующая, а
+               её доклад в эту же пачку мог и не попасть: докладывают только
+               те, кто пересёк. Ушедшая НИЖЕ черты значит обратное: черта
+               поднялась выше неё, и вот тогда под чертой действительно
+               пусто. */
+            let hit = false;
+            let bare = true;
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                hit = true;
+                root.dataset[c.mark] = groundOf(e.target as HTMLElement);
+              } else if (e.boundingClientRect.top <= line) {
+                bare = false;
+              }
+            }
+            if (!hit && bare) root.dataset[c.mark] = BARE_GROUND;
+          },
+          { rootMargin, threshold: 0 }
+        );
+        els.forEach((el) => next.observe(el));
+        c.io = next;
+      }
+    };
+    armChrome();
+    window.addEventListener('resize', armChrome);
+
+    const stopGrounds = () => {
+      io.disconnect();
+      for (const c of chrome) c.io?.disconnect();
+      window.removeEventListener('resize', armChrome);
+    };
+
     if (reduced) {
-      root.style.setProperty('--miss', '0');
-      root.style.setProperty('--progress', '0');
-      root.style.setProperty('--run-p', '0');
+      /* Обнулять здесь нечего: --miss, --progress и --run-p объявлены
+         ненаследуемыми с initial-value 0, и без единой записи цикла каждый их
+         читатель стоит ровно в приводке. Наводка наследуемая, и ноль ей
+         объявлен в :root, но написать его ещё раз дешевле, чем помнить об
+         этом различии: запись однократная. */
       root.style.setProperty('--reg-x', '0');
       root.style.setProperty('--reg-y', '0');
       window.dispatchEvent(new CustomEvent('alfa:delta', { detail: { mm: 0 } }));
-      return () => io.disconnect();
+      return stopGrounds;
     }
 
     /* ── Прокрутка ────────────────────────────────────────────────────────── */
@@ -96,6 +246,14 @@ export function PlateProvider({ sections }: { sections: SectionMeta[] }) {
       lerp: 0.085,
       wheelMultiplier: 1,
       syncTouch: false,
+      /* ВЛОЖЕННАЯ ПРОКРУТКА ОТДАЁТСЯ ЭЛЕМЕНТУ, А ПОТОМ ВОЗВРАЩАЕТСЯ СТРАНИЦЕ.
+         Такой элемент на сайте один: перечень изделий на листе §03, который
+         лежит в постоянном резерве и довозится колесом. Без этого колесо над
+         листом везло бы страницу, а перечень стоял. Запрет колеса
+         (data-lenis-prevent) решал бы полдела и ломал вторую: дойдя до конца
+         перечня, колесо упиралось бы в лист, вместо того чтобы отдать ход
+         странице. Lenis считает край сам и отдаёт. */
+      allowNestedScroll: true,
     });
 
     // Якорные ссылки ведёт Lenis, иначе он «догоняет» нативный прыжок.
@@ -210,6 +368,24 @@ export function PlateProvider({ sections }: { sections: SectionMeta[] }) {
     let raf = 0;
     let markEl: HTMLElement | null = null;
     let trackEls: HTMLElement[] = [];
+    let missEls: HTMLElement[] = [];
+    let progEls: HTMLElement[] = [];
+
+    /* СПИСКИ ЧИТАТЕЛЕЙ ПЕРЕСОБИРАЮТСЯ ПО РАЗМЕТКЕ, А НЕ ПО КАДРУ. Формы R
+       приходят и уходят с React-рендером (§03 перебирает строки под курсором,
+       §04 пересобирает ленту), и querySelectorAll шестьдесят раз в секунду
+       ради этого платить незачем. Наблюдатель ставит флаг, кадр разбирает его
+       не чаще раза. data-invert в фильтре потому, что от него зависит, какая
+       форма уходит: узел при смене грунта остаётся тем же. */
+    let stale = true;
+    const readers = new MutationObserver(() => {
+      stale = true;
+    });
+    readers.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributeFilter: ['data-invert'],
+    });
     let rx = 0;
     let ry = 0;
     let regSettled = true;
@@ -230,6 +406,19 @@ export function PlateProvider({ sections }: { sections: SectionMeta[] }) {
       if (!host || written.get(name) === value) return;
       written.set(name, value);
       host.style.setProperty(name, value);
+    };
+
+    /* ТО ЖЕ, НО НА ВСЕХ ЧИТАТЕЛЕЙ РАЗОМ. Двадцать пять записей в стиль дешевле
+       одной записи в :root, и дешевле не на проценты. Замерено на собранном
+       листе, две секунды после одного поворота колеса: из :root это 311
+       пересчётов стиля и 1305 мс работы, то есть восемьдесят шесть процентов
+       времени; теми же кадрами на сами формы R это 140 пересчётов и 16 мс.
+       Ровно в эти две секунды и попадает наведение на строку §03, и опаздывало
+       оно не из-за §03. */
+    const putAll = (hosts: HTMLElement[], name: string, value: string) => {
+      if (written.get(name) === value) return;
+      written.set(name, value);
+      for (const host of hosts) host.style.setProperty(name, value);
     };
 
     const frame = (t: number) => {
@@ -286,6 +475,17 @@ export function PlateProvider({ sections }: { sections: SectionMeta[] }) {
          Шильд ищется заново, только если его нет в документе: Dopusk ставит
          его после разной строки на телефоне и на столе, и на смене формата
          узел пересоздаётся. На листах без шильда весь блок пропускается. */
+      /* Память записи сбрасывается вместе со списком: новый узел с той же
+         строкой не получил бы ничего и застыл бы в приводке. Та же причина,
+         по которой сбрасывается --run-p при пересборке ленты. */
+      if (stale) {
+        stale = false;
+        missEls = Array.from(document.querySelectorAll<HTMLElement>(MISS_READERS));
+        progEls = Array.from(document.querySelectorAll<HTMLElement>(PROGRESS_READERS));
+        written.delete('--miss');
+        written.delete('--progress');
+      }
+
       if (!coarse && !markEl?.isConnected) {
         markEl = document.querySelector('[data-register-mark]');
         /* Память записи держит СТРОКУ, а не узел: на новый шильд с той же
@@ -338,7 +538,7 @@ export function PlateProvider({ sections }: { sections: SectionMeta[] }) {
            от этого не только короче вдвое, он ЗАКАНЧИВАЕТСЯ: дальше строка
            не меняется, а неизменную строка запись не трогает. */
         if (s < 0.005) s = 0;
-        put(root, '--miss', s.toFixed(4));
+        putAll(missEls, '--miss', s.toFixed(4));
 
         if (markEl) {
           rx += (tx - rx) * REG_LERP;
@@ -417,14 +617,10 @@ export function PlateProvider({ sections }: { sections: SectionMeta[] }) {
           trackEls = Array.from(document.querySelectorAll<HTMLElement>('.marks-track'));
           written.delete('--run-p');
         }
-        const runP = phase.toFixed(5);
-        if (written.get('--run-p') !== runP) {
-          written.set('--run-p', runP);
-          for (const el of trackEls) el.style.setProperty('--run-p', runP);
-        }
+        putAll(trackEls, '--run-p', phase.toFixed(5));
       }
 
-      put(root, '--progress', (lenis.progress || 0).toFixed(4));
+      putAll(progEls, '--progress', (lenis.progress || 0).toFixed(4));
 
 
       // 12 Гц: чаще, и цифры начинают мельтешить.
@@ -447,7 +643,8 @@ export function PlateProvider({ sections }: { sections: SectionMeta[] }) {
       window.removeEventListener('blur', onPointerLeave);
       document.removeEventListener('visibilitychange', onHide);
       lenis.destroy();
-      io.disconnect();
+      stopGrounds();
+      readers.disconnect();
     };
   }, [sections]);
 

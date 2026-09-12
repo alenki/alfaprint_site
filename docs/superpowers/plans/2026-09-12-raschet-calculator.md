@@ -1002,6 +1002,14 @@ git commit -m "raschet: стили полосы, панель вне поток�
 
 One parameter: the resting row plus its out-of-flow panel. A disclosure button whose panel holds a radiogroup.
 
+> **AMENDED 12.09.2026, before implementation.** The first draft of this task decided whether an
+> option's value was money or a multiplier by testing `Number.isInteger(value)`. That is wrong:
+> the first entry of every materials list and of the срок list has the multiplier value `1`, an
+> integer, so the page would have printed «Обычный +1 ₽». Guessing is impossible in principle
+> here, so the caller now states it with a `money` prop. The draft's `cn` import, its `void cn;`
+> line and its `export { formatAdder as __formatAdder }` were scaffolding with no purpose and are
+> gone too.
+
 **Files:**
 - Create: `src/components/ui/RaschetField.tsx`
 
@@ -1010,7 +1018,6 @@ One parameter: the resting row plus its out-of-flow panel. A disclosure button w
 ```tsx
 'use client';
 
-import { cn } from '@/lib/cn';
 import type { Option } from '@/lib/raschet';
 
 /**
@@ -1018,8 +1025,8 @@ import type { Option } from '@/lib/raschet';
  *
  * СТРОКА ЭТО DISCLOSURE, панель это радиогруппа. Выбор одного из N обязан
  * называться радиогруппой, иначе скринридер не скажет, сколько их и какой
- * стоит. §03 от радиосемантики отказался осознанно, там строки НЕ выбор, а
- * раскрытие; здесь выбор.
+ * стоит. §03 от радиосемантики отказался осознанно: там строки НЕ выбор, а
+ * раскрытие. Здесь выбор.
  *
  * ПАНЕЛЬ ВЫНУТА ИЗ ПОТОКА. `.rs-slot` имеет нулевую высоту, панель висит в
  * ней абсолютом, а высоту компенсирует хвост колонки. Разбор арифметики
@@ -1029,29 +1036,25 @@ import type { Option } from '@/lib/raschet';
  * ПАНЕЛЬ ОСТАЁТСЯ В РАЗМЕТКЕ ЗАКРЫТОЙ, под `hidden`. Без JS её раскрывает
  * `<noscript>`-стиль: снять `display:none` с того, чего в документе нет,
  * нельзя, а прочитать варианты и их цены обязан и тот, у кого скрипты сняты.
+ *
+ * ЦЕНУ ПОКАЗЫВАЮТ ТОЛЬКО СЛАГАЕМЫЕ, и говорит об этом ВЫЗЫВАЮЩИЙ, а не
+ * догадка по числу. Множитель это не цена, а ставка наценки, и ни одна
+ * страница «Альфы» такой таблицы не печатала (решение заказчика 12.09.2026).
  */
 export function RaschetField({
-  id,
-  label,
-  value,
-  price,
-  options,
-  selected,
-  open,
-  shift,
-  onToggle,
-  onPick,
-  mode = 'radio',
+  id, label, value, price, options, selected, money, open, shift, onToggle, onPick, mode = 'radio',
 }: {
   id: string;
   label: string;
   /** Что стоит в строке в покое. */
   value: string;
-  /** Цена у правого поля. Пусто у параметров, которые множатся. */
+  /** Цена у правого поля строки. Пусто у параметров, которые множатся. */
   price?: string;
   options: readonly Option[];
   /** Номера выбранных вариантов. У радиогруппы ровно один. */
   selected: readonly number[];
+  /** Значения вариантов это рубли, а не множители: печатать ли их. */
+  money?: boolean;
   open: boolean;
   shift: boolean;
   onToggle: () => void;
@@ -1062,25 +1065,15 @@ export function RaschetField({
 
   return (
     <div className="rs-field" data-shift={shift ? 'true' : 'false'}>
-      <button
-        type="button"
-        className="rs-row"
-        aria-expanded={open}
-        aria-controls={panelId}
-        onClick={onToggle}
-      >
+      <button type="button" className="rs-row" aria-expanded={open} aria-controls={panelId} onClick={onToggle}>
         <span className="t-label fg-56">{label}</span>
         <span className="rs-row-v">{value}</span>
         <span className="rs-row-p">{price ?? ''}</span>
       </button>
 
       <div className="rs-slot">
-        <div
-          id={panelId}
-          className="rs-panel"
-          hidden={!open}
-          {...(mode === 'radio' ? { role: 'radiogroup', 'aria-label': label } : { role: 'group', 'aria-label': label })}
-        >
+        <div id={panelId} className="rs-panel" hidden={!open}
+             role={mode === 'radio' ? 'radiogroup' : 'group'} aria-label={label}>
           {options.map((o, i) => {
             const on = selected.includes(i);
             return (
@@ -1095,7 +1088,7 @@ export function RaschetField({
               >
                 <span className="rs-opt-mark" aria-hidden />
                 <span>{o.label}</span>
-                <span className="rs-opt-p">{formatAdder(o.value, mode)}</span>
+                <span className="rs-opt-p">{money ? formatMoney(o.value) : ''}</span>
               </button>
             );
           })}
@@ -1106,35 +1099,35 @@ export function RaschetField({
 }
 
 /**
- * ЦЕНУ ПОКАЗЫВАЮТ ТОЛЬКО СЛАГАЕМЫЕ. Множитель («×1,55») это не цена, а ставка
- * наценки, и ни одна страница «Альфы» такой таблицы не печатала. Решение
- * заказчика от 12.09.2026, см. §3 спецификации.
+ * Слагаемое у правого поля варианта. Ноль печатается словом «0 ₽», а не
+ * пустотой: «Без отделки» и «Самовывоз» это тоже цена, и читатель обязан
+ * видеть, что она названа, а не забыта.
  */
-function formatAdder(value: number, mode: 'radio' | 'toggle'): string {
-  if (!Number.isInteger(value)) return '';
-  if (mode === 'radio' && value === 0) return '0\u00A0₽';
-  if (value === 0) return '';
-  const sign = value > 0 ? '+' : '\u2212';
-  return `${sign}${Math.abs(value).toLocaleString('ru-RU').replace(/\u202F/g, '\u00A0')}\u00A0₽`;
+function formatMoney(value: number): string {
+  if (value === 0) return '0 ₽';
+  const sign = value > 0 ? '+' : '−';
+  return `${sign}${Math.abs(value).toLocaleString('ru-RU').replace(/ /g, ' ')} ₽`;
 }
-
-export { formatAdder as __formatAdder };
-
-/** Не даём `cn` уехать из импортов, пока он не понадобился разметке. */
-void cn;
 ```
 
-- [ ] **Step 2: Remove the placeholder import**
-
-The `void cn;` line and the `cn` import are scaffolding. Delete both lines now — the component does not need `cn`.
-
-- [ ] **Step 3: Typecheck**
+- [ ] **Step 2: Typecheck**
 
 ```bash
 npm run typecheck
 ```
 
-Expected: no output, exit 0.
+Expected: no output, exit 0. If it reports errors in files this task did not create, those belong to the other sessions working in this repo — report them, do not fix them.
+
+- [ ] **Step 3: Check `formatMoney` against the real values**
+
+```bash
+node --input-type=module -e "
+const f = (v) => { if (v === 0) return '0 ₽'; const s = v > 0 ? '+' : '−'; return s + Math.abs(v).toLocaleString('ru-RU').replace(/ /g,' ') + ' ₽'; };
+for (const v of [0, 600, 1400, 2500, -300]) console.log(v, '->', f(v));
+"
+```
+
+Expected `0 ₽`, `+600 ₽`, `+1 400 ₽`, `+2 500 ₽`, `−300 ₽`. The last sign is U+2212, a real minus, not a hyphen.
 
 - [ ] **Step 4: Commit**
 
