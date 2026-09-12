@@ -111,3 +111,41 @@ export function termKey(p: Product, c: Choice, sh: Shared, slow: readonly string
 export function formatRub(n: number): string {
   return Math.round(n).toLocaleString('ru-RU').replace(/\u202F/g, '\u00A0') + '\u00A0₽';
 }
+
+/** Ровно те подписи, которые нужны сообщению. Структурный тип: импорта нет. */
+export type MessageCopy = {
+  readonly waOpen: string;
+  readonly waTotal: string;
+  readonly waTail: string;
+  readonly fields: {
+    readonly qty: string; readonly material: string; readonly format: string;
+    readonly speed: string; readonly finish: string; readonly design: string;
+    readonly delivery: string; readonly extras: string;
+  };
+  readonly qtyUnit: string;
+};
+
+/**
+ * НАРЯД ТЕКСТОМ. Прежний сайт открывал пустой чат, и менеджеру приходилось
+ * спрашивать всё заново. Ничего никуда не отправляется, открывается WhatsApp:
+ * врать в подтверждении по-прежнему нечем.
+ */
+export function raschetMessage(p: Product, c: Choice, sh: Shared, copy: MessageCopy): string {
+  const f = copy.fields;
+  const lines = [
+    copy.waOpen,
+    `${p.title}`,
+    `${f.qty}: ${c.qty} ${copy.qtyUnit}`,
+    `${f.material}: ${p.materials[c.material].label}`,
+    `${f.format}: ${p.formats[c.format].label}`,
+    `${f.finish}: ${p.finishes[c.finish].label}`,
+    `${f.design}: ${sh.design[c.design].label}`,
+    `${f.speed}: ${sh.speed[c.speed].label}`,
+    `${f.delivery}: ${sh.delivery[c.delivery].label}`,
+  ];
+  const picked = sh.extras.filter((e) => c.extras.includes(e.id));
+  if (picked.length) lines.push(`${f.extras}: ${picked.map((e) => e.label).join(', ')}`);
+  lines.push(`${copy.waTotal}: ${formatRub(grandTotal(p, c, sh))}`);
+  lines.push(copy.waTail);
+  return lines.join('\n');
+}

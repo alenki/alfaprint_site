@@ -12,8 +12,8 @@
  */
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
-import { PRODUCTS, SHARED, SLOW_PRODUCTS, TERMS } from '../src/content/raschet.ts';
-import { runTotal, setupTotal, grandTotal, termKey, formatRub } from '../src/lib/raschet.ts';
+import { PRODUCTS, SHARED, SLOW_PRODUCTS, TERMS, RASCHET } from '../src/content/raschet.ts';
+import { runTotal, setupTotal, grandTotal, termKey, formatRub, raschetMessage } from '../src/lib/raschet.ts';
 
 const oracle = JSON.parse(fs.readFileSync(new URL('./raschet-oracle.json', import.meta.url), 'utf8'));
 
@@ -123,4 +123,18 @@ assert.equal(Math.round(grandTotal(cards, def, SHARED)), 1200, 'состояни
 assert.equal(termKey(cards, def, SHARED, SLOW_PRODUCTS), 'normal', 'срок по умолчанию');
 
 console.log('контрольные примеры: 4 990 ₽ и 1 200 ₽ — сходятся');
+
+/* ── 4. СООБЩЕНИЕ В WHATSAPP ────────────────────────────────────────────── */
+const msg = raschetMessage(cards, worked, SHARED, RASCHET);
+for (const needle of ['Визитки', '100', 'Премиум картон / фактурная бумага',
+  'Двусторонняя визитка', 'Премиальная отделка', 'Макет готов', 'Срочно',
+  'Доставка по городу', 'предварительн']) {
+  assert.ok(msg.toLowerCase().includes(needle.toLowerCase()), `в сообщении нет «${needle}»:\n${msg}`);
+}
+assert.ok(msg.includes(formatRub(grandTotal(cards, worked, SHARED))), `в сообщении нет итоговой суммы:\n${msg}`);
+assert.ok(!msg.includes('undefined'), 'в сообщении undefined');
+
+const empty = raschetMessage(cards, def, SHARED, RASCHET);
+assert.ok(!empty.includes(RASCHET.fields.extras), 'пустой набор доп. работ не должен попадать в сообщение');
+console.log('сообщение в WhatsApp: собирается');
 console.log('\nВСЁ СОШЛОСЬ.');
