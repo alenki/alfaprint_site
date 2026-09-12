@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { SITE_URL } from '@/app/layout';
+import { ROUTES } from '@/lib/base';
 import { Raschet } from '@/components/sections/Raschet';
 import { VykhodnyeDannye } from '@/components/sections/VykhodnyeDannye';
 import { RASCHET } from '@/content/raschet';
@@ -17,7 +19,11 @@ import { RASCHET } from '@/content/raschet';
 export const metadata: Metadata = {
   title: RASCHET.title,
   description: RASCHET.metaDescription,
-  alternates: { canonical: '/raschet' },
+  /* Адрес абсолютный и собран из двух источников: площадка из раскладки, путь
+     из таблицы адресов. Относительный сюда писать нельзя: `metadataBase` уже
+     несёт подкаталог площадки, и путь от корня его бы затёр. Тем же способом
+     собран канонический адрес листа «Контакты». */
+  alternates: { canonical: `${SITE_URL}${ROUTES.raschet}` },
   openGraph: {
     title: `${RASCHET.title} · Альфа Принт`,
     description: RASCHET.metaDescription,
