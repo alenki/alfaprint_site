@@ -110,6 +110,24 @@ export function TopBar() {
   const navHref = (href: string) =>
     offHome && href.startsWith('#') ? `${asset('/')}${href}` : href;
 
+  /* «ГЛАВНАЯ» НА САМОЙ ГЛАВНОЙ ЭТО ХОД ВВЕРХ, А НЕ ПЕРЕЗАГРУЗКА ЛИСТА.
+     Адрес у пункта честный (`/`), и браузер по нему уводит с любого другого
+     листа; но нажатое на самой главной, это же нажатие перезаряжало бы
+     страницу целиком — вместе с приладкой, которая считает до ста. Поэтому на
+     своём листе ход отдаётся Lenis тем же событием, каким пользуются остальные
+     узлы полосы, и адресная строка остаётся чистой: якорь `#pervyi-progon`
+     здесь не нужен, он и был тем, что писало в адрес имя внутренней полосы.
+
+     Нажатия с модификатором и средней кнопкой не перехватываются: «открыть в
+     новой вкладке» обязано открыть главную. */
+  const homeHref = asset('/');
+  const onHome = (e: React.MouseEvent) => {
+    setOpen(false);
+    if (offHome || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    window.dispatchEvent(new CustomEvent('alfa:scrollto', { detail: { y: 0 } }));
+  };
+
   const plateRef = useRef<HTMLDivElement>(null);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
 
@@ -123,7 +141,17 @@ export function TopBar() {
        листе не значат ничего; зато пункт меню, чей адрес совпал с адресом
        страницы, и есть текущий раздел, причём на всей её высоте. Слушать
        тут нечего, и наблюдателя эта ветка не заводит. */
-    const page = NAV.find((n) => !n.href.startsWith('#') && location.pathname.startsWith(n.href));
+/* КОРЕНЬ СРАВНИВАЕТСЯ ЦЕЛИКОМ, ВНУТРЕННИЙ ЛИСТ — НАЧАЛОМ ПУТИ. «Главная»
+       это теперь адрес `/`, и с которого начинается ЛЮБОЙ путь: сравнение
+       началом пометило бы её текущей на всех листах разом. */
+    const trim = (s: string) => s.replace(/\/+$/, '');
+    const here = trim(location.pathname);
+    const home = trim(asset('/'));
+    const page = NAV.find((n) => {
+      if (n.href.startsWith('#')) return false;
+      const h = trim(n.href);
+      return h === home ? here === home : here.startsWith(h);
+    });
     if (page) {
       setActive(page.href);
       return;
@@ -217,7 +245,7 @@ export function TopBar() {
         <div className="sheet flex h-full items-start pt-[var(--bar-pad)]">
           <div ref={plateRef} className="bar-plate" data-open={open ? 'true' : 'false'}>
             <div className="bar-rail gap-[clamp(16px,2vw,48px)]">
-              <Wordmark onClick={() => setOpen(false)} />
+              <Wordmark href={homeHref} onClick={onHome} />
 
               <nav aria-label="Разделы сайта" className="hidden lg:block">
                 <ul className="bar-nav flex items-center gap-[clamp(20px,2.5vw,44px)]">
@@ -226,6 +254,7 @@ export function TopBar() {
                       <a
                         href={navHref(item.href)}
                         className="navlink"
+                        {...(item.href === homeHref ? { onClick: onHome } : null)}
                         {...(active === item.href ? { 'aria-current': 'true' as const } : null)}
                       >
                         {item.label}
@@ -284,7 +313,7 @@ export function TopBar() {
                       <li key={item.href}>
                         <a
                           href={navHref(item.href)}
-                          onClick={() => setOpen(false)}
+                          onClick={item.href === homeHref ? onHome : () => setOpen(false)}
                           className="menu-row"
                           style={{ ['--i' as string]: i }}
                           {...(active === item.href
@@ -356,6 +385,13 @@ export function TopBar() {
  * не называет. Имя фирмы лист всё равно произносит: вылетом в §01, титулом
  * вкладки и `aria-label` этой самой ссылки.
  *
+ * АДРЕС У ЗНАКА ТОТ ЖЕ, ЧТО У «ГЛАВНОЙ»: сам лист, `/`. Здесь стоял якорь
+ * `#pervyi-progon`, и он врал дважды. На чужом листе полосы с таким именем в
+ * документе нет, обработчик её не находит и нажатие не делало РОВНО НИЧЕГО.
+ * А на самой главной он доезжал куда надо, но писал в адресную строку имя
+ * внутренней полосы: знак фирмы обязан называть лист, а не его первый абзац.
+ * Ход вверх на своём листе делает `onHome` из полосы, см. там же.
+ *
  * МАРКА СТОИТ НАМЕРТВО. Закон ухода приводки на неё не заведён: в собственном
  * знаке сползшая форма читается не как дрожь машины, а как опечатка.
  *
@@ -374,9 +410,15 @@ export function TopBar() {
  * нельзя ни при каких правках: без него в шапке останется безымянная
  * картинка.
  */
-function Wordmark({ onClick }: { onClick?: () => void }) {
+function Wordmark({
+  href,
+  onClick,
+}: {
+  href: string;
+  onClick?: (e: React.MouseEvent) => void;
+}) {
   return (
-    <a href="#pervyi-progon" className="wordmark" aria-label={HEADER.home} onClick={onClick}>
+    <a href={href} className="wordmark" aria-label={HEADER.home} onClick={onClick}>
       <Mark className="wordmark-mark" />
     </a>
   );
