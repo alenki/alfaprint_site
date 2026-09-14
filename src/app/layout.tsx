@@ -3,6 +3,7 @@ import { MotionConfig } from 'motion/react';
 import './globals.css';
 import { fontVariables } from '@/app/fonts';
 import { PlateProvider, type SectionMeta } from '@/components/chrome/PlateProvider';
+import { Priladka } from '@/components/chrome/Priladka';
 import { TopBar } from '@/components/chrome/TopBar';
 import { ControlStrip } from '@/components/chrome/ControlStrip';
 import { MobileCta } from '@/components/chrome/MobileCta';
@@ -98,6 +99,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="ru"
       className={fontVariables}
+      /* `data-press` ставит на корень приладочный лист, и ставит РАНЬШЕ
+         гидратации: React видит на узле атрибут, которого сам не рисовал, и
+         без этой пометки пишет в консоль расхождение разметки. Значение при
+         этом верное, React его не трогает, см. `Priladka.tsx`. */
+      suppressHydrationWarning
       data-ground="paper"
       data-bar-ground="paper"
       data-strip-ground="paper"
@@ -109,11 +115,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* Без JS ракель не проходит, значит, маску надо снять, иначе набор
             останется под ней. Оттиски §03 при этом ложатся стопкой: без JS
-            форму не переключить, а прочитать надо все десять. */}
+            форму не переключить, а прочитать надо все десять.
+
+            Приладочный лист без JS снимается целиком, и первым правилом:
+            считать на нём нечем, а накрывает он собой весь сайт. Паузы §01
+            здесь снимать не надо, её ставит тот же скрипт, которого нет. */}
         <noscript>
           <style
             dangerouslySetInnerHTML={{
               __html: `
+                .mk{display:none!important}
                 [data-reveal]{clip-path:none!important;opacity:1!important}
                 .dv-sheet{position:static!important;display:block!important;
                   aspect-ratio:auto!important;max-height:none!important;overflow:visible!important}
@@ -130,6 +141,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }}
           />
         </noscript>
+
+        {/* ПРИЛАДОЧНЫЙ ЛИСТ СТОИТ ВЫШЕ ВСЕГО ОСТАЛЬНОГО В РАЗМЕТКЕ, и место
+            это не про порядок чтения, а про порядок РАЗБОРА. Внутри лежит
+            голый скрипт, и выполниться он обязан раньше, чем браузер дойдёт
+            до `<main>`: только тогда пауза §01 встаёт с первого её кадра.
+            Ниже по дереву он опоздал бы ровно на ту анимацию, которую и
+            заводится придержать. См. `Priladka.tsx`. */}
+        <Priladka />
 
         <MotionConfig reducedMotion="user">
           <NaryadProvider>
