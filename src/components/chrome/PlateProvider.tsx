@@ -273,7 +273,14 @@ export function PlateProvider({ sections }: { sections: SectionMeta[] }) {
         parseFloat(
           getComputedStyle(document.documentElement).getPropertyValue('--topbar-h')
         ) || 72;
-      lenis.scrollTo(target as HTMLElement, { offset: -(bar + 8) });
+      /* ОТСТУП НУЖЕН ТОЛЬКО ПО ХОДУ ВВЕРХ. Вниз полоса уходит под рез (см.
+         BAR_STEP ниже), и место, оставленное под неё, оставалось полосой
+         ЧУЖОГО грунта: восемьдесят пикселей предыдущего раздела над началом
+         нужного. Пока ссылка на раздел была одна, это читалось как огрех;
+         теперь ссылка есть у каждой полосы, и огрех стоял бы на каждом
+         переходе. Вверх полоса возвращается, и отступ под неё остаётся. */
+      const down = target.getBoundingClientRect().top > 0;
+      lenis.scrollTo(target as HTMLElement, { offset: down ? 0 : -(bar + 8) });
       history.replaceState(null, '', id);
     };
     document.addEventListener('click', onClick);
@@ -373,7 +380,7 @@ export function PlateProvider({ sections }: { sections: SectionMeta[] }) {
 
     /* СПИСКИ ЧИТАТЕЛЕЙ ПЕРЕСОБИРАЮТСЯ ПО РАЗМЕТКЕ, А НЕ ПО КАДРУ. Формы R
        приходят и уходят с React-рендером (§03 перебирает строки под курсором,
-       §04 пересобирает ленту), и querySelectorAll шестьдесят раз в секунду
+       §01 пересобирает ленту), и querySelectorAll шестьдесят раз в секунду
        ради этого платить незачем. Наблюдатель ставит флаг, кадр разбирает его
        не чаще раза. data-invert в фильтре потому, что от него зависит, какая
        форма уходит: узел при смене грунта остаётся тем же. */

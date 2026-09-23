@@ -29,7 +29,6 @@ export const asset = (path: string) => `${BASE_PATH}${path}`;
  */
 export const ROUTES = {
   kontakty: '/kontakty/',
-  raschet: '/raschet/',
   /* Юридический лист, а не раздел: в `NAV` его нет и быть не должно. Сюда
      ведёт строка согласия из-под форм и одна строка в подвале. */
   soglasie: '/soglasie/',

@@ -56,11 +56,7 @@ export function Plan() {
           </div>
 
           <div className="col-span-4 md:col-span-4 md:col-start-9">
-            <PrintReveal as="p" delay={0.034} className="t-lead fg-70 measure">
-              {K_PLAN.lead}
-            </PrintReveal>
-
-            <PrintReveal as="div" delay={0.08} className="mt-[clamp(18px,1.8vw,32px)]">
+            <PrintReveal as="div" delay={0.034}>
               <a
                 href={K_PLAN.mapsHref}
                 target="_blank"

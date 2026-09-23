@@ -1,6 +1,30 @@
 import { COMPANY, CONTACTS } from '@/content/site';
 import { CATALOGUE } from '@/content/catalogue';
-import { HOURS_CONFIRMED } from '@/content/hours';
+import { HOURS, HOURS_CONFIRMED, LUNCH } from '@/content/hours';
+
+/** Порядок дней в schema.org совпадает с Date#getDay, индекс общий с HOURS. */
+const SCHEMA_DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+/**
+ * ПЕРЕРЫВ В SCHEMA.ORG ЭТО ДВА ОКНА, А НЕ ПОЛЕ. Обеда в
+ * OpeningHoursSpecification нет, и час с 13:00 закрывается единственным
+ * честным способом: день отдаётся двумя отрезками, до перерыва и после.
+ * Выходные не описываются вовсе: у дня без окна нет часов, и это ровно то,
+ * что поисковик обязан прочитать.
+ *
+ * Сборка держится на том, что все рабочие дни идут по одному окну; появится
+ * второе, и раскладывать придётся по дням.
+ */
+function openingHours() {
+  const days = SCHEMA_DAYS.filter((_, i) => HOURS[i]);
+  const shift = HOURS.find((h) => h);
+  if (!shift || days.length === 0) return undefined;
+
+  return [
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: days, opens: shift.open, closes: LUNCH.start },
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: days, opens: LUNCH.end, closes: shift.close },
+  ];
+}
 
 /**
  * Разметка LocalBusiness.
@@ -11,17 +35,7 @@ import { HOURS_CONFIRMED } from '@/content/hours';
  * Поисковику нельзя отдавать данные, которых мы не знаем.
  */
 export function localBusinessSchema(siteUrl: string) {
-  const hours = HOURS_CONFIRMED
-    ? [
-        {
-          '@type': 'OpeningHoursSpecification',
-          dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-          opens: '09:00',
-          closes: '18:00',
-        },
-        { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Saturday', opens: '10:00', closes: '15:00' },
-      ]
-    : undefined;
+  const hours = HOURS_CONFIRMED ? openingHours() : undefined;
 
   return {
     '@context': 'https://schema.org',

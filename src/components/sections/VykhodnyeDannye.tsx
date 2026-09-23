@@ -19,7 +19,7 @@ import { CLOSING, IMPRINT, PAGES, SECTIONS } from '@/content/site';
  * руку, и только потом диктуют адрес.
  *
  * ЧЕТЫРЕ ПОЛОСЫ СВЕРХУ ВНИЗ:
- *   1 · заявление и один абзац под ним;
+ *   1 · заголовок, и больше на этой полосе ничего;
  *   2 · две плашки заказа во весь формат, бумага и рубин;
  *   3 · колонки справочника: цех, разделы, связь, и план города у реза;
  *   4 · слепое тиснение имени во весь вылет.
@@ -44,33 +44,25 @@ export function VykhodnyeDannye() {
       gain={0.5}
       className="overflow-hidden pt-[var(--section-pad)]"
     >
-      {/* ── 1 · Заявление ─────────────────────────────────────────────────── */}
+      {/* ── 1 · Заголовок ─────────────────────────────────────────────────── */}
       <Sheet>
         <Grid>
           <div className="col-span-4 md:col-span-9">
             <PrintReveal as="div">
               <h2 className="t-h2 fg">
-                {CLOSING.statement.map((l) => (
+                {CLOSING.heading.map((l) => (
                   <span key={l} className="block">
                     {l}
                   </span>
                 ))}
               </h2>
             </PrintReveal>
-
-            <PrintReveal
-              as="p"
-              delay={0.034}
-              className="t-lead fg-70 measure mt-[clamp(24px,2.4vw,44px)]"
-            >
-              {CLOSING.lead}
-            </PrintReveal>
           </div>
         </Grid>
       </Sheet>
 
       {/* ── 2 · Плашки заказа во весь формат ──────────────────────────────── */}
-      <div className="mt-[clamp(44px,5.4vw,116px)]">
+      <div className="mt-[clamp(56px,6.4vw,150px)]">
         <ContactPanels />
       </div>
 
@@ -90,9 +82,9 @@ export function VykhodnyeDannye() {
               </p>
 
               {/* ОРИЕНТИР ИДЁТ ПОСЛЕ АДРЕСА И МЕЛЬЧЕ ЕГО. Диктуют «Тарчокова,
-                  29», а ищут «напротив History»: это два разных сведения, и
-                  набирать их одним кеглем значит заявить, что имя чужого
-                  заведения равно нашему адресу. */}
+                  29», а входят «между клиниками»: это два разных сведения, и
+                  набирать их одним кеглем значит заявить, что имена чужих
+                  вывесок равны нашему адресу. */}
               <p className="t-small fg-56 mt-[clamp(7px,0.7vw,12px)]">{IMPRINT.landmark}</p>
 
               <ul className="mt-[clamp(18px,1.7vw,28px)] space-y-1.5">

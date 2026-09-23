@@ -98,7 +98,7 @@ export function TopBar() {
      НА САМОЙ ГЛАВНОЙ АДРЕСА ОСТАЮТСЯ ГОЛЫМИ, и это условие, а не мелочь:
      обработчик плавной прокрутки ловит ровно `a[href^="#"]`, и переписанный
      адрес ушёл бы у него из-под рук в нативный прыжок, то есть главная
-     потеряла бы Lenis на всех пяти пунктах разом.
+     потеряла бы Lenis на всех якорных пунктах разом.
 
      Считается после монтирования, потому что путь известен только браузеру;
      до первого кадра адреса голые, как и на сервере, и разметка сходится. */
@@ -136,32 +136,39 @@ export function TopBar() {
      `data-section`, которую цикл и так пишет на :root ради грунтов. Один
      MutationObserver на один атрибут срабатывает восемь раз за весь лист. */
   useEffect(() => {
+    const trim = (s: string) => s.replace(/\/+$/, '');
+    const here = trim(location.pathname);
+    const home = trim(asset('/'));
+
     /* НА ОТДЕЛЬНОМ ЛИСТЕ ТЕКУЩИЙ РАЗДЕЛ РЕШАЕТ АДРЕС, А НЕ ПРОКРУТКА.
        Реестр `SECTIONS` принадлежит главной полосе, и её номера на чужом
        листе не значат ничего; зато пункт меню, чей адрес совпал с адресом
        страницы, и есть текущий раздел, причём на всей её высоте. Слушать
-       тут нечего, и наблюдателя эта ветка не заводит. */
-/* КОРЕНЬ СРАВНИВАЕТСЯ ЦЕЛИКОМ, ВНУТРЕННИЙ ЛИСТ — НАЧАЛОМ ПУТИ. «Главная»
-       это теперь адрес `/`, и с которого начинается ЛЮБОЙ путь: сравнение
-       началом пометило бы её текущей на всех листах разом. */
-    const trim = (s: string) => s.replace(/\/+$/, '');
-    const here = trim(location.pathname);
-    const home = trim(asset('/'));
-    const page = NAV.find((n) => {
-      if (n.href.startsWith('#')) return false;
-      const h = trim(n.href);
-      return h === home ? here === home : here.startsWith(h);
-    });
-    if (page) {
-      setActive(page.href);
+       тут нечего, и наблюдателя эта ветка не заводит.
+
+       «Главная» здесь не участвует: её адрес `/` это начало ЛЮБОГО пути, и
+       сравнение началом пометило бы её текущей на всех листах разом. */
+    if (here !== home) {
+      const page = NAV.find((n) => {
+        if (n.href.startsWith('#')) return false;
+        const h = trim(n.href);
+        return h !== home && here.startsWith(h);
+      });
+      setActive(page ? page.href : null);
       return;
     }
 
+    /* НА ГЛАВНОЙ ТЕКУЩИЙ РАЗДЕЛ РЕШАЕТ ПРОКРУТКА. Прежде «Главная» здесь
+       совпадала с адресом листа и стояла текущей на всей его высоте, а
+       наблюдатель до главной не доходил вовсе. Теперь у каждой полосы свой
+       пункт, и совпадение по адресу означало бы, что указатель молчит на
+       всех пунктах, кроме первого. У первой полосы своего пункта нет: пока
+       читают её, текущей стоит «Главная». */
     const root = document.documentElement;
     const read = () => {
       const n = root.dataset.section;
       const s = SECTIONS.find((x) => x.n === n);
-      setActive(s ? `#${s.id}` : null);
+      setActive(!s ? null : s === SECTIONS[0] ? asset('/') : `#${s.id}`);
     };
     read();
     const mo = new MutationObserver(read);
@@ -169,12 +176,17 @@ export function TopBar() {
     return () => mo.disconnect();
   }, []);
 
-  /* Разделы переезжают в саму рейку на 1024 px, и второй ряд плашки там
+  /* Разделы переезжают в саму рейку на 1280 px, и второй ряд плашки там
      не показывается. Если формат развернули с открытым содержанием, ряд
      обязан закрыться сам: иначе плашка осталась бы стоять раскрытой без
-     единого видимого слова внутри. */
+     единого видимого слова внутри.
+
+     ПОРОГ 1280, А НЕ 1024. Пока пунктов было три, рейка держала их с 1024.
+     Восемь пунктов на 1024 занимают всю середину плашки и сжимают колонку
+     марки до четырёх пикселей: знак фирмы уходит под первое слово. Ниже
+     1280 оглавление живёт во втором ряду, как на планшете. */
   useEffect(() => {
-    const mq = window.matchMedia('(min-width: 1024px)');
+    const mq = window.matchMedia('(min-width: 1280px)');
     const read = () => {
       if (mq.matches) setOpen(false);
     };
@@ -247,8 +259,8 @@ export function TopBar() {
             <div className="bar-rail gap-[clamp(16px,2vw,48px)]">
               <Wordmark href={homeHref} onClick={onHome} />
 
-              <nav aria-label="Разделы сайта" className="hidden lg:block">
-                <ul className="bar-nav flex items-center gap-[clamp(20px,2.5vw,44px)]">
+              <nav aria-label="Разделы сайта" className="hidden xl:block">
+                <ul className="bar-nav flex items-center">
                   {NAV.map((item) => (
                     <li key={item.href}>
                       <a
@@ -272,7 +284,7 @@ export function TopBar() {
                 <button
                   ref={menuBtnRef}
                   type="button"
-                  className="menu-burger lg:hidden"
+                  className="menu-burger xl:hidden"
                   aria-label={open ? HEADER.close : HEADER.menu}
                   aria-expanded={open}
                   aria-controls="menu-panel"
@@ -300,7 +312,8 @@ export function TopBar() {
                 неотличима от прежней рейки. */}
             <div
               id="menu-panel"
-              className="bar-panel lg:hidden"
+              className="bar-panel xl:hidden"
+              data-lenis-prevent
               role="dialog"
               aria-modal="true"
               aria-label={HEADER.menuTitle}
@@ -361,7 +374,7 @@ export function TopBar() {
           складывает её обратно. Клавиатуре поле не нужно, у неё есть Escape
           и тот же крест в рейке. */}
       <div
-        className="menu-scrim lg:hidden"
+        className="menu-scrim xl:hidden"
         data-open={open ? 'true' : 'false'}
         role="presentation"
         aria-hidden
@@ -396,7 +409,7 @@ export function TopBar() {
  * знаке сползшая форма читается не как дрожь машины, а как опечатка.
  *
  * МАРКА ВСТАВЛЕНА ВНУТРЬ ССЫЛКИ, А НЕ РЯДОМ С НЕЙ. `.bar-rail` это сетка с
- * заданным числом колонок (две до 1024 px, три выше), и лишний прямой
+ * заданным числом колонок (две до 1280 px, три выше), и лишний прямой
  * потомок уехал бы во второй ряд рейки фиксированной высоты.
  *
  * ВЫВОДИТСЯ ОДИН РАЗ НА ВЕСЬ ЛИСТ. Прежде вторая копия марки стояла в первой

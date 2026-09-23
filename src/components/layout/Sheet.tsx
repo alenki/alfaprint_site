@@ -21,11 +21,10 @@ import type { ReactNode } from 'react';
  * отбивают разделы грунт и воздух.
  */
 
-type Ground = 'paper' | 'paper-hi' | 'ink' | 'rubine';
+type Ground = 'paper' | 'ink' | 'rubine';
 
 const GROUND_CLASS: Record<Ground, string> = {
   paper: 'ground-paper',
-  'paper-hi': 'ground-paper-hi',
   ink: 'ground-ink',
   rubine: 'ground-rubine',
 };

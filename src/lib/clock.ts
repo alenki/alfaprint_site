@@ -1,4 +1,4 @@
-import { HOURS, HOURS_DISPLAY, TIMEZONE } from '@/content/hours';
+import { HOURS, HOURS_DISPLAY, LUNCH, TIMEZONE } from '@/content/hours';
 
 /**
  * СОСТОЯНИЕ СМЕНЫ.
@@ -51,10 +51,15 @@ export function getShift(now = new Date()): Shift {
 
   if (!today) return { day, open: false };
 
-  return {
-    day,
-    open: minutes >= toMinutes(today.open) && minutes < toMinutes(today.close),
-  };
+  /**
+   * ОБЕД ЭТО ЗАКРЫТАЯ ДВЕРЬ, А НЕ ОТТЕНОК ОТКРЫТОСТИ. Час перерыва вырезан из
+   * смены целиком: «открыто» здесь значит ровно одно, что сейчас можно
+   * приехать, и с 13:00 до 14:00 приехать нельзя.
+   */
+  const inShift = minutes >= toMinutes(today.open) && minutes < toMinutes(today.close);
+  const atLunch = minutes >= toMinutes(LUNCH.start) && minutes < toMinutes(LUNCH.end);
+
+  return { day, open: inShift && !atLunch };
 }
 
 export { HOURS_DISPLAY };

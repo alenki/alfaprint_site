@@ -54,26 +54,26 @@ export function Svyaz() {
         </PrintReveal>
 
         <Grid className="mt-[clamp(104px,11vw,240px)] gap-y-[clamp(28px,2.8vw,52px)]">
-          <div className="col-span-4 md:col-span-6">
-            <PrintReveal as="p" delay={0.04} className="t-lead fg-70 measure">
-              {K_SVYAZ.lead}
-            </PrintReveal>
-          </div>
-
           <div className="col-span-4 md:col-span-4 md:col-start-9">
             <PrintReveal as="div" delay={0.08}>
               <span className="t-micro fg-56 kp-col-label">{K_SVYAZ.hoursLabel}</span>
-              <ul className="space-y-1.5">
+              {/* КОЛОНКА ДНЕЙ МЕРЯЕТСЯ СЛОВОМ, А НЕ ЗНАКАМИ. В `ch` считается
+                  ширина нуля без разрядки, а `t-mono` набран вразрядку и в
+                  прописных: «Перерыв» вылезает из семи `ch` и съедает отбивку
+                  до времени, пока соседние строки стоят просторно. max-content
+                  меряет самое длинное слово как оно набрано, и отбивка
+                  становится одинаковой в каждой строке. */}
+              <ul className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1.5">
                 {HOURS_DISPLAY.map((h) => {
                   const today =
                     shift.day >= 0 && (h.match as readonly number[]).includes(shift.day);
                   return (
                     <li
                       key={h.days}
-                      className="t-mono flex gap-4"
+                      className="t-mono col-span-2 grid grid-cols-subgrid"
                       style={{ color: today ? 'var(--fg)' : 'var(--fg-70)' }}
                     >
-                      <span className="w-[6ch] shrink-0">{h.days}</span>
+                      <span>{h.days}</span>
                       <span>{h.time}</span>
                     </li>
                   );

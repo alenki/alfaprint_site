@@ -1,4 +1,4 @@
-import { Noto_Serif, Golos_Text, Martian_Mono, Montserrat } from 'next/font/google';
+import { Noto_Serif, Martian_Mono, Montserrat } from 'next/font/google';
 
 /**
  * ТРИ ГАРНИТУРЫ И ЧЕТЫРЕ РОЛИ
@@ -37,18 +37,13 @@ import { Noto_Serif, Golos_Text, Martian_Mono, Montserrat } from 'next/font/goog
  *    400 и 700, а при `font-synthesis: none` промежуточные веса молча
  *    съехали бы к соседним и серость полосы поехала бы с ними.
  *
- * ── GOLOS TEXT ─ ОСНАСТКА, и ровно пять ссылок.
- *    «Паратайп», Москва. Держала обе роли формы K до 12.09, ушла с листа
- *    вместе со сменой антиквы и вернулась обратно ТОЛЬКО в шапку: токен
- *    `--font-nav` стоит у `.navlink` и у `.menu-row-word`, то есть у одних и
- *    тех же пяти ссылок разделов в двух их видах, настольном и телефонном.
- *
- *    ДОВОД НЕ «ТАК БЫЛО», А ЧТО ЭТО ЗА ТЕКСТ. Шапка не набор, а оснастка:
- *    она стоит НАД листом, липнет к верху, ездит с прокруткой и к полосе не
- *    относится. Ей не обязательно быть одной породы с тем, что под ней, и
- *    гротеск в ней читается как надпись на приборе, а не как чужая антиква.
- *    Кнопка «Заказать», телефон меню и каналы под ним НЕ ССЫЛКИ РАЗДЕЛОВ и
- *    остаются на антикве: это действия, а не навигация.
+ * ── У ШАПКИ СВОЕЙ ГАРНИТУРЫ БОЛЬШЕ НЕТ.
+ *    С 12.09 по 22.09 ссылки разделов, `.navlink` и `.menu-row-word`,
+ *    держала Golos Text: шапку считали оснасткой над листом, а не набором.
+ *    Ссылки попросили набрать тем же, чем набран сайт, и Golos ушла из
+ *    сборки целиком, других мест у неё не было. Ссылки на плашке стоят
+ *    корпусом, как «Заказать» рядом с ними; строки меню на телефоне стоят
+ *    дисплеем, как телефон под ними.
  *
  * ── MARTIAN MONO ─ форма R, машина.
  *    Evil Martians. Кириллица родная, цифры табличные по природе: счётчик
@@ -134,15 +129,6 @@ export const notoSerif = Noto_Serif({
   adjustFontFallback: false,
 });
 
-export const golos = Golos_Text({
-  subsets: ['cyrillic', 'latin'],
-  display: 'swap',
-  preload: true,
-  variable: '--font-golos',
-  fallback: ['Segoe UI', 'system-ui', 'sans-serif'],
-  adjustFontFallback: false,
-});
-
 export const martian = Martian_Mono({
   subsets: ['cyrillic', 'latin'],
   axes: ['wdth'],
@@ -169,4 +155,4 @@ export const montserrat = Montserrat({
   adjustFontFallback: false,
 });
 
-export const fontVariables = `${notoSerif.variable} ${golos.variable} ${martian.variable} ${montserrat.variable}`;
+export const fontVariables = `${notoSerif.variable} ${martian.variable} ${montserrat.variable}`;

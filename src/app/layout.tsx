@@ -115,7 +115,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* Без JS ракель не проходит, значит, маску надо снять, иначе набор
             останется под ней. Оттиски §03 при этом ложатся стопкой: без JS
-            форму не переключить, а прочитать надо все десять.
+            форму не переключить, а прочитать надо все десять. Так же ложатся
+            двенадцать оттисков §04, а фишки сфер над ними снимаются: нажать
+            их без скрипта нечем, а имя каждой сферы стоит над её оттиском.
+            С 1024 стопка стоит в два столбца: одним она уходила бы на семь
+            тысяч пикселей вниз. Три доли оттиска без скрипта не нужны, и
+            внутри каждого оттиска ряды идут столбиком, с прежними отбивками.
 
             Приладочный лист без JS снимается целиком, и первым правилом:
             считать на нём нечем, а накрывает он собой весь сайт. Паузы §01
@@ -131,12 +136,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 .dv-print{grid-area:auto!important;visibility:visible!important;
                   clip-path:none!important;opacity:1!important}
                 .dv-print + .dv-print{margin-top:1.25rem}
-                .dv-panel{position:static!important;height:auto!important;right:auto!important;
-                  visibility:visible!important;clip-path:none!important;opacity:1!important}
-                .dv-item{transform:none!important}
                 .dv-plate[hidden]{display:block!important}
                 .dv-mount::after{display:none!important}
                 .dv-tail,.dv-toggle{display:none!important}
+                .km-case{display:none!important}
+                .km-stack{display:block!important}
+                .km-print{display:block!important;visibility:visible!important}
+                .km-print + .km-print{margin-top:3rem}
+                .km-row{clip-path:none!important}
+                .km-after{margin-top:3rem!important}
+                @media (width >= 1024px){
+                  .km-stack{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+                    grid-template-rows:none!important;column-gap:var(--gutter);row-gap:3rem}
+                  .km-print{grid-row:auto!important;grid-column:auto!important}
+                  .km-print + .km-print{margin-top:0}
+                  .km-after{grid-column:1 / -1!important;grid-row:auto!important}
+                  .km-lists{margin-top:1.5rem!important}
+                  .km-price{margin-top:1.25rem!important}
+                }
               `,
             }}
           />

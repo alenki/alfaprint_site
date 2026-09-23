@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, type CSSProperties } from 'react';
 import { motion, useScroll, useTransform, type MotionValue } from 'motion/react';
 import { SROK } from '@/content/site';
 import { usePrefersReducedMotion } from '@/lib/hooks';
@@ -17,6 +17,19 @@ import { usePrefersReducedMotion } from '@/lib/hooks';
  * расписанием от 09:00 до 17:00; часов у срочного заказа фирма не называет
  * нигде, и выдуманное расписание обещало за неё. Номер говорит ровно то,
  * что здесь и надо сказать: порядок. Разбор источника у `SROK`.
+ *
+ * ПОД НОМЕРОМ И СЛОВОМ СТОИТ СТРОКА МАСТЕРСКОЙ. Прежде узел печатал только
+ * номер и слово, и путь отвечал на «в каком порядке», но не на «что там
+ * делают». Строка эта взята у фирмы слово в слово, см. `SROK.nodes`.
+ *
+ * МЕРУ ПОДПИСИ ДЕРЖИТ ЗАЗОР МЕЖДУ УЗЛАМИ, А НЕ ДЛИНА СТРОКИ. Подписи стоят
+ * через одну: первая и третья над линией, вторая и четвёртая под, и потому
+ * столкнуться могут только соседи через один, за два зазора друг от друга.
+ * Отсюда потолок в 4/9 полосы; `--op-cap` держится много ниже него.
+ *
+ * ВЫСОТУ ПОЛОСЫ ЗАДАЁТ ОТБИВКА, А НЕ ТЕКСТ. Подписи вынуты из потока, и
+ * длина строки не двигает линию: место под самую высокую из них отмерено
+ * заранее в `--op-pad`. Строка вдвое длиннее не сделает полосу выше.
  *
  * Рубиновая линия растёт строго линейно по прогрессу секции: скрабленная
  * анимация никогда не имеет кривой: иначе она врёт про положение.
@@ -38,9 +51,20 @@ export function OrderPath() {
   const nodes = SROK.nodes;
 
   return (
-    <div ref={ref} className="relative mt-[clamp(72px,7vw,160px)]">
+    <div
+      ref={ref}
+      className="relative mt-[clamp(56px,5vw,112px)]"
+      style={
+        {
+          /** Место под самую высокую подпись: номер, слово и три строки. */
+          '--op-pad': 'clamp(150px,9vw,180px)',
+          /** Мера подписи. Потолок столкновения 4/9 полосы, здесь много ниже. */
+          '--op-cap': 'clamp(240px,22vw,400px)',
+        } as CSSProperties
+      }
+    >
       {/* ── Десктоп: линия во весь лист ──────────────────────────────────── */}
-      <div className="relative hidden md:block" style={{ paddingBlock: 'clamp(64px,6vw,116px)' }}>
+      <div className="relative hidden md:block" style={{ paddingBlock: 'var(--op-pad)' }}>
         {/* Линейка уходит за обрез: путь не начинается и не кончается на поле. */}
         <div className="absolute inset-x-0 top-1/2 h-px bg-[var(--rule)]" />
         <motion.div
@@ -70,12 +94,17 @@ export function OrderPath() {
           className="absolute bottom-0 left-[calc(var(--edge)+5px)] top-0 w-px origin-top bg-[var(--color-rubine)]"
           style={{ scaleY: reduced ? 1 : scale }}
         />
-        <ul className="flex flex-col gap-9">
+        <ul className="flex flex-col gap-10">
           {nodes.map((node) => (
-            <li key={node.step} className="relative flex items-baseline gap-5 pl-6">
+            <li key={node.step} className="relative pl-6">
               <span className="absolute left-0 top-2 h-[11px] w-[11px] rounded-full border border-[var(--rule)] bg-[var(--color-ink)]" />
-              <span className="t-micro fg-56 w-7 shrink-0">{node.step}</span>
-              <span className="font-display fg text-2xl font-semibold">{node.title}</span>
+              <div className="flex items-baseline gap-5">
+                <span className="t-micro fg-56 w-7 shrink-0">{node.step}</span>
+                <span className="font-display fg text-2xl font-semibold">{node.title}</span>
+              </div>
+              {/* Строка встаёт под слово, а не под номер: колонка номеров
+                  остаётся колонкой номеров сверху донизу. */}
+              <p className="t-body fg-56 measure-tight ml-12 mt-2">{node.body}</p>
             </li>
           ))}
         </ul>
@@ -92,7 +121,7 @@ function Node({
   reduced,
   edge,
 }: {
-  node: { step: string; title: string };
+  node: { step: string; title: string; body: string };
   i: number;
   threshold: number;
   progress: MotionValue<number>;
@@ -105,6 +134,9 @@ function Node({
      выглядит как сбой вёрстки. */
   const litText = useTransform(lit, [0, 1], [0.42, 1]);
   const litDot = useTransform(lit, [0, 1], [0.22, 1]);
+  /* Строка гаснет мягче слова: она и так набрана вполсилы, и та же доля
+     увела бы её в ничто. Приглушённая строка обязана читаться. */
+  const litBody = useTransform(lit, [0, 1], [0.62, 1]);
   const above = i % 2 === 0;
 
   /** Крайние подписи прижимаются к своему резу, иначе они уходят за обрез. */
@@ -118,7 +150,7 @@ function Node({
   return (
     <li className="relative flex flex-col items-center" style={{ flex: '0 0 auto' }}>
       <div
-        className={`absolute whitespace-nowrap ${place}`}
+        className={`absolute w-[var(--op-cap)] ${place}`}
         style={above ? { bottom: '20px' } : { top: '20px' }}
       >
         <p className="t-micro fg-56">{node.step}</p>
@@ -127,6 +159,12 @@ function Node({
           style={{ opacity: reduced ? 1 : litText }}
         >
           {node.title}
+        </motion.p>
+        <motion.p
+          className="t-body fg-56 mt-2.5 leading-[1.5]"
+          style={{ opacity: reduced ? 1 : litBody }}
+        >
+          {node.body}
         </motion.p>
       </div>
 

@@ -5,7 +5,6 @@ import { ChannelBand } from '@/components/print/ChannelBand';
 import { Blank } from '@/components/ui/Blank';
 import { Section, Sheet, Grid } from '@/components/layout/Sheet';
 import { K_BLANK, K_SECTIONS } from '@/content/kontakty';
-import { SEND_MODE } from '@/lib/send';
 
 /**
  * §K2 · БЛАНК
@@ -26,11 +25,6 @@ import { SEND_MODE } from '@/lib/send';
  */
 export function BlankSection() {
   const S = K_SECTIONS[1];
-
-  /* ЛИД ОБЕЩАЕТ РОВНО ТО, ЧТО ДЕЛАЕТ КНОПКА, и берётся он оттуда же, откуда
-     она: из режима отправки. Переключить режим и забыть переписать лид тут
-     нельзя, потому что переписывать нечего. */
-  const lead = K_BLANK.modes[SEND_MODE].lead;
 
   return (
     <Section id={S.id} ground={S.ground} gain={S.gain} className="pb-[var(--section-pad)]">
@@ -53,14 +47,6 @@ export function BlankSection() {
                   </span>
                 ))}
               </h2>
-            </PrintReveal>
-
-            <PrintReveal
-              as="p"
-              delay={0.034}
-              className="t-lead fg-70 measure mt-[clamp(22px,2.2vw,40px)]"
-            >
-              {lead}
             </PrintReveal>
           </div>
         </Grid>
