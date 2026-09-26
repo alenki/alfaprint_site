@@ -89,7 +89,7 @@ export function Naryad() {
               className={cn(
                 't-micro flex min-h-[44px] flex-1 items-center justify-center border px-3 transition-colors duration-200',
                 n.deadline === d
-                  ? 'border-[var(--color-ink)] bg-[var(--color-ink)] text-[var(--color-paper)]'
+                  ? 'border-[var(--color-deep,var(--color-ink))] bg-[var(--color-deep,var(--color-ink))] text-[var(--color-paper)]'
                   : 'fg-70 border-[var(--rule)]'
               )}
             >

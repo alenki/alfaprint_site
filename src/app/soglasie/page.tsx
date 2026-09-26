@@ -3,6 +3,7 @@ import './soglasie.css';
 import { SITE_URL } from '@/app/layout';
 import { Section, Sheet } from '@/components/layout/Sheet';
 import { VykhodnyeDannye } from '@/components/sections/VykhodnyeDannye';
+import { COMPANY } from '@/content/site';
 import { SOGLASIE, S_PATH } from '@/content/soglasie';
 import { SEND_MODE } from '@/lib/send';
 
@@ -33,17 +34,18 @@ import { SEND_MODE } from '@/lib/send';
  */
 export const metadata: Metadata = {
   title: SOGLASIE.title,
-  description:
-    'Какие данные записывает «Альфа Принт», зачем, на сколько и как их удалить. Коротко и без юридического языка. Счётчиков и cookie слежения на сайте нет.',
+  /* Имя фирмы берётся из `COMPANY`, а не набрано здесь: в заголовке вкладки
+     его дописывает шаблон раскладки, и две правды об одном имени разошлись
+     бы при первой же правке. */
+  description: `Какие данные записывает ${COMPANY.name}, зачем, на сколько и как их удалить. Коротко и без юридического языка. Счётчиков и cookie слежения на сайте нет.`,
   /* Адрес абсолютный и собран из двух источников: площадка из раскладки, путь
      из таблицы адресов. Тем же способом собраны оба других листа. */
   alternates: { canonical: `${SITE_URL}${S_PATH}` },
   openGraph: {
     type: 'website',
     locale: 'ru_RU',
-    title: `${SOGLASIE.title} | Альфа Принт`,
-    description:
-      'Какие данные записывает «Альфа Принт», зачем, на сколько и как их удалить. Без юридического языка.',
+    title: `${SOGLASIE.title} | ${COMPANY.name}`,
+    description: `Какие данные записывает ${COMPANY.name}, зачем, на сколько и как их удалить. Без юридического языка.`,
   },
 };
 

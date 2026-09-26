@@ -12,7 +12,7 @@ export function Screen({
   pitch,
   angle,
   colour,
-  word = 'АЛЬФА',
+  word = 'Legko',
   fit,
   anchorY,
   zoom,

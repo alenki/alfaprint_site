@@ -4,34 +4,21 @@ import { useEffect, useReducer, useState } from 'react';
 import { Section, Sheet } from '@/components/layout/Sheet';
 import { RaschetField } from '@/components/ui/RaschetField';
 import { CONTACTS } from '@/content/site';
-import {
-  PRODUCTS,
-  PRODUCTS_BY_ID,
-  SHARED,
-  SLOW_PRODUCTS,
-  TERMS,
-  DEFAULTS,
-  RASCHET,
-} from '@/content/raschet';
-import {
-  runTotal,
-  setupTotal,
-  grandTotal,
-  termKey,
-  formatRub,
-  formatFrom,
-  raschetMessage,
-  type Choice,
-} from '@/lib/raschet';
+import { ASK, PRODUCTS, PRODUCTS_BY_ID, SHARED, DEFAULTS, RASCHET } from '@/content/raschet';
+import { formatQty, raschetMessage, type Choice } from '@/lib/raschet';
 import { WA } from '@/lib/whatsapp';
 import { Soglasie } from '@/components/ui/Soglasie';
 
 /**
- * ПРЕДВАРИТЕЛЬНЫЙ РАСЧЁТ.
+ * ЗАКАЗ.
  *
- * СТРАНИЦА ДЕЛИТСЯ ПО САМОЙ ФОРМУЛЕ, а не по вкусу: слева то, что множится на
- * каждый экземпляр, справа то, что платится один раз. Так считают в
- * типографии, и подписи колонок это единственное место, где мысль названа.
+ * ЛИСТ СОБИРАЕТ НАРЯД, А НЕ СЧИТАЕТ ЦЕНУ. Цен и сроков агентства мы не
+ * знаем, поэтому на листе нет ни одной суммы: читатель выбирает, что ему
+ * нужно, и отправляет наряд в переписку, а цену и срок агентство называет
+ * в ответ.
+ *
+ * ДВА БЛАНКА РЯДОМ: слева тираж (что и сколько), справа подготовка (макет и
+ * срок). Подписи колонок это единственное место, где мысль названа.
  *
  * В ПОКОЕ ВИДНО ТОЛЬКО ВЫБРАННОЕ: по строке на параметр. Первая редакция
  * печатала все варианты сразу и была отвергнута заказчиком 12.09.2026: сорок
@@ -42,55 +29,43 @@ import { Soglasie } from '@/components/ui/Soglasie';
  * колонке потребовали бы двойного резерва, то есть вдвое больше воздуха на
  * листе в покое, ради состояния, которого никто не просил.
  *
- * СМЕНА ПРОДУКТА СБРАСЫВАЕТ материал, формат и отделку на первый вариант, и
- * это не удобство, а верность: прежний сайт пересобирал эти три списка
- * заново (`fillSelect`), и выбор в них не переживал смены продукта. Макет,
- * срок, получение и галочки переживали, и здесь переживают.
+ * СМЕНА УСЛУГИ СБРАСЫВАЕТ ВИД на первый вариант: у каждой услуги свой
+ * список, и номер из чужого списка ничего бы не значил. Размер, макет и
+ * срок общие для всех услуг и смену переживают.
  */
 
 type State = Choice;
 
-type PickField = 'material' | 'format' | 'finish' | 'design' | 'speed' | 'delivery';
+type PickField = 'kind' | 'size' | 'design' | 'speed';
 
 type Action =
   | { t: 'product'; id: string }
   | { t: 'qty'; n: number }
-  | { t: 'pick'; field: PickField; i: number }
-  | { t: 'extra'; id: string };
+  | { t: 'pick'; field: PickField; i: number };
 
 const INITIAL: State = {
   productId: DEFAULTS.productId,
   qty: DEFAULTS.qty,
-  material: 0,
-  format: 0,
-  finish: 0,
+  kind: 0,
+  size: 0,
   design: 0,
   speed: 0,
-  delivery: 0,
-  extras: [],
 };
 
 function reducer(s: State, a: Action): State {
   switch (a.t) {
     case 'product':
-      return { ...s, productId: a.id, material: 0, format: 0, finish: 0 };
+      return { ...s, productId: a.id, kind: 0 };
     case 'qty':
       return { ...s, qty: a.n };
     case 'pick':
       return { ...s, [a.field]: a.i };
-    case 'extra':
-      return {
-        ...s,
-        extras: s.extras.includes(a.id)
-          ? s.extras.filter((x) => x !== a.id)
-          : [...s.extras, a.id],
-      };
   }
 }
 
 /** Порядок строк в колонках. Из него же считается, кому ехать вниз. */
-const RUN_FIELDS: readonly string[] = ['qty', 'material', 'format', 'speed'];
-const SETUP_FIELDS: readonly string[] = ['finish', 'design', 'delivery', 'extras'];
+const RUN_FIELDS: readonly string[] = ['qty', 'kind', 'size'];
+const SETUP_FIELDS: readonly string[] = ['design', 'speed'];
 
 export function Raschet() {
   const [s, dispatch] = useReducer(reducer, INITIAL);
@@ -99,7 +74,7 @@ export function Raschet() {
   const p = PRODUCTS_BY_ID[s.productId];
 
   /* Метка страницы гасит нижнюю панель телефона: её работу делает плашка
-     итога, и второй WhatsApp у нижнего реза дублировал бы первый. Метка
+     наряда, и второй WhatsApp у нижнего реза дублировал бы первый. Метка
      лежит на :root, потому что панель живёт в макете, а не здесь. */
   useEffect(() => {
     document.documentElement.dataset.page = 'raschet';
@@ -118,12 +93,13 @@ export function Raschet() {
     return () => window.removeEventListener('keydown', onKey);
   }, [open]);
 
-  const run = runTotal(p, s, SHARED);
-  const setup = setupTotal(p, s, SHARED);
-  const total = grandTotal(p, s, SHARED);
-  const term = TERMS[termKey(p, s, SHARED, SLOW_PRODUCTS)];
-
-  const pickedExtras = SHARED.extras.filter((e) => s.extras.includes(e.id));
+  const qty = formatQty(s.qty);
+  const kind = p.kinds[s.kind].label;
+  /* «Опишу в переписке» это ответ заказчика, а не изделие: в сводке тиража
+     вместо него стоит сама услуга. В сообщение ответ уходит как есть. */
+  const runName = kind === ASK.label ? p.title : kind;
+  const design = SHARED.design[s.design].label;
+  const speed = SHARED.speed[s.speed].label;
 
   const toggle = (id: string) => setOpen((v) => (v === id ? null : id));
 
@@ -131,13 +107,10 @@ export function Raschet() {
      сдвиг соседних строк; резерв колонки объявлен по самой длинной панели и
      не зависит от раскрытого, поэтому высота листа не меняется никогда. */
   const panelRows: Record<string, number> = {
-    material: p.materials.length,
-    format: p.formats.length,
-    speed: SHARED.speed.length,
-    finish: p.finishes.length,
+    kind: p.kinds.length,
+    size: SHARED.size.length,
     design: SHARED.design.length,
-    delivery: SHARED.delivery.length,
-    extras: SHARED.extras.length,
+    speed: SHARED.speed.length,
   };
 
   const columnProps = (fields: readonly string[]) => {
@@ -152,21 +125,16 @@ export function Raschet() {
   const shifted = (fields: readonly string[], me: string) =>
     open !== null && fields.includes(open) && fields.indexOf(open) < fields.indexOf(me);
 
-  /* Слагаемое у правого поля строки. Ноль не печатается вовсе: строка «без
-     отделки» ничего к приладке не прибавляет, и «0 ₽» в покое было бы шумом
-     (в панели, где ноль это ВЫБОР среди платных вариантов, он печатается). */
-  const money = (n: number) => (n === 0 ? undefined : formatFrom(n));
-
   return (
     <Section id="raschet" ground="paper" gain={0.8}>
       <Sheet className="rs-head">
-        {/* МЕТКИ «ПРЕДВАРИТЕЛЬНЫЙ РАСЧЁТ» НАД ИМЕНЕМ БОЛЬШЕ НЕТ (решение
-            заказчика 12.09.2026). Страница называет себя тремя другими
-            способами: пунктом «Расчёт» в шапке сайта, заголовком окна и
-            меткой плашки итога. Четвёртый раз над именем продукта был
-            подписью к подписи. `RASCHET.kicker` при этом остаётся в копии:
-            им подписана радиогруппа продуктов для скринридера, где имя
-            «Визитки» само по себе ничего не объясняет. */}
+        {/* МЕТКИ НАД ИМЕНЕМ НЕТ (решение заказчика 12.09.2026). Страница
+            называет себя тремя другими способами: пунктом «Заказ» в шапке
+            сайта, заголовком окна и меткой плашки наряда. Четвёртый раз над
+            именем услуги был бы подписью к подписи. `RASCHET.kicker` при
+            этом остаётся в копии: им подписана радиогруппа услуг для
+            скринридера, где имя «Полиграфия» само по себе ничего не
+            объясняет. */}
         <button
           type="button"
           className="rs-name"
@@ -188,7 +156,7 @@ export function Raschet() {
 
       <Sheet className="rs-body">
         <div className="rs-cols">
-          {/* ── ТИРАЖ: всё, что множится на каждый экземпляр ─────────────── */}
+          {/* ── ТИРАЖ: что и сколько ─────────────────────────────────────── */}
           <div className="rs-col" {...columnProps(RUN_FIELDS)}>
             <h2 className="rs-colhead t-label fg-56">
               <span>{RASCHET.run.title}</span>
@@ -234,55 +202,50 @@ export function Raschet() {
             </div>
 
             <RaschetField
-              id="material"
-              label={RASCHET.fields.material}
-              value={p.materials[s.material].label}
-              options={p.materials}
-              selected={[s.material]}
-              open={open === 'material'}
-              shift={shifted(RUN_FIELDS, 'material')}
-              onToggle={() => toggle('material')}
-              onPick={(i) => dispatch({ t: 'pick', field: 'material', i })}
+              id="kind"
+              label={RASCHET.fields.kind}
+              value={kind}
+              options={p.kinds}
+              selected={s.kind}
+              open={open === 'kind'}
+              shift={shifted(RUN_FIELDS, 'kind')}
+              onToggle={() => toggle('kind')}
+              onPick={(i) => dispatch({ t: 'pick', field: 'kind', i })}
             />
             <RaschetField
-              id="format"
-              label={RASCHET.fields.format}
-              value={p.formats[s.format].label}
-              options={p.formats}
-              selected={[s.format]}
-              open={open === 'format'}
-              shift={shifted(RUN_FIELDS, 'format')}
-              onToggle={() => toggle('format')}
-              onPick={(i) => dispatch({ t: 'pick', field: 'format', i })}
-            />
-            <RaschetField
-              id="speed"
-              label={RASCHET.fields.speed}
-              value={SHARED.speed[s.speed].label}
-              options={SHARED.speed}
-              selected={[s.speed]}
-              open={open === 'speed'}
-              shift={shifted(RUN_FIELDS, 'speed')}
-              onToggle={() => toggle('speed')}
-              onPick={(i) => dispatch({ t: 'pick', field: 'speed', i })}
+              id="size"
+              label={RASCHET.fields.size}
+              value={SHARED.size[s.size].label}
+              options={SHARED.size}
+              selected={s.size}
+              open={open === 'size'}
+              shift={shifted(RUN_FIELDS, 'size')}
+              onToggle={() => toggle('size')}
+              onPick={(i) => dispatch({ t: 'pick', field: 'size', i })}
             />
 
             {/* РЕЗЕРВ ПАНЕЛИ СТОИТ ЗДЕСЬ, МЕЖДУ ПОСЛЕДНЕЙ СТРОКОЙ И ПОДЫТОГОМ,
                 и порядок этих двух узлов несёт всю раскладку. Резерв это то
                 место, куда едут строки под раскрытой панелью; подытог за ним
                 прибит к подошве колонки и не едет вообще никогда. В покое
-                резерв читается воздухом перед итогом, то есть тем, чем
+                резерв читается воздухом перед подытогом, то есть тем, чем
                 кончается печатный бланк. Поменять их местами значит вернуть
-                двести пунктов пустоты ПОСЛЕ суммы, ради которой лист и
+                двести пунктов пустоты ПОСЛЕ показания, ради которого бланк и
                 заведён. */}
             <div className="rs-tail" aria-hidden />
+            {/* ПОДЫТОГ ЭТО СВОДКА КОЛОНКИ, А НЕ ЦЕНА: что и сколько одной
+                строкой, как прежде сумма её строк. Повторять одно значение
+                строки над ним было бы эхом, а не подытогом. В сводке есть
+                число, оно меняется на каждом шаге тиража, и поэтому она не
+                перенабирается краской. Единица прибита к числу неразрывным
+                пробелом: «экз.» на своей строке это обрывок. */}
             <p className="rs-subtotal">
               <span className="t-label fg-56">{RASCHET.run.total}</span>
-              <span className="rs-subtotal-n">{formatFrom(run)}</span>
+              <span className="rs-subtotal-n">{`${runName} · ${qty} ${RASCHET.qtyUnit}`}</span>
             </p>
           </div>
 
-          {/* ── ПРИЛАДКА: всё, что платится один раз ─────────────────────── */}
+          {/* ── ПОДГОТОВКА: макет и срок ─────────────────────────────────── */}
           <div className="rs-col" {...columnProps(SETUP_FIELDS)}>
             <h2 className="rs-colhead t-label fg-56">
               <span>{RASCHET.setup.title}</span>
@@ -290,92 +253,47 @@ export function Raschet() {
             </h2>
 
             <RaschetField
-              id="finish"
-              label={RASCHET.fields.finish}
-              value={p.finishes[s.finish].label}
-              price={money(p.finishes[s.finish].value)}
-              options={p.finishes}
-              selected={[s.finish]}
-              money
-              open={open === 'finish'}
-              shift={shifted(SETUP_FIELDS, 'finish')}
-              onToggle={() => toggle('finish')}
-              onPick={(i) => dispatch({ t: 'pick', field: 'finish', i })}
-            />
-            <RaschetField
               id="design"
               label={RASCHET.fields.design}
-              value={SHARED.design[s.design].label}
-              price={money(SHARED.design[s.design].value)}
+              value={design}
               options={SHARED.design}
-              selected={[s.design]}
-              money
+              selected={s.design}
               open={open === 'design'}
               shift={shifted(SETUP_FIELDS, 'design')}
               onToggle={() => toggle('design')}
               onPick={(i) => dispatch({ t: 'pick', field: 'design', i })}
             />
             <RaschetField
-              id="delivery"
-              label={RASCHET.fields.delivery}
-              value={SHARED.delivery[s.delivery].label}
-              price={money(SHARED.delivery[s.delivery].value)}
-              options={SHARED.delivery}
-              selected={[s.delivery]}
-              money
-              open={open === 'delivery'}
-              shift={shifted(SETUP_FIELDS, 'delivery')}
-              onToggle={() => toggle('delivery')}
-              onPick={(i) => dispatch({ t: 'pick', field: 'delivery', i })}
-            />
-            <RaschetField
-              id="extras"
-              label={RASCHET.fields.extras}
-              mode="toggle"
-              value={
-                pickedExtras.length
-                  ? pickedExtras.map((e) => e.label).join(' · ')
-                  : RASCHET.extrasEmpty
-              }
-              price={money(pickedExtras.reduce((n, e) => n + e.value, 0))}
-              options={SHARED.extras}
-              selected={SHARED.extras.flatMap((e, i) => (s.extras.includes(e.id) ? [i] : []))}
-              money
-              open={open === 'extras'}
-              /* ПОСЛЕДНЯЯ СТРОКА ЕДЕТ ТАК ЖЕ, КАК ВСЕ. Здесь стояло `false`,
-                 как будто «ниже неё ничего нет, значит и ехать некуда», и
-                 довод перевёрнут: ехать некуда ВЫШЕ, а ниже раскрытой панели
-                 стоит именно она. Любая панель в этой колонке («отделка»,
-                 «макет», «получение») уводила соседей вниз, а «дополнительно»
-                 оставалась на месте, и строки печатались одна поверх другой.
-                 В колонке тиража на том же месте стоит «срок», и он с самого
-                 начала считался правильно. */
-              shift={shifted(SETUP_FIELDS, 'extras')}
-              onToggle={() => toggle('extras')}
-              onPick={(i) => dispatch({ t: 'extra', id: SHARED.extras[i].id })}
+              id="speed"
+              label={RASCHET.fields.speed}
+              value={speed}
+              options={SHARED.speed}
+              selected={s.speed}
+              open={open === 'speed'}
+              /* ПОСЛЕДНЯЯ СТРОКА ЕДЕТ ТАК ЖЕ, КАК ВСЕ: ехать некуда ВЫШЕ
+                 неё, а ниже раскрытой панели стоит именно она. */
+              shift={shifted(SETUP_FIELDS, 'speed')}
+              onToggle={() => toggle('speed')}
+              onPick={(i) => dispatch({ t: 'pick', field: 'speed', i })}
             />
 
-            {/* РЕЗЕРВ ПАНЕЛИ СТОИТ ЗДЕСЬ, МЕЖДУ ПОСЛЕДНЕЙ СТРОКОЙ И ПОДЫТОГОМ,
-                и порядок этих двух узлов несёт всю раскладку. Резерв это то
-                место, куда едут строки под раскрытой панелью; подытог за ним
-                прибит к подошве колонки и не едет вообще никогда. В покое
-                резерв читается воздухом перед итогом, то есть тем, чем
-                кончается печатный бланк. Поменять их местами значит вернуть
-                двести пунктов пустоты ПОСЛЕ суммы, ради которой лист и
-                заведён. */}
+            {/* Резерв и подытог: разбор в колонке тиража. */}
             <div className="rs-tail" aria-hidden />
+            {/* Здесь сводка состоит из одних имён, без числа, и
+                перенабирается краской, как всякое имя на листе. */}
             <p className="rs-subtotal">
               <span className="t-label fg-56">{RASCHET.setup.total}</span>
-              <span className="rs-subtotal-n">{formatFrom(setup)}</span>
+              <span key={`${design}|${speed}`} className="rs-subtotal-n rs-reink">
+                {`${design} · ${speed}`}
+              </span>
             </p>
           </div>
         </div>
 
-        {/* ВОСЕМНАДЦАТЬ ПРОДУКТОВ НАКРЫВАЮТ РАСЧЁТ. Резервировать под них
-            место на листе постоянно нельзя: шесть пустых строк это тот самый
-            хлам, ради отмены которого раскладка и переделывалась. А накрыть
-            собой расчёт смена продукта имеет право: она обесценивает всё,
-            что стоит ниже. */}
+        {/* СПИСОК УСЛУГ НАКРЫВАЕТ НАРЯД. Резервировать под него место на
+            листе постоянно нельзя: пустые строки это тот самый хлам, ради
+            отмены которого раскладка и переделывалась. А накрыть собой наряд
+            смена услуги имеет право: она обесценивает всё, что стоит ниже. */}
         <div
           id="rs-products"
           className="rs-products"
@@ -413,23 +331,27 @@ export function Raschet() {
             <p>
               <span className="t-label fg-56">{RASCHET.totalLabel}</span>
               <span className="rs-total-n">
-                {/* Частица неразрывным пробелом ВНУТРИ узла, а не полем: поле
-                    рисует отбивку, но в текст её не кладёт, и «от1 200 ₽»
-                    уходило бы в буфер обмена и в синтезатор речи. */}
-                <span className="rs-from">{'от\u00A0'}</span>
-                {formatRub(total)}
+                {qty}
+                {/* Единица счёта неразрывным пробелом ВНУТРИ узла, а не
+                    полем: поле рисует отбивку, но в текст её не кладёт, и
+                    «100экз.» уходило бы в буфер обмена и в синтезатор речи. */}
+                <span className="rs-unit">{` ${RASCHET.qtyUnit}`}</span>
               </span>
             </p>
             <p>
               <span className="t-label fg-56">{RASCHET.termLabel}</span>
-              <span key={term} className="rs-total-term rs-reink block font-semibold">
-                {term}
+              <span key={speed} className="rs-total-term rs-reink block font-semibold">
+                {speed}
               </span>
             </p>
             <p>
-              <span className="t-label fg-56">{RASCHET.recLabel}</span>
-              <span key={p.id} className="rs-total-rec rs-reink fg-56 block">
-                {p.rec}
+              <span className="t-label fg-56">{RASCHET.hoursLabel}</span>
+              <span className="rs-total-hours fg-70 block">
+                {RASCHET.hours.map((line) => (
+                  <span key={line} className="block">
+                    {line}
+                  </span>
+                ))}
               </span>
             </p>
           </div>
@@ -437,11 +359,11 @@ export function Raschet() {
 
         {/* Ничего никуда не отправляется, открывается WhatsApp: врать в
             подтверждении нечем. Но наряд уходит туда целиком, а не пустым
-            чатом, как на прежнем сайте.
+            чатом.
 
             ПОРЯДОК ТОТ ЖЕ, ЧТО У §08 НИЖЕ НА ЭТОЙ ЖЕ СТРАНИЦЕ: телефон, за
-            ним WhatsApp в рубине. Стояло наоборот, и два разговора об одном и
-            том же на одном листе шли в разные стороны. */}
+            ним WhatsApp плашкой формы R. Стояло наоборот, и два разговора об
+            одном и том же на одном листе шли в разные стороны. */}
         <div className="rs-cta">
           <a href={CONTACTS.phoneHref}>
             {RASCHET.callCta} · {CONTACTS.phone}
@@ -467,14 +389,13 @@ export function Raschet() {
         <Soglasie className="rs-soglasie" />
       </div>
 
-      {/* ОГОВОРКА ЭТО ПОСЛЕДНЕЕ ЗАЯВЛЕНИЕ ЛИСТА, А НЕ ЕГО СНОСКА. Стояли два
-          абзаца одним серым корпусом восьмым кеглем, и лист, у которого
-          каждая сумма подписана «от», кончался самым тихим местом на всей
-          полосе. Метка взята в рубин — единственную хрому сайта, ту же, что
-          помечает раскрытую строку и итог, — а первое предложение набрано
-          тем же весом и кеглем, что значения расчёта: читатель видит его в
-          один вес с тем, что выбрал. Разбор под ним остался разбором.
-          Ни одной новой краски, ни одной новой линейки. */}
+      {/* ОГОВОРКА ЭТО ПОСЛЕДНЕЕ ЗАЯВЛЕНИЕ ЛИСТА, А НЕ ЕГО СНОСКА. Лист без
+          единой цены обязан сказать, кто и когда её назовёт, и сказать это
+          не тише, чем всё остальное. Метка взята в краску формы R, ту же, что
+          помечает раскрытую строку, а первое предложение набрано тем же
+          весом и кеглем, что значения наряда: читатель видит его в один вес
+          с тем, что выбрал. Разбор под ним остался разбором. Ни одной новой
+          краски, ни одной новой линейки. */}
       <Sheet className="rs-note">
         <p className="t-label rs-note-mark">{RASCHET.noteTitle}</p>
         <div>

@@ -55,12 +55,19 @@ export function ControlStrip() {
   );
 }
 
-/** Ступень: первые десять это растр K, вторые десять растр R. */
+/**
+ * Ступень: первые десять это растр K, вторые десять растр R.
+ *
+ * Краска R берётся из `--strip-r`, а не прямо из токена: на тёмно-синем
+ * грунте шкала подменяет её светлой синей, потому что синяя с логотипа там
+ * даёт 1,71:1 и ступени слились бы с грунтом (правило в globals.css, у
+ * `data-strip-ground`). На бумаге подмены нет, и ступень печатается синей.
+ */
 function Step({ i }: { i: number }) {
   const isK = i < 10;
   const t = (i % 10) / 9;
   const bg = isK
     ? `color-mix(in srgb, var(--color-ink) ${14 + t * 86}%, transparent)`
-    : `color-mix(in srgb, var(--color-rubine) ${15 + t * 85}%, transparent)`;
+    : `color-mix(in srgb, var(--strip-r, var(--color-rubine)) ${15 + t * 85}%, transparent)`;
   return <div className="h-full flex-1" style={{ background: bg }} />;
 }

@@ -1,9 +1,9 @@
 'use client';
 
-import { formatFrom, type Option } from '@/lib/raschet';
+import type { Option } from '@/lib/raschet';
 
 /**
- * ОДИН ПАРАМЕТР РАСЧЁТА: строка в покое и её панель вариантов.
+ * ОДИН ПАРАМЕТР НАРЯДА: строка в покое и её панель вариантов.
  *
  * СТРОКА ЭТО DISCLOSURE, панель это радиогруппа. Выбор одного из N обязан
  * называться радиогруппой, иначе скринридер не скажет, сколько их и какой
@@ -16,7 +16,7 @@ import { formatFrom, type Option } from '@/lib/raschet';
  * места, и сдвиг соседей ниже задаёт `data-shift`, а не эта разметка.
  *
  * ПАНЕЛЬ ОСТАЁТСЯ В РАЗМЕТКЕ ЗАКРЫТОЙ: раскрыть то, чего в документе нет,
- * нельзя, а прочитать варианты и их цены обязан и тот, у кого скрипты сняты.
+ * нельзя, а прочитать варианты обязан и тот, у кого скрипты сняты.
  * Раскрывает её без JS `<noscript>`-стиль из `src/app/raschet/page.tsx`.
  * Закрыта она краской, `visibility` и резом, а не `display`, и довод у этой
  * тройки один: из `display:none` не выходит ни один ход. Разбор при
@@ -43,9 +43,8 @@ import { formatFrom, type Option } from '@/lib/raschet';
  * стал другим, переходить ему тут не от чего. Узел с новым ключом монтируется
  * заново, и `rs-reink` идёт с первого его кадра. Ключ это САМО ЗНАЧЕНИЕ,
  * поэтому выбор того же варианта второй раз ничего не перенабирает: ход
- * отвечает на смену, а не на нажатие. Цену `.rs-row-p` это не трогает, и
- * закон записан при `@keyframes rs-reink`: краска на именах, ни одной краски
- * на суммах.
+ * отвечает на смену, а не на нажатие. Закон записан при `@keyframes
+ * rs-reink`: краска на именах, ни одной краски на числах.
  *
  * ГНЕЗДО ЗНАЕТ О РАСКРЫТОМ НАРАВНЕ С ПАНЕЛЬЮ. Ниже 1040 колонки встают друг
  * под друга, панель идёт В ПОТОКЕ, и прятать её там нечем: вне потока место
@@ -53,50 +52,32 @@ import { formatFrom, type Option } from '@/lib/raschet';
  * его гнездо долей 0fr → 1fr, и метка на нём нужна ровно для этого. Выше
  * порога метка не делает ничего.
  *
- * ЦЕНУ ПОКАЗЫВАЮТ ТОЛЬКО СЛАГАЕМЫЕ, и говорит об этом ВЫЗЫВАЮЩИЙ, а не
- * догадка по числу. Множитель это не цена, а ставка наценки, и ни одна
- * страница «Альфы» такой таблицы не печатала (решение заказчика 12.09.2026).
- * Догадка тут невозможна в принципе: первый множитель в каждом списке равен
- * единице, то есть целому числу, и всякая проверка «целое значит рубли»
- * напечатала бы «Обычный от 1 ₽».
- *
- * А НАБИРАЕТ СУММУ НЕ ЭТОТ ФАЙЛ. Здесь стоял свой `formatMoney` со знаком
- * «+» перед слагаемым, и лист печатал сумму двумя разными правилами: «+600 ₽»
- * в панели и «600 ₽» той же отделки в строке над ней. Теперь обе идут через
- * `formatFrom` из `lib/raschet.ts`, и плюс снят: его работу делает частица
- * «от», а единственное вычитаемое на листе («Повтор заказа») по-прежнему
- * помечено минусом, то есть читается исключением.
+ * ЦЕН НА ЛИСТЕ НЕТ, поэтому у строки и у варианта нет правого числового
+ * поля. Правый борт колонки остаётся за единицей счёта в строке тиража
+ * (`.rs-row-p` в `Raschet.tsx`), и больше там не стоит ничего.
  */
 export function RaschetField({
   id,
   label,
   value,
-  price,
   options,
   selected,
-  money,
   open,
   shift,
   onToggle,
   onPick,
-  mode = 'radio',
 }: {
   id: string;
   label: string;
   /** Что стоит в строке в покое. */
   value: string;
-  /** Цена у правого поля строки. Пусто у параметров, которые множатся. */
-  price?: string;
   options: readonly Option[];
-  /** Номера выбранных вариантов. У радиогруппы ровно один. */
-  selected: readonly number[];
-  /** Значения вариантов это рубли, а не множители: печатать ли их. */
-  money?: boolean;
+  /** Номер выбранного варианта. */
+  selected: number;
   open: boolean;
   shift: boolean;
   onToggle: () => void;
   onPick: (i: number) => void;
-  mode?: 'radio' | 'toggle';
 }) {
   const panelId = `rs-panel-${id}`;
 
@@ -113,7 +94,6 @@ export function RaschetField({
         <span key={value} className="rs-row-v rs-reink">
           {value}
         </span>
-        <span className="rs-row-p">{price ?? ''}</span>
       </button>
 
       <div className="rs-slot" data-open={open ? 'true' : 'false'}>
@@ -121,24 +101,23 @@ export function RaschetField({
           id={panelId}
           className="rs-panel"
           data-open={open ? 'true' : 'false'}
-          role={mode === 'radio' ? 'radiogroup' : 'group'}
+          role="radiogroup"
           aria-label={label}
         >
           {options.map((o, i) => {
-            const on = selected.includes(i);
+            const on = selected === i;
             return (
               <button
                 key={o.label}
                 type="button"
                 className="rs-opt"
-                {...(mode === 'radio'
-                  ? { role: 'radio', 'aria-checked': on, tabIndex: on ? 0 : -1 }
-                  : { 'aria-pressed': on })}
+                role="radio"
+                aria-checked={on}
+                tabIndex={on ? 0 : -1}
                 onClick={() => onPick(i)}
               >
                 <span className="rs-opt-mark" aria-hidden />
                 <span>{o.label}</span>
-                <span className="rs-opt-p">{money ? formatFrom(o.value) : ''}</span>
               </button>
             );
           })}

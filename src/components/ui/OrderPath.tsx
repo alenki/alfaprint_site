@@ -13,17 +13,21 @@ import { usePrefersReducedMotion } from '@/lib/hooks';
  * весь лист целиком, и на формате во весь лист он обязан занимать весь
  * лист; в колонке по центру он читался как виджет.
  *
- * НАД УЗЛАМИ СТОЯТ НОМЕРА, А НЕ ЧАСЫ. Прежде это было сменное задание с
- * расписанием от 09:00 до 17:00; часов у срочного заказа фирма не называет
- * нигде, и выдуманное расписание обещало за неё. Номер говорит ровно то,
- * что здесь и надо сказать: порядок. Разбор источника у `SROK`.
+ * НАД УЗЛАМИ СТОЯТ НОМЕРА, А НЕ ЧАСЫ. Срока фирма не называет нигде, и
+ * расписание по часам обещало бы за неё. Номер говорит ровно то, что здесь
+ * и надо сказать: порядок. Разбор у `SROK`.
  *
- * Рубиновая линия растёт строго линейно по прогрессу секции: скрабленная
+ * Линия второй краски растёт строго линейно по прогрессу секции: скрабленная
  * анимация никогда не имеет кривой: иначе она врёт про положение.
  *
+ * КРАСКА ЛИНИИ БЕРЁТСЯ У ГРУНТА (`--accent`), А НЕ ИЗ ТОКЕНА НАПРЯМУЮ.
+ * Полоса стоит на тёмно-синем грунте, и синий логотипа на нём почти пропадает
+ * (1,71:1). Грунт поэтому объявляет свою вторую краску, светлую синюю того же
+ * тона (3,20:1, законно для линий и точек), и путь заказа берёт её оттуда.
+ * Точка мобильного узла залита цветом самого грунта, чтобы читаться кольцом.
+ *
  * Узлы загораются от порога, посчитанного из той же переменной, и ни одного
- * слушателя на узлах. У последнего узла дорисовывается галочка: знак бренда
- * появляется ровно в точке сдачи заказа.
+ * слушателя на узлах. У последнего узла дорисовывается галочка: заказ сдан.
  */
 export function OrderPath() {
   const ref = useRef<HTMLDivElement>(null);
@@ -44,7 +48,7 @@ export function OrderPath() {
         {/* Линейка уходит за обрез: путь не начинается и не кончается на поле. */}
         <div className="absolute inset-x-0 top-1/2 h-px bg-[var(--rule)]" />
         <motion.div
-          className="absolute inset-x-0 top-1/2 h-px origin-left bg-[var(--color-rubine)]"
+          className="absolute inset-x-0 top-1/2 h-px origin-left bg-[var(--accent)]"
           style={{ scaleX: reduced ? 1 : scale }}
         />
 
@@ -67,13 +71,13 @@ export function OrderPath() {
       <div className="relative px-[var(--edge)] md:hidden">
         <div className="absolute bottom-0 left-[calc(var(--edge)+5px)] top-0 w-px bg-[var(--rule)]" />
         <motion.div
-          className="absolute bottom-0 left-[calc(var(--edge)+5px)] top-0 w-px origin-top bg-[var(--color-rubine)]"
+          className="absolute bottom-0 left-[calc(var(--edge)+5px)] top-0 w-px origin-top bg-[var(--accent)]"
           style={{ scaleY: reduced ? 1 : scale }}
         />
         <ul className="flex flex-col gap-9">
           {nodes.map((node) => (
             <li key={node.step} className="relative flex items-baseline gap-5 pl-6">
-              <span className="absolute left-0 top-2 h-[11px] w-[11px] rounded-full border border-[var(--rule)] bg-[var(--color-ink)]" />
+              <span className="absolute left-0 top-2 h-[11px] w-[11px] rounded-full border border-[var(--rule)] bg-[var(--color-deep,var(--color-ink))]" />
               <span className="t-micro fg-56 w-7 shrink-0">{node.step}</span>
               <span className="font-display fg text-2xl font-semibold">{node.title}</span>
             </li>
@@ -130,15 +134,15 @@ function Node({
         </motion.p>
       </div>
 
-      {/* Точка узла: сначала мелом, потом заливается рубином. */}
+      {/* Точка узла: сначала мелом, потом заливается второй краской. */}
       <span className="relative block h-1.5 w-1.5 rounded-full bg-[var(--rule)]">
         <motion.span
           className="absolute inset-0 rounded-full"
-          style={{ background: 'var(--color-rubine)', opacity: reduced ? 1 : litDot }}
+          style={{ background: 'var(--accent)', opacity: reduced ? 1 : litDot }}
         />
       </span>
 
-      {/* Знак бренда появляется ровно в точке сдачи заказа. */}
+      {/* Галочка появляется ровно в точке сдачи заказа: заказ сдан. */}
       {edge === 'end' && (
         <motion.svg
           viewBox="0 0 24 22"
@@ -153,7 +157,7 @@ function Node({
         >
           <motion.path
             d="M2 11.5 L8.5 19.5 L22 1.5"
-            stroke="var(--color-rubine)"
+            stroke="var(--accent)"
             strokeWidth="3"
             strokeLinecap="butt"
             strokeLinejoin="miter"

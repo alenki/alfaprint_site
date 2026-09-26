@@ -1,23 +1,27 @@
 import type { NextConfig } from 'next';
 
 /**
- * ПЛОЩАДКА: lumako.ru/alfaprint.
+ * ПЛОЩАДКА: lumako.ru/legko.
  *
  * Сайт лежит НЕ в корне домена, а в подкаталоге, и отдаётся статикой:
  * `next build` кладёт готовый каталог `out/`, его содержимое поднимается
- * в папку `alfaprint` на сервере. Ни Node, ни `next start` там не нужны.
+ * в папку `legko` на сервере. Ни Node, ни `next start` там не нужны.
  *
  * Отсюда три следствия, и все три обязательны:
  *
- * 1. `basePath` — Next сам подставляет `/alfaprint` во все свои ссылки:
+ * 1. `basePath`: Next сам подставляет `/legko` во все свои ссылки:
  *    `_next/static`, шрифты, иконку, `<Link>`. Строки, написанные руками
  *    в JSX и CSS, он НЕ трогает: для них есть `BASE_PATH` в `lib/base.ts`.
- * 2. `trailingSlash` — на статике адрес приходит каталогом, и файл должен
- *    лежать как `alfaprint/index.html`, а не `alfaprint.html`.
- * 3. `output: 'export'` — ни серверных маршрутов, ни ISR на листе нет,
+ * 2. `trailingSlash`: на статике адрес приходит каталогом, и файл должен
+ *    лежать как `legko/index.html`, а не `legko.html`.
+ * 3. `output: 'export'`: ни серверных маршрутов, ни ISR на листе нет,
  *    так что уходить в рантайм не за чем.
+ *
+ * Путь обязан совпадать с `SITE_URL` в `app/layout.tsx`: оттуда берутся
+ * канонический адрес, Open Graph и разметка организации. Переезд на свой
+ * домен агентства это пустая строка здесь и новый адрес там.
  */
-const BASE_PATH = '/alfaprint';
+const BASE_PATH = '/legko';
 
 const nextConfig: NextConfig = {
   output: 'export',

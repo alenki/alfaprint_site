@@ -9,16 +9,22 @@ import { HOURS, HOURS_DISPLAY, TIMEZONE } from '@/content/hours';
  * Наружу состояние идёт одной подсветкой: в выходных данных выделена
  * сегодняшняя строка часов. Живых обещаний и обратного отсчёта сайт больше
  * не печатает, поэтому и текстов здесь нет.
+ *
+ * ПЕРЕРЫВ ЭТО ЗАКРЫТО. В обеденный час офис не работает, и `open` в эти
+ * минуты ложно; отдельно `pause` говорит, почему: закрыто не до завтра, а
+ * до конца перерыва.
  */
 
 export type Shift = {
   /** Индекс дня недели по МСК, чтобы подсветить строку в часах. */
   day: number;
   open: boolean;
+  /** Идёт перерыв внутри рабочего дня. При нём `open` всегда ложно. */
+  pause: boolean;
 };
 
 /** Нейтральный вариант для SSR: одинаков на сервере и до гидратации. */
-export const NEUTRAL_SHIFT: Shift = { day: -1, open: false };
+export const NEUTRAL_SHIFT: Shift = { day: -1, open: false, pause: false };
 
 function nalchikNow(now: Date) {
   const parts = new Intl.DateTimeFormat('ru-RU', {
@@ -49,12 +55,16 @@ export function getShift(now = new Date()): Shift {
   const { day, minutes } = nalchikNow(now);
   const today = HOURS[day];
 
-  if (!today) return { day, open: false };
+  if (!today) return { day, open: false, pause: false };
 
-  return {
-    day,
-    open: minutes >= toMinutes(today.open) && minutes < toMinutes(today.close),
-  };
+  const working = minutes >= toMinutes(today.open) && minutes < toMinutes(today.close);
+  const pause =
+    working &&
+    !!today.pause &&
+    minutes >= toMinutes(today.pause[0]) &&
+    minutes < toMinutes(today.pause[1]);
+
+  return { day, open: working && !pause, pause };
 }
 
 export { HOURS_DISPLAY };

@@ -1,140 +1,116 @@
 /**
- * ПРОВЕРКА ПЕРЕНОСА КАЛЬКУЛЯТОРА.
+ * ПРОВЕРКА ЛИСТА «ЗАКАЗ».
  *
- * Два утверждения, и оба о том, что перенос ничего не изменил:
- *   1. наши данные это те же данные (порядок, имена, ставки, множители, суммы);
- *   2. наша формула это та же формула, на ПОЛНОМ переборе сочетаний.
+ * Лист не считает цену, поэтому сверять здесь нечего, кроме устройства:
+ * данные обязаны влезать в раскладку, а ни одна строка листа и сообщения не
+ * имеет права назвать цену. Проверка сторожит пять утверждений:
+ *   1. услуга по умолчанию существует, услуг не больше восемнадцати, имена
+ *      и номера не повторяются;
+ *   2. в каждом списке от двух до пяти вариантов, имена в списке разные
+ *      (они же ключи React), имя услуги не длиннее замеренного;
+ *   3. в данных и копии нет рубля, нет цифры перед рублём и нет тире;
+ *   4. сообщение в WhatsApp собирается на ВСЕХ сочетаниях, без `undefined`,
+ *      без рубля и без пустых строк;
+ *   5. в сообщении нет строк, которых нет на листе: каждая строка это
+ *      приветствие, имя услуги, «поле: значение» или последняя просьба.
  *
- * Оракул ниже переписан с `window.calc` прежнего сайта дословно. Приводить его
- * в порядок нельзя: именно он и есть проверяемое поведение.
- *
- * Запуск: node scripts/check-raschet.mjs
+ * Запуск: node scripts/check-raschet.mjs (Node 22 сам снимает типы с .ts).
  */
-import fs from 'node:fs';
 import assert from 'node:assert/strict';
-import { PRODUCTS, SHARED, SLOW_PRODUCTS, TERMS, RASCHET } from '../src/content/raschet.ts';
-import { runTotal, setupTotal, grandTotal, termKey, formatRub, raschetMessage } from '../src/lib/raschet.ts';
+import { PRODUCTS, PRODUCTS_BY_ID, SHARED, DEFAULTS, RASCHET } from '../src/content/raschet.ts';
+import { formatQty, raschetMessage } from '../src/lib/raschet.ts';
 
-const oracle = JSON.parse(fs.readFileSync(new URL('./raschet-oracle.json', import.meta.url), 'utf8'));
+/* Замер `.rs-name` в `raschet.css`: 22 знака встают в одну строку. */
+const NAME_MAX = 22;
+const LIST_MAX = 5;
+const PRODUCTS_MAX = 18;
 
-/* ── оракул: формула прежнего сайта ─────────────────────────────────────── */
-function oraclePrice(data, qty, material, format, finish, design, speed, delivery, proof, consult, repeat) {
-  let price = Math.max(data.min, qty * data.base);
-  price = price * material * format * speed + finish + design + delivery + proof + consult + repeat;
-  price = Math.max(900, price);
-  return price;
-}
-function oracleTerm(product, speed) {
-  return speed > 1.3
-    ? 'срочно, уточнить'
-    : (['shirts', 'souvenirs', 'banners', 'calendars'].includes(product)
-        ? '2–7 рабочих дней'
-        : '1–3 рабочих дня');
+/** Все строки объекта, на любой глубине. */
+function strings(v, out = []) {
+  if (typeof v === 'string') out.push(v);
+  else if (Array.isArray(v)) v.forEach((x) => strings(x, out));
+  else if (v && typeof v === 'object') Object.values(v).forEach((x) => strings(x, out));
+  return out;
 }
 
-/* ── 1. ДАННЫЕ ──────────────────────────────────────────────────────────── */
-let optionCount = 0;
-assert.deepEqual(PRODUCTS.map((p) => p.id), oracle.order, 'порядок продуктов разошёлся');
+/* Тире как знак препинания: длинное, короткое, двойной дефис и дефис,
+   отбитый пробелами. Дефис внутри слова («УФ-печать») законен. */
+const DASH = /[—–]|--| - /;
+const RUB = /₽/;
+const DIGIT_RUB = /\d\s*₽/;
 
-for (const p of PRODUCTS) {
-  const o = oracle.products[p.id];
-  assert.ok(o, `продукта ${p.id} нет в оракуле`);
-  assert.equal(p.title, o.title, `${p.id}: имя`);
-  assert.equal(p.base, o.base, `${p.id}: ставка`);
-  assert.equal(p.min, o.min, `${p.id}: минимум`);
-  assert.equal(p.rec, o.rec, `${p.id}: рекомендация`);
-  for (const key of ['materials', 'formats', 'finishes']) {
-    assert.equal(p[key].length, o[key].length, `${p.id}.${key}: длина списка`);
-    p[key].forEach((opt, i) => {
-      assert.equal(opt.label, o[key][i][1], `${p.id}.${key}[${i}]: имя варианта`);
-      assert.equal(opt.value, Number(o[key][i][0]), `${p.id}.${key}[${i}]: число`);
-      optionCount++;
-    });
+function clean(where, text) {
+  assert.ok(!RUB.test(text), `${where}: рубль в «${text}»`);
+  assert.ok(!DIGIT_RUB.test(text), `${where}: цена в «${text}»`);
+  assert.ok(!DASH.test(text), `${where}: тире в «${text}»`);
+  assert.ok(!text.includes('undefined'), `${where}: undefined в «${text}»`);
+}
+
+/* ── 1. УСЛУГИ ──────────────────────────────────────────────────────────── */
+assert.ok(PRODUCTS.length >= 1, 'список услуг пуст');
+assert.ok(PRODUCTS.length <= PRODUCTS_MAX, `услуг ${PRODUCTS.length}, больше ${PRODUCTS_MAX}`);
+assert.ok(PRODUCTS_BY_ID[DEFAULTS.productId], `услуги по умолчанию «${DEFAULTS.productId}» нет`);
+assert.ok(Number.isInteger(DEFAULTS.qty) && DEFAULTS.qty >= 1, 'тираж по умолчанию');
+assert.equal(new Set(PRODUCTS.map((p) => p.id)).size, PRODUCTS.length, 'номера услуг повторяются');
+assert.equal(new Set(PRODUCTS.map((p) => p.title)).size, PRODUCTS.length, 'имена услуг повторяются');
+
+/* ── 2. СПИСКИ ──────────────────────────────────────────────────────────── */
+function list(where, opts) {
+  assert.ok(opts.length >= 2, `${where}: вариантов ${opts.length}, панель из одного бессмысленна`);
+  assert.ok(opts.length <= LIST_MAX, `${where}: вариантов ${opts.length}, резерв держит ${LIST_MAX}`);
+  assert.equal(new Set(opts.map((o) => o.label)).size, opts.length, `${where}: имена повторяются`);
+  for (const o of opts) {
+    assert.equal(Object.keys(o).join(), 'label', `${where}: у варианта «${o.label}» есть поля кроме имени`);
+    assert.ok(o.label.trim().length > 0, `${where}: пустое имя`);
   }
 }
+for (const p of PRODUCTS) {
+  assert.ok(p.title.length <= NAME_MAX, `${p.id}: имя «${p.title}» длиннее ${NAME_MAX} знаков, перемерьте .rs-name`);
+  assert.deepEqual(Object.keys(p).sort(), ['id', 'kinds', 'title'], `${p.id}: лишние поля`);
+  list(`${p.id}.kinds`, p.kinds);
+}
+for (const [key, opts] of Object.entries(SHARED)) list(`SHARED.${key}`, opts);
 
-/* Общие параметры оракул не хранит: они стояли прямо в разметке #calc. */
-assert.deepEqual(SHARED.design.map((o) => [o.label, o.value]),
-  [['Макет готов', 0], ['Небольшая правка', 1200], ['Дизайн с нуля', 2500]], 'макет');
-assert.deepEqual(SHARED.speed.map((o) => [o.label, o.value]),
-  [['Обычный', 1], ['Быстрее', 1.25], ['Срочно', 1.45]], 'срок');
-assert.deepEqual(SHARED.delivery.map((o) => [o.label, o.value]),
-  [['Самовывоз', 0], ['Доставка по городу', 300]], 'получение');
-assert.deepEqual(SHARED.extras.map((o) => [o.id, o.label, o.value]),
-  [['proof', 'Проверка файла', 500], ['consult', 'Подбор материала', 350], ['repeat', 'Повтор заказа', -300]], 'дополнительно');
-assert.deepEqual([...SLOW_PRODUCTS].sort(), ['banners', 'calendars', 'shirts', 'souvenirs'], 'долгие продукты');
+/* ── 3. НИ ОДНОЙ ЦЕНЫ В ДАННЫХ И КОПИИ ──────────────────────────────────── */
+for (const t of strings(PRODUCTS)) clean('PRODUCTS', t);
+for (const t of strings(SHARED)) clean('SHARED', t);
+for (const t of strings(RASCHET)) clean('RASCHET', t);
 
-console.log(`данные: 18 продуктов, ${optionCount} вариантов, общие параметры — сходится`);
+assert.equal(formatQty(10000), '10 000', 'разряды тиража отбиты неразрывным пробелом');
+assert.equal(formatQty(100), '100', 'тираж без разрядов');
 
-/* ── 2. ФОРМУЛА, ПОЛНЫЙ ПЕРЕБОР ─────────────────────────────────────────── */
-const QTYS = [1, 2, 100, 999, 10000];
-const EXTRA_SETS = [[], ['proof'], ['consult'], ['repeat'],
-  ['proof', 'consult'], ['proof', 'repeat'], ['consult', 'repeat'], ['proof', 'consult', 'repeat']];
+console.log(`услуги: ${PRODUCTS.length}, списков ${PRODUCTS.length + Object.keys(SHARED).length}, цен нет`);
+
+/* ── 4 и 5. СООБЩЕНИЕ НА ВСЕХ СОЧЕТАНИЯХ ────────────────────────────────── */
+const f = RASCHET.fields;
+const FIELD_PREFIXES = [f.qty, f.kind, f.size, f.design, f.speed].map((x) => `${x}: `);
 let checked = 0;
 
-for (const p of PRODUCTS) {
-  const o = oracle.products[p.id];
-  for (let mi = 0; mi < p.materials.length; mi++)
-  for (let fi = 0; fi < p.formats.length; fi++)
-  for (let ni = 0; ni < p.finishes.length; ni++)
-  for (let di = 0; di < SHARED.design.length; di++)
-  for (let si = 0; si < SHARED.speed.length; si++)
-  for (let li = 0; li < SHARED.delivery.length; li++)
-  for (const extras of EXTRA_SETS)
-  for (const qty of QTYS) {
-    const c = { productId: p.id, qty, material: mi, format: fi, finish: ni, design: di, speed: si, delivery: li, extras };
+for (const p of PRODUCTS)
+for (let kind = 0; kind < p.kinds.length; kind++)
+for (let size = 0; size < SHARED.size.length; size++)
+for (let design = 0; design < SHARED.design.length; design++)
+for (let speed = 0; speed < SHARED.speed.length; speed++)
+for (const qty of [1, DEFAULTS.qty, 12345]) {
+  const c = { productId: p.id, qty, kind, size, design, speed };
+  const msg = raschetMessage(p, c, SHARED, RASCHET);
+  clean(`сообщение ${p.id}`, msg);
 
-    const mine = grandTotal(p, c, SHARED);
-    const theirs = oraclePrice(
-      o, qty, Number(o.materials[mi][0]), Number(o.formats[fi][0]), Number(o.finishes[ni][0]),
-      SHARED.design[di].value, SHARED.speed[si].value, SHARED.delivery[li].value,
-      extras.includes('proof') ? 500 : 0,
-      extras.includes('consult') ? 350 : 0,
-      extras.includes('repeat') ? -300 : 0,
-    );
-    assert.equal(mine, theirs, `цена разошлась: ${p.id} qty=${qty} m=${mi} f=${fi} n=${ni} d=${di} s=${si} l=${li} [${extras}]`);
-
-    assert.equal(TERMS[termKey(p, c, SHARED, SLOW_PRODUCTS)], oracleTerm(p.id, SHARED.speed[si].value), `срок разошёлся: ${p.id} s=${si}`);
-
-    /* Две подсуммы обязаны сходиться с итогом: приладка всегда целая, поэтому
-       округление тиража не может увести сумму. Если это утверждение когда-то
-       упадёт, значит, сработал порог 900, и страницу надо будет о нём
-       предупредить. Сейчас он мёртв, см. §6.4 спецификации. */
-    assert.equal(Math.round(runTotal(p, c, SHARED)) + setupTotal(p, c, SHARED), Math.round(mine),
-      `подсуммы не сошлись с итогом: ${p.id} qty=${qty}`);
-
-    checked++;
+  const lines = msg.split('\n');
+  assert.equal(lines[0], RASCHET.waOpen, 'первая строка');
+  assert.equal(lines[1], p.title, 'вторая строка это имя услуги');
+  assert.equal(lines.at(-1), RASCHET.waTail, 'последняя строка');
+  for (const line of lines.slice(2, -1)) {
+    const prefix = FIELD_PREFIXES.find((x) => line.startsWith(x));
+    assert.ok(prefix, `строка «${line}» не принадлежит ни одному полю листа`);
+    assert.ok(line.slice(prefix.length).trim().length > 0, `пустое значение в «${line}»`);
   }
+  assert.equal(lines.length, 2 + FIELD_PREFIXES.length + 1, 'по строке на поле, не больше');
+  for (const needle of [`${qty} ${RASCHET.qtyUnit}`, p.kinds[kind].label,
+    SHARED.size[size].label, SHARED.design[design].label, SHARED.speed[speed].label]) {
+    assert.ok(msg.includes(needle), `в сообщении нет «${needle}»:\n${msg}`);
+  }
+  checked++;
 }
-console.log(`формула: ${checked.toLocaleString('ru-RU')} сочетаний — сходится с прежним сайтом`);
-
-/* ── 3. КОНТРОЛЬНЫЙ ПРИМЕР ИЗ СПЕЦИФИКАЦИИ ──────────────────────────────── */
-const cards = PRODUCTS.find((p) => p.id === 'cards');
-const worked = { productId: 'cards', qty: 100, material: 3, format: 2, finish: 4, design: 0, speed: 2, delivery: 1, extras: [] };
-assert.equal(Math.round(grandTotal(cards, worked, SHARED)), 4990, 'контрольный пример 4 990 ₽');
-assert.equal(Math.round(runTotal(cards, worked, SHARED)), 3290, 'контрольный пример, за тираж');
-assert.equal(setupTotal(cards, worked, SHARED), 1700, 'контрольный пример, за приладку');
-
-assert.equal(formatRub(1234567), '1 234 567 ₽', 'разряды отбиты неразрывным пробелом');
-assert.equal(formatRub(4990.34), '4 990 ₽', 'рубль округляется до целого');
-
-const def = { productId: 'cards', qty: 100, material: 0, format: 0, finish: 0, design: 0, speed: 0, delivery: 0, extras: [] };
-assert.equal(Math.round(grandTotal(cards, def, SHARED)), 1200, 'состояние по умолчанию 1 200 ₽');
-assert.equal(termKey(cards, def, SHARED, SLOW_PRODUCTS), 'normal', 'срок по умолчанию');
-
-console.log('контрольные примеры: 4 990 ₽ и 1 200 ₽ — сходятся');
-
-/* ── 4. СООБЩЕНИЕ В WHATSAPP ────────────────────────────────────────────── */
-const msg = raschetMessage(cards, worked, SHARED, RASCHET);
-for (const needle of ['Визитки', '100', 'Премиум картон / фактурная бумага',
-  'Двусторонняя визитка', 'Премиальная отделка', 'Макет готов', 'Срочно',
-  'Доставка по городу', 'предварительн']) {
-  assert.ok(msg.toLowerCase().includes(needle.toLowerCase()), `в сообщении нет «${needle}»:\n${msg}`);
-}
-assert.ok(msg.includes(formatRub(grandTotal(cards, worked, SHARED))), `в сообщении нет итоговой суммы:\n${msg}`);
-assert.ok(!msg.includes('undefined'), 'в сообщении undefined');
-
-const empty = raschetMessage(cards, def, SHARED, RASCHET);
-assert.ok(!empty.includes(RASCHET.fields.extras), 'пустой набор доп. работ не должен попадать в сообщение');
-console.log('сообщение в WhatsApp: собирается');
+console.log(`сообщение в WhatsApp: ${checked} сочетаний, собирается`);
 console.log('\nВСЁ СОШЛОСЬ.');

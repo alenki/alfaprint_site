@@ -1,325 +1,146 @@
 [
  {
-  "slug": "gazprom-mrg",
-  "name": "Газпром межрегионгаз Нальчик",
-  "raster": "gazprom-mrg.png",
-  "seen": "подарочный набор: ежедневник, пауэрбанк, ручка",
-  "gallery": [
-   "p000",
-   "p004",
-   "p162",
-   "p165",
-   "p204",
-   "p205",
-   "p206",
-   "v021"
-  ],
-  "origin": "https://www.mrgkbr.ru/wp-content/uploads/2017/08/LOGO-GMN.%D1%81%D0%B8%D0%BD%D0%B8%D0%B9-e1503497087545.jpg",
-  "from": "https://www.mrgkbr.ru/",
-  "note": "Медиабиблиотека самого mrgkbr.ru, файл «LOGO GMN.синий». Именно нальчикская версия локапа, а не федеральный знак «Газпрома» и не АО «Газпром газораспределение Нальчик» это другая организация."
+  "slug": "zerno",
+  "name": "Кофейня «Зерно»",
+  "raster": "zerno.png",
+  "seen": null,
+  "origin": "заглушка",
+  "note": "ЗАГЛУШКА: фирма и знак вымышлены, нарисованы для макета 26.09.2026. Отдельного исходника нет: для пересчёта набора в --src кладётся сама маска public/logos/zerno.png. До сдачи сайта строка меняется на настоящего заказчика."
  },
  {
-  "slug": "istoki",
-  "name": "Ресторан «Истоки»",
-  "raster": "istoki.png",
-  "seen": "винная и алкогольная карта",
-  "gallery": [
-   "p282",
-   "v016"
-  ],
-  "origin": "https://avatars.mds.yandex.net/get-altay/17765111/2a0000019d2a4c0749964f3d41053feec436/orig",
-  "from": "https://yandex.ru/maps/org/istoki/89230305347/",
-  "note": "Логотип с подтверждённой карточки заведения на Яндекс.Картах. Марка САМА является плашкой с вывороткой: тёмный круг, из которого выбито «исmоки», поэтому `invert` здесь НЕ ставится."
+  "slug": "vershina",
+  "name": "Отель «Вершина»",
+  "raster": "vershina.png",
+  "seen": null,
+  "origin": "заглушка",
+  "note": "ЗАГЛУШКА: фирма и знак вымышлены, нарисованы для макета 26.09.2026. Отдельного исходника нет: для пересчёта набора в --src кладётся сама маска public/logos/vershina.png. До сдачи сайта строка меняется на настоящего заказчика."
  },
  {
-  "slug": "moi-biznes",
-  "name": "Мойбизнес.рф",
-  "raster": "moi-biznes.png",
-  "seen": "ролл-ап конференции, пауэрбанк",
-  "gallery": [
-   "p145",
-   "p215",
-   "p268",
-   "v018",
-   "v038"
-  ],
-  "origin": "https://xn--90aifddrld7a.xn--p1ai/local/templates/mybiz/images/logo.svg",
-  "from": "https://xn--90aifddrld7a.xn--p1ai/",
-  "note": "Шапка мойбизнес.рф. На ролл-апе p145 знак стоит рядом с Минэкономразвития КБР."
+  "slug": "monolit",
+  "name": "Строительная компания «Монолит»",
+  "raster": "monolit.png",
+  "seen": null,
+  "origin": "заглушка",
+  "note": "ЗАГЛУШКА: фирма и знак вымышлены, нарисованы для макета 26.09.2026. Отдельного исходника нет: для пересчёта набора в --src кладётся сама маска public/logos/monolit.png. До сдачи сайта строка меняется на настоящего заказчика."
  },
  {
-  "slug": "zhk-kvartal",
-  "name": "ЖК «Квартал»",
-  "raster": "zhk-kvartal.png",
-  "seen": "кубок и медали «Кубок ЖК Квартал»",
-  "gallery": [
-   "p177",
-   "p178",
-   "p179",
-   "p180",
-   "p181",
-   "p214",
-   "v030"
-  ],
-  "origin": "https://t.me/kvartal_nalchik, аватар канала (cdn4.telesco.pe)",
-  "from": "https://t.me/kvartal_nalchik/13",
-  "note": "Своего сайта у комплекса нет; знак взят с аватара его собственного канала. Белая линейная графика по чёрному, отсюда `invert`. Постоянного адреса у файла нет: аватар телеграма отдаётся по временной ссылке, поэтому при пересчёте набора исходник восстанавливается из уже набранной маски (белая графика по чёрному), и `invert` остаётся правдой. Это единственный знак из двадцати трёх, который нельзя скачать заново.",
-  "invert": true
+  "slug": "talk-club",
+  "name": "Языковая школа Talk Club",
+  "raster": "talk-club.png",
+  "seen": null,
+  "origin": "заглушка",
+  "note": "ЗАГЛУШКА: фирма и знак вымышлены, нарисованы для макета 26.09.2026. Отдельного исходника нет: для пересчёта набора в --src кладётся сама маска public/logos/talk-club.png. До сдачи сайта строка меняется на настоящего заказчика."
  },
  {
-  "slug": "rosmolodezh",
-  "name": "Росмолодёжь",
-  "raster": "rosmolodezh.png",
-  "seen": "ежедневник форума, ручки",
-  "gallery": [
-   "p227",
-   "p237",
-   "p238"
-  ],
-  "origin": "https://fadm.gov.ru/local/templates/fadmgovru/assets/img/globa/logo.svg",
-  "from": "https://fadm.gov.ru/",
-  "note": "Брендовый словесный знак из пресс-кита fadm.gov.ru (не геральдическая эмблема ведомства: на форумной сувенирке стоит именно бренд). Кислотно-жёлтый #DAEF14: по яркости почти бумага, поэтому маска считается по тёмному каналу."
+  "slug": "versal",
+  "name": "Банкетный зал «Версаль»",
+  "raster": "versal.png",
+  "seen": null,
+  "origin": "заглушка",
+  "note": "ЗАГЛУШКА: фирма и знак вымышлены, нарисованы для макета 26.09.2026. Отдельного исходника нет: для пересчёта набора в --src кладётся сама маска public/logos/versal.png. До сдачи сайта строка меняется на настоящего заказчика."
  },
  {
-  "slug": "myaso-syr",
-  "name": "Мясо & Сыр",
-  "raster": "myaso-syr.png",
-  "seen": "барная карта",
-  "gallery": [
-   "p281"
-  ],
-  "origin": "https://avatars.mds.yandex.net/get-altay/15352901/2a00000195dc5a71d1656eb369029090c7d9/orig",
-  "from": "https://yandex.com/maps/org/myaso_syr/76393419731/",
-  "note": "Логотип с подтверждённой карточки заведения на Яндекс.Картах. Головка сыра, из которой выбрана монограмма, и словесный знак под ней."
+  "slug": "bars",
+  "name": "Спортивный клуб «Барс»",
+  "raster": "bars.png",
+  "seen": null,
+  "origin": "заглушка",
+  "note": "ЗАГЛУШКА: фирма и знак вымышлены, нарисованы для макета 26.09.2026. Отдельного исходника нет: для пересчёта набора в --src кладётся сама маска public/logos/bars.png. До сдачи сайта строка меняется на настоящего заказчика."
  },
  {
-  "slug": "fazenda07",
-  "name": "Fazenda 07 Family Market",
-  "raster": "fazenda07.png",
-  "seen": "этикетки на упаковку",
-  "gallery": [
-   "p254",
-   "v035"
-  ],
-  "origin": "https://fazenda07.ru/catalog/view/theme/default/image/logo.svg",
-  "from": "https://fazenda07.ru/",
-  "note": "Вектор из шапки собственного интернет-магазина."
+  "slug": "emal",
+  "name": "Стоматология «Эмаль»",
+  "raster": "emal.png",
+  "seen": null,
+  "origin": "заглушка",
+  "note": "ЗАГЛУШКА: фирма и знак вымышлены, нарисованы для макета 26.09.2026. Отдельного исходника нет: для пересчёта набора в --src кладётся сама маска public/logos/emal.png. До сдачи сайта строка меняется на настоящего заказчика."
  },
  {
-  "slug": "spartak",
-  "name": "Спартак",
-  "raster": "spartak.png",
-  "seen": "футболки турнира по дзюдо",
-  "gallery": [
-   "p193",
-   "p194",
-   "p196"
-  ],
-  "origin": "https://upload.wikimedia.org/wikipedia/commons/3/3e/HC_Spartak_Moscow_Logo.svg",
-  "from": "https://commons.wikimedia.org/",
-  "note": "Ромб общества с литерой С, сверено с оттиском на груди футболки в p193. Не футбольный клуб: у того в знаке мяч."
+  "slug": "syrovarnya",
+  "name": "Горная сыроварня",
+  "raster": "syrovarnya.png",
+  "seen": null,
+  "origin": "заглушка",
+  "note": "ЗАГЛУШКА: фирма и знак вымышлены, нарисованы для макета 26.09.2026. Отдельного исходника нет: для пересчёта набора в --src кладётся сама маска public/logos/syrovarnya.png. До сдачи сайта строка меняется на настоящего заказчика."
  },
  {
-  "slug": "le-rucci",
-  "name": "Le Rucci",
-  "raster": "le-rucci.png",
-  "seen": "акриловый QR-стенд, визитки",
-  "gallery": [
-   "p203",
-   "v020"
-  ],
-  "origin": "https://lerucci.ru/image/catalog/596703.jpg",
-  "from": "https://lerucci.ru/",
-  "note": "Знак со страницы «О компании» собственного магазина."
+  "slug": "drayv",
+  "name": "Автоцентр «Драйв»",
+  "raster": "drayv.png",
+  "seen": null,
+  "origin": "заглушка",
+  "note": "ЗАГЛУШКА: фирма и знак вымышлены, нарисованы для макета 26.09.2026. Отдельного исходника нет: для пересчёта набора в --src кладётся сама маска public/logos/drayv.png. До сдачи сайта строка меняется на настоящего заказчика."
  },
  {
-  "slug": "pervye",
-  "name": "Движение Первых",
-  "raster": "pervye.png",
-  "seen": "акриловые плакетки, медали, ручки",
-  "gallery": [
-   "p186",
-   "p209",
-   "p212",
-   "p279",
-   "p319",
-   "p324",
-   "v029",
-   "v109"
-  ],
-  "origin": "https://upload.wikimedia.org/wikipedia/commons/f/fc/Logo_of_the_Movement_of_the_First.svg",
-  "from": "https://commons.wikimedia.org/",
-  "note": "В галерее встречаются и суббренды: «Бутса Первых», «Наставник Первых»; в ленте стоит головной знак."
+  "slug": "gorizont",
+  "name": "Турагентство «Горизонт»",
+  "raster": "gorizont.png",
+  "seen": null,
+  "origin": "заглушка",
+  "note": "ЗАГЛУШКА: фирма и знак вымышлены, нарисованы для макета 26.09.2026. Отдельного исходника нет: для пересчёта набора в --src кладётся сама маска public/logos/gorizont.png. До сдачи сайта строка меняется на настоящего заказчика."
  },
  {
-  "slug": "kiberone",
-  "name": "KIBERone",
-  "raster": "kiberone.png",
-  "seen": "ролл-ап и промо-стойка",
-  "gallery": [
-   "p195",
-   "p228"
-  ],
-  "origin": "https://kiber-one.com/img/redesign2/logo.svg",
-  "from": "https://nalchik.kiber-one.com/",
-  "note": "Общий для всех городов знак франшизы; нальчикский поддомен отдаёт тот же файл. Серая рамка локапа снята `deframe`: в одну краску она стала бы плашкой."
+  "slug": "umka",
+  "name": "Детский центр «Умка»",
+  "raster": "umka.png",
+  "seen": null,
+  "origin": "заглушка",
+  "note": "ЗАГЛУШКА: фирма и знак вымышлены, нарисованы для макета 26.09.2026. Отдельного исходника нет: для пересчёта набора в --src кладётся сама маска public/logos/umka.png. До сдачи сайта строка меняется на настоящего заказчика."
  },
  {
-  "slug": "cheget-star",
-  "name": "Отель Cheget Star",
-  "raster": "cheget-star.png",
-  "seen": "меню завтраков и ресторана",
-  "gallery": [
-   "p352",
-   "p353",
-   "p354"
-  ],
-  "origin": "https://cheget-star.ru/img/a02f003b3b6555ea.webp",
-  "from": "https://cheget-star.ru/",
-  "note": "Отель в Терсколе, Приэльбрусье. Знак отрисован светлым по прозрачному, силуэтом взят альфа-канал исходника."
+  "slug": "kunak",
+  "name": "Кафе «Кунак»",
+  "raster": "kunak.png",
+  "seen": null,
+  "origin": "заглушка",
+  "note": "ЗАГЛУШКА: фирма и знак вымышлены, нарисованы для макета 26.09.2026. Отдельного исходника нет: для пересчёта набора в --src кладётся сама маска public/logos/kunak.png. До сдачи сайта строка меняется на настоящего заказчика."
  },
  {
-  "slug": "rshb",
-  "name": "Россельхозбанк",
-  "raster": "rshb.png",
-  "seen": "обложка ежедневника, партнёрский ряд",
-  "gallery": [
-   "p227"
-  ],
-  "origin": "https://www.rshb.ru/wcms-resources/LOGO_RSHB.svg",
-  "from": "https://www.rshb.ru/",
-  "note": "Знак из шапки собственного сайта банка. Действующий локап: три полосы и «РСХБ». В партнёрском ряду на обложке ежедневника p227 стоит он же."
+  "slug": "dubrava",
+  "name": "Мебельная фабрика «Дубрава»",
+  "raster": "dubrava.png",
+  "seen": null,
+  "origin": "заглушка",
+  "note": "ЗАГЛУШКА: фирма и знак вымышлены, нарисованы для макета 26.09.2026. Отдельного исходника нет: для пересчёта набора в --src кладётся сама маска public/logos/dubrava.png. До сдачи сайта строка меняется на настоящего заказчика."
  },
  {
-  "slug": "kurort-nalchik",
-  "name": "Курорт «Нальчик»",
-  "raster": "kurort-nalchik.png",
-  "seen": "ролл-ап баннер",
-  "gallery": [
-   "v073"
-  ],
-  "origin": "https://www.kurortnalchik.ru/media/img/template/logo.png",
-  "from": "https://www.kurortnalchik.ru/",
-  "note": "Знак из шапки собственного сайта курорта федерального значения. Не путать с санаторием «Горный родник», который стоит на том же ролл-апе v073 отдельной строкой."
+  "slug": "pion",
+  "name": "Цветочная мастерская «Пион»",
+  "raster": "pion.png",
+  "seen": null,
+  "origin": "заглушка",
+  "note": "ЗАГЛУШКА: фирма и знак вымышлены, нарисованы для макета 26.09.2026. Отдельного исходника нет: для пересчёта набора в --src кладётся сама маска public/logos/pion.png. До сдачи сайта строка меняется на настоящего заказчика."
  },
  {
-  "slug": "natsproekty",
-  "name": "Национальные проекты России",
-  "raster": "natsproekty.png",
-  "seen": "ролл-ап баннер, ручки",
-  "gallery": [
-   "p145",
-   "p215",
-   "v038"
-  ],
-  "origin": "https://logo-teka.com/wp-content/uploads/2025/09/national-projects-of-russia-logo.png",
-  "from": "https://logo-teka.com/nacionalnye-proekty-rossii/",
-  "note": "Бренд образца 2019…2024, тот самый, что стоит на ролл-апе p145. НЕ старая эмблема «Приоритетные национальные проекты» 2006 года и НЕ нынешний знак «По решению Президента», обе были отвергнуты при сверке. Марка сама является плашкой с вывороткой, `invert` не ставится."
+  "slug": "pulse",
+  "name": "Фитнес-клуб Pulse",
+  "raster": "pulse.png",
+  "seen": null,
+  "origin": "заглушка",
+  "note": "ЗАГЛУШКА: фирма и знак вымышлены, нарисованы для макета 26.09.2026. Отдельного исходника нет: для пересчёта набора в --src кладётся сама маска public/logos/pulse.png. До сдачи сайта строка меняется на настоящего заказчика."
  },
  {
-  "slug": "rec",
-  "name": "Российский экспортный центр",
-  "raster": "rec.png",
-  "seen": "пауэрбанк из подарочного набора",
-  "gallery": [
-   "p268",
-   "v018"
-  ],
-  "origin": "https://www.exportcenter.ru/upload/iblock/92a/3ptxp8u0ob7i10k0d20uy3i2lky54m95.png",
-  "from": "https://www.exportcenter.ru/press_center/mass_media_materials/",
-  "note": "Официальный файл из раздела «Материалы для СМИ». В исходнике стоит локап ВСЕЙ ГРУППЫ: под чертой к знаку РЭЦ приписаны ЭКСАР и РОСЭКСИМБАНК. Обе приписки срезаны при растрировании (кроп по 440 px из 827): на пауэрбанке они стоят самостоятельными марками, а в ленте стоит головной знак, как и у «Первых»."
+  "slug": "blade",
+  "name": "Барбершоп Blade",
+  "raster": "blade.png",
+  "seen": null,
+  "origin": "заглушка",
+  "note": "ЗАГЛУШКА: фирма и знак вымышлены, нарисованы для макета 26.09.2026. Отдельного исходника нет: для пересчёта набора в --src кладётся сама маска public/logos/blade.png. До сдачи сайта строка меняется на настоящего заказчика."
  },
  {
-  "slug": "foster",
-  "name": "Foster",
-  "raster": "foster.png",
-  "seen": "визитки на soft-touch картоне",
-  "gallery": [
-   "p158",
-   "p161",
-   "p211"
-  ],
-  "origin": "https://avatars.mds.yandex.net/get-altay/11924971/2a000001915fcd90c5fc1b18ec52f8d27a80/XXL",
-  "from": "https://yandex.ru/maps/org/foster/206180719769/",
-  "note": "Спортивный магазин. Монограмма FR светлым по чёрной плашке, отсюда `invert`.",
-  "invert": true
+  "slug": "parkovyi",
+  "name": "Жилой комплекс «Парковый»",
+  "raster": "parkovyi.png",
+  "seen": null,
+  "origin": "заглушка",
+  "note": "ЗАГЛУШКА: фирма и знак вымышлены, нарисованы для макета 26.09.2026. Отдельного исходника нет: для пересчёта набора в --src кладётся сама маска public/logos/parkovyi.png. До сдачи сайта строка меняется на настоящего заказчика."
  },
  {
-  "slug": "dinamo",
-  "name": "Общество «Динамо»",
-  "raster": "dinamo.png",
-  "seen": "вымпелы всероссийских соревнований по дзюдо",
-  "gallery": [
-   "p197"
-  ],
-  "origin": "https://www.dynamo.su/local/templates/dynamo/assets/images/symbols/dynamo-new.svg",
-  "from": "https://www.dynamo.su/",
-  "note": "Знак с сайта самого Общества «Динамо»."
- },
- {
-  "slug": "daimond",
-  "name": "Daimond",
-  "raster": "daimond.png",
-  "seen": "буклет, бланк, визитки",
-  "gallery": [
-   "p149",
-   "p185",
-   "v032"
-  ],
-  "origin": "https://avatars.mds.yandex.net/get-maps-adv-crm/3927175/2a0000018817f3d88b37aef57204f500a2f0/orig",
-  "from": "https://okna-daimond.clients.site/",
-  "note": "Оконные и дверные системы. Написание через AI: DAIMOND, не DIAMOND: так набрано и на визитке в галерее, и в фирменном знаке. Светлое по чёрному, `invert`.",
-  "invert": true
- },
- {
-  "slug": "volrota",
-  "name": "Волонтёрская рота",
-  "raster": "volrota.png",
-  "seen": "ролл-ап баннер",
-  "gallery": [
-   "p222"
-  ],
-  "origin": "https://volrota.ru/wp-content/uploads/2020/07/rota_logo-2.png",
-  "from": "https://volrota.ru/",
-  "note": "Знак отрисован белым по прозрачному: на белой бумаге он бы исчез, поэтому силуэтом взят альфа-канал исходника."
- },
- {
-  "slug": "brunch",
-  "name": "Brunch restaurant & bar",
-  "raster": "brunch.png",
-  "seen": "деревянная подставка под меню",
-  "gallery": [
-   "p236",
-   "v079"
-  ],
-  "origin": "https://avatars.mds.yandex.net/get-altay/9717139/2a000001896d7c4d4742ddcd1df141b644f6/orig",
-  "from": "https://yandex.com/maps/org/brunch/24694095820/",
-  "note": "Логотип с подтверждённой карточки заведения на Яндекс.Картах. Рукописный знак белым по бирюзовой плашке, отсюда `invert`.",
-  "invert": true
- },
- {
-  "slug": "sindika",
-  "name": "Холдинг «Синдика»",
-  "raster": "sindika.png",
-  "seen": "программа мероприятия",
-  "gallery": [
-   "p155"
-  ],
-  "origin": "https://static.tildacdn.com/tild3235-3264-4633-b737-303432306436/logo1.svg",
-  "from": "https://sindika.ru/",
-  "note": "Вектор из шапки собственного сайта холдинга. Знак отрисован белым по прозрачному: на белой бумаге он бы исчез, поэтому силуэтом взят альфа-канал исходника."
- },
- {
-  "slug": "avenue-hotel",
-  "name": "Бутик-отель «Avenue»",
-  "raster": "avenue-hotel.png",
-  "seen": "деревянные брелоки для ключей",
-  "gallery": [
-   "p303",
-   "v005"
-  ],
-  "origin": "https://hotel-avenue.ru/_next/image?url=http%3A%2F%2F127.0.0.1%3A8090%2Fapi%2Ffiles%2F87wnq8ztmirq1ww%2Fdewiyrgcatsyhyx%2Fnew_06_OAqfKMZOK4.png&w=1920&q=100",
-  "from": "https://hotel-avenue.ru/",
-  "note": "Знак из шапки собственного сайта отеля."
+  "slug": "kolos",
+  "name": "Пекарня «Колос»",
+  "raster": "kolos.png",
+  "seen": null,
+  "origin": "заглушка",
+  "note": "ЗАГЛУШКА: фирма и знак вымышлены, нарисованы для макета 26.09.2026. Отдельного исходника нет: для пересчёта набора в --src кладётся сама маска public/logos/kolos.png. До сдачи сайта строка меняется на настоящего заказчика."
  }
 ]

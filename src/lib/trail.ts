@@ -75,8 +75,12 @@ const CAP = 192;
 /** Плотность выше двух холст не окупает: линия тонкая и одноцветная. */
 const MAX_DPR = 2;
 
-/** Краска по умолчанию на случай, если холст ещё не в документе. */
-const INK_FALLBACK = '#d12a26';
+/**
+ * Краска по умолчанию на случай, если холст ещё не в документе: синяя с
+ * логотипа, то есть `--color-rubine`. Число повторено руками, потому что до
+ * документа токен прочитать неоткуда; правится вместе с токеном.
+ */
+const INK_FALLBACK = '#10529c';
 
 let canvas: HTMLCanvasElement | null = null;
 let ctx: CanvasRenderingContext2D | null = null;
@@ -108,10 +112,34 @@ let x1 = 0;
 let y1 = 0;
 
 /* Краска спрашивается у CSS и перечитывается только на смене грунта: по
-   рубину след уходит в бумагу, на всех прочих грунтах печатается хромой.
-   Само значение объявлено на .trail и подменяется там же. */
+   синему грунту след уходит в бумагу, по тёмно-синему берёт светлую синюю
+   (синяя с логотипа там даёт 1,71:1), на бумаге печатается синей. Само
+   значение объявлено на .trail и подменяется там же. */
 let ink = INK_FALLBACK;
 let inkedFor: string | null = null;
+
+/**
+ * ГРУНТ ПОД УКАЗАТЕЛЕМ, А НЕ ПОД СЕРЕДИНОЙ ОКНА. Середину окна считает
+ * `PlateProvider`, и для указателя разделов это верно; для следа нет:
+ * плашка шапки, итог заказа на /raschet и первые полэкрана тёмной полосы
+ * стоят на тёмно-синем, пока середина окна ещё на бумаге, и синяя с
+ * логотипа легла бы по тёмно-синему в 1,71:1. Поэтому след спрашивает грунт
+ * у того узла, над которым стоит указатель, и пишет его на свой же холст.
+ */
+let under = 'paper';
+
+function groundUnder(t: EventTarget | null): string {
+  const el = (t as Element | null)?.closest?.(
+    '.bar-plate, .hero-tab, .ground-ink, .ground-rubine, [data-section-ground]'
+  ) as HTMLElement | null;
+  if (!el) return 'paper';
+  if (el.classList.contains('bar-plate')) {
+    return document.documentElement.dataset.barGround === 'ink' ? 'paper' : 'ink';
+  }
+  if (el.classList.contains('ground-ink') || el.classList.contains('hero-tab')) return 'ink';
+  if (el.classList.contains('ground-rubine')) return 'rubine';
+  return el.dataset.sectionGround || 'paper';
+}
 
 /** Записывает точку пути. Единственное место, где кольцо растёт. */
 function push(x: number, y: number, t: number) {
@@ -195,6 +223,13 @@ export function attachTrail(node: HTMLCanvasElement) {
 export function trailPointer(e: PointerEvent) {
   if (!ctx || e.pointerType === 'touch') return;
 
+  const g = groundUnder(e.target);
+  if (g !== under) {
+    under = g;
+    settled = false;
+    if (canvas) canvas.dataset.ground = g;
+  }
+
   const now = performance.now();
 
   /* Мышь на 1000 Гц отдаёт браузеру десяток положений между кадрами, и все
@@ -242,7 +277,7 @@ export function trailFrame(t: number) {
   /* Грунт читается раньше геометрии: он решает и краску, и то, считать ли
      кадр вообще. Это чтение атрибута, а не пересчёт стилей: за самой краской
      ходят ниже и только на смене грунта. */
-  const ground = document.documentElement.dataset.ground ?? '';
+  const ground = under;
 
   /* Указатель стоит, и остаток под ним уже лежит на листе: считать нечего,
      стирать нечего, рисовать нечего. */

@@ -31,7 +31,8 @@ import { K_SECTIONS, K_SVYAZ } from '@/content/kontakty';
  * ЧАСЫ СТОЯТ ЗДЕСЬ, А НЕ В ПОДВАЛЕ ЛИСТА, и стоят рядом с номером не случайно:
  * они отвечают на второй вопрос звонящего, возьмут ли трубку. Подсветка
  * сегодняшней строки взята у §08 главной без единой правки: обещаний живой
- * строкой сайт не печатает.
+ * строкой сайт не печатает. В будний день подсвечены две строки, график и
+ * перерыв: обе про сегодня.
  */
 export function Svyaz() {
   const shift = useShift();
@@ -63,17 +64,20 @@ export function Svyaz() {
           <div className="col-span-4 md:col-span-4 md:col-start-9">
             <PrintReveal as="div" delay={0.08}>
               <span className="t-micro fg-56 kp-col-label">{K_SVYAZ.hoursLabel}</span>
-              <ul className="space-y-1.5">
+              {/* Колонку дней держит сетка по самой длинной метке, а не
+                  ширина в знаках: «Перерыв» длиннее «Пн…Пт», и время во
+                  всех строках обязано стоять по одной оси. См. `.k-hours`. */}
+              <ul className="k-hours">
                 {HOURS_DISPLAY.map((h) => {
                   const today =
                     shift.day >= 0 && (h.match as readonly number[]).includes(shift.day);
                   return (
                     <li
                       key={h.days}
-                      className="t-mono flex gap-4"
+                      className="t-mono"
                       style={{ color: today ? 'var(--fg)' : 'var(--fg-70)' }}
                     >
-                      <span className="w-[6ch] shrink-0">{h.days}</span>
+                      <span>{h.days}</span>
                       <span>{h.time}</span>
                     </li>
                   );
